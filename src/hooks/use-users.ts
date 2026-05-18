@@ -3,7 +3,7 @@ import { App } from 'antd'
 import { useCallback } from 'react'
 import type { Role } from '@/types/role'
 import type { User } from '@/types/user'
-import { apiDelete, apiGet, apiPatch, apiPost } from '@/utils/http-client'
+import { apiDelete, apiGet, apiPost, apiPut } from '@/utils/http-client'
 
 type UsersListResponse = {
   items: User[]
@@ -64,7 +64,7 @@ export function useUsers({ page, pageSize, search }: UseUsersArgs) {
         password: string
         roles: Role[]
       }>
-    }) => apiPatch<User, typeof body>(`/api/users/${id}`, body),
+    }) => apiPut<User, typeof body>(`/api/users/${id}`, body),
     onSuccess: () => {
       message.success('User updated')
       invalidateUsers()

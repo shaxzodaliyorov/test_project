@@ -61,6 +61,21 @@ export async function apiPatch<T, B = unknown>(path: string, body: B): Promise<T
   return parseJson<T>(res)
 }
 
+export async function apiPut<T, B = unknown>(path: string, body: B): Promise<T> {
+  const token = useAuthStore.getState().token
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  }
+  if (token) headers.Authorization = `Bearer ${token}`
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(body),
+  })
+  return parseJson<T>(res)
+}
+
 export async function apiDelete(path: string): Promise<void> {
   const token = useAuthStore.getState().token
   const headers: Record<string, string> = { Accept: 'application/json' }

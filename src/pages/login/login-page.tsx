@@ -26,16 +26,18 @@ import {
 } from './login.styles'
 import { PERMISSIONS } from '@/constants/permissions'
 import { useAuthStore } from '@/hooks/auth-store'
+import type { User } from '@/types/user'
 import { PATHS } from '@/routes/paths'
 import { getApiErrorMessage } from '@/utils/api-error'
 import { apiPost } from '@/utils/http-client'
 
-type LoginResponse = { token: string }
+type LoginResponse = { token: string; user: User }
 
 export function LoginPage() {
   const navigate = useNavigate()
   const { message } = App.useApp()
   const setToken = useAuthStore((s) => s.setToken)
+  const setUser = useAuthStore((s) => s.setUser)
 
   const login = useMutation({
     mutationFn: (values: { email: string; password: string }) =>
@@ -45,6 +47,7 @@ export function LoginPage() {
       ),
     onSuccess: (data) => {
       setToken(data.token)
+      setUser(data.user)
       void navigate(PATHS.DASHBOARD)
     },
     onError: (error) => {

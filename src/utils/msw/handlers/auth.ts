@@ -6,6 +6,7 @@ import {
   rowToUser,
 } from '@/utils/msw/demo-users-store'
 import { buildMockJwt, parseMockJwtPayload } from '@/utils/mock-jwt'
+import { mswLatency } from '@/utils/msw/msw-latency'
 
 export function getUserFromAuthHeader(auth: string | null): User | null {
   if (!auth?.startsWith('Bearer ')) return null
@@ -29,6 +30,7 @@ function tokenForUser(user: User): string {
 
 export const authHandlers = [
   http.post('/api/auth/login', async ({ request }) => {
+    await mswLatency()
     const body = (await request.json()) as { email?: string; password?: string }
     const record = getDemoPasswordRecord(body.email ?? '')
     if (!record || record.password !== body.password) {
@@ -39,9 +41,11 @@ export const authHandlers = [
     }
     return HttpResponse.json({
       token: tokenForUser(record.user),
+      user: record.user,
     })
   }),
-  http.get('/api/auth/me', ({ request }) => {
+  http.get('/api/auth/me', async ({ request }) => {
+    await mswLatency()
     const user = getUserFromAuthHeader(request.headers.get('authorization'))
     if (!user) {
       return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
