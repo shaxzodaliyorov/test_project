@@ -1,5 +1,6 @@
 import type { CurrencyCode } from '@/constants/currencies'
 import type { UiLocale } from '@/constants/ui-languages'
+import { normalizeCurrencySpacing } from '@/utils/format-currency'
 
 export type SettingsCopy = {
   pageTitle: string
@@ -12,7 +13,6 @@ export type SettingsCopy = {
   themeLabel: string
   themeLight: string
   themeDark: string
-  themeSystem: string
   appearanceSection: string
   primaryColorLabel: string
   fontLabel: string
@@ -35,7 +35,6 @@ export const SETTINGS_COPY: Record<UiLocale, SettingsCopy> = {
     themeLabel: 'Mavzu',
     themeLight: 'Yorug‘',
     themeDark: 'Qorong‘u',
-    themeSystem: 'Tizim',
     appearanceSection: 'Ko‘rinish',
     primaryColorLabel: 'Asosiy rang',
     fontLabel: 'Shrift',
@@ -56,7 +55,6 @@ export const SETTINGS_COPY: Record<UiLocale, SettingsCopy> = {
     themeLabel: 'Тема',
     themeLight: 'Светлая',
     themeDark: 'Тёмная',
-    themeSystem: 'Системная',
     appearanceSection: 'Оформление',
     primaryColorLabel: 'Основной цвет',
     fontLabel: 'Шрифт',
@@ -77,7 +75,6 @@ export const SETTINGS_COPY: Record<UiLocale, SettingsCopy> = {
     themeLabel: 'Theme',
     themeLight: 'Light',
     themeDark: 'Dark',
-    themeSystem: 'System',
     appearanceSection: 'Appearance',
     primaryColorLabel: 'Primary color',
     fontLabel: 'Font',
@@ -103,12 +100,15 @@ export function formatSampleAmount(
     en: 'en-US',
   }
   try {
-    return new Intl.NumberFormat(map[locale], {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount)
+    return normalizeCurrencySpacing(
+      new Intl.NumberFormat(map[locale], {
+        style: 'currency',
+        currency,
+        maximumFractionDigits: 0,
+        currencyDisplay: 'narrowSymbol',
+      }).format(amount),
+    )
   } catch {
-    return `${amount.toFixed(0)} ${currency}`
+    return normalizeCurrencySpacing(`${amount.toFixed(0)} ${currency}`)
   }
 }

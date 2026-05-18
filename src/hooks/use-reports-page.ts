@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReportTableSection, ReportsOverviewResponse, ReportsTableResponse } from "@/types/reports";
+import { useAuthStore } from "@/hooks/auth-store";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { apiGet } from "@/utils/http-client";
 import {
@@ -48,6 +49,9 @@ function tableSectionFromTab(tab: string): ReportTableSection | null {
 }
 
 export function useReportsPage() {
+  const preferredCurrency = useAuthStore(
+    (s) => s.user?.preferredCurrency ?? "USD",
+  );
   const [range, setRange] = useState<ReportsRangeParam>("");
   const [activeTab, setActiveTab] = useState("summary");
 
@@ -93,7 +97,7 @@ export function useReportsPage() {
   const debouncedTableSearch = useDebouncedValue(tableSearchRaw, 350);
 
   const overviewQuery = useQuery({
-    queryKey: ["reports", "overview", range],
+    queryKey: ["reports", "overview", range, preferredCurrency],
     queryFn: () => apiGet<ReportsOverviewResponse>(reportsOverviewUrl(range)),
   });
 
@@ -106,6 +110,7 @@ export function useReportsPage() {
       tablePaging?.page,
       tablePaging?.pageSize,
       debouncedTableSearch,
+      preferredCurrency,
     ],
     enabled: Boolean(tableSection && tablePaging),
     queryFn: () =>

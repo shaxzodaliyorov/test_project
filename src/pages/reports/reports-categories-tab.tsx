@@ -36,7 +36,7 @@ export function ReportsCategoriesTab({
         dataSource={data?.items ?? []}
         size="small"
         columns={reportsColumnsCategory}
-        scroll={{ y: 400, x: 720 }}
+        scroll={{ y: 400, x: 900 }}
         pagination={{
           current: filter.page,
           pageSize: filter.pageSize,

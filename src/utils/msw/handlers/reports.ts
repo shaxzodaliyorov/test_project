@@ -9,7 +9,9 @@ import type {
   ReportsOverviewResponse,
   ReportsTableResponse,
 } from '@/types/reports'
+import type { CurrencyCode } from '@/constants/currencies'
 import { PERMISSIONS } from '@/constants/permissions'
+import { convertUsdCentsToDisplayCurrency } from '@/utils/msw/convert-usd-cents-to-display-currency'
 import { getUserFromAuthHeader } from '@/utils/msw/handlers/auth'
 import { mswLatency } from '@/utils/msw/msw-latency'
 import { seriesDaily, seriesRevenueByMonth } from '@/utils/msw/demo-report-series'
@@ -136,6 +138,86 @@ function buildReportsBundle(range: string | null): ReportsBundle {
   }
 }
 
+function adaptReportsBundle(
+  bundle: ReportsBundle,
+  preferred: CurrencyCode,
+): ReportsBundle {
+  if (preferred === 'USD') return bundle
+
+  const m = (usdCents: number) =>
+    convertUsdCentsToDisplayCurrency(usdCents, preferred)
+
+  const revenueByMonth = bundle.revenueByMonth.map((r) => ({
+    ...r,
+    amount: m(Math.round(r.amount)),
+  }))
+
+  const dailyTrend = bundle.dailyTrend.map((d) => ({
+    ...d,
+    grossCents: m(d.grossCents),
+    netCents: m(d.netCents),
+  }))
+
+  const byCategory = bundle.byCategory.map((row) => ({
+    ...row,
+    amountCents: m(row.amountCents),
+  }))
+  const catSum = byCategory.reduce((s, r) => s + r.amountCents, 0) || 1
+  for (const r of byCategory) {
+    r.sharePercent = Math.round((r.amountCents / catSum) * 1000) / 10
+  }
+
+  const topMerchants = bundle.topMerchants.map((row) => ({
+    ...row,
+    revenueCents: m(row.revenueCents),
+    refundsCents: m(row.refundsCents),
+  }))
+
+  const totalGrossCents = dailyTrend.reduce((s, d) => s + d.grossCents, 0)
+  const totalOrders = dailyTrend.reduce((s, d) => s + d.orders, 0)
+  const totalNetCents = dailyTrend.reduce((s, d) => s + d.netCents, 0)
+
+  const labels = revenueByMonth.map((r) => r.month)
+  const data = revenueByMonth.map((r) => r.amount)
+  const netSeries = revenueByMonth.map((r) =>
+    Math.round(r.amount * (0.88 + (r.amount % 7) * 0.000_001)),
+  )
+
+  const overview: ReportsOverviewResponse = {
+    summary: {
+      totalGrossCents,
+      totalNetCents,
+      totalOrders,
+      avgOrderValueCents: totalOrders
+        ? Math.round(totalGrossCents / totalOrders)
+        : 0,
+      periodLabel: bundle.overview.summary.periodLabel,
+    },
+    chart: {
+      labels,
+      datasets: [
+        {
+          label: bundle.overview.chart.datasets[0]?.label ?? 'Daromad (brutto)',
+          data,
+        },
+        {
+          label: bundle.overview.chart.datasets[1]?.label ?? 'Daromad (netto)',
+          data: netSeries,
+        },
+      ],
+    },
+  }
+
+  return {
+    revenueByMonth,
+    dailyTrend,
+    byCategory,
+    topMerchants,
+    hourly: bundle.hourly,
+    overview,
+  }
+}
+
 function norm(s: string): string {
   return s.trim().toLowerCase()
 }
@@ -219,7 +301,10 @@ export const reportsHandlers = [
     const range = url.searchParams.get('range')
     const part = url.searchParams.get('part') ?? 'overview'
 
-    const bundle = buildReportsBundle(range)
+    const bundle = adaptReportsBundle(
+      buildReportsBundle(range),
+      user.preferredCurrency,
+    )
 
     if (part === 'overview') {
       const body: ReportsOverviewResponse = bundle.overview

@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/hooks/auth-store'
+import { useUiPreferencesStore } from '@/hooks/ui-preferences-store'
 import { apiGet } from '@/utils/http-client'
 import type { User } from '@/types/user'
 
@@ -17,7 +18,16 @@ export function useAuthSession() {
   })
 
   useEffect(() => {
-    if (query.data) setUser(query.data)
+    if (query.data) {
+      setUser(query.data)
+      const ui = useUiPreferencesStore.getState()
+      if (query.data.preferredLocale !== ui.locale) {
+        ui.setLocale(query.data.preferredLocale)
+      }
+      if (query.data.preferredCurrency !== ui.currency) {
+        ui.setCurrency(query.data.preferredCurrency)
+      }
+    }
   }, [query.data, setUser])
 
   useEffect(() => {

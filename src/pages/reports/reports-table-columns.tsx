@@ -41,25 +41,33 @@ export const reportsColumnsCategory: ColumnsType<ReportCategoryRow> = [
     dataIndex: "category",
     key: "category",
     ellipsis: true,
+    width: 200,
   },
   {
-    title: "Tranzaksiyalar",
+    title: (
+      <span style={{ whiteSpace: "nowrap" }}>Tranzaksiyalar</span>
+    ),
     dataIndex: "transactionCount",
     key: "transactionCount",
-    width: 120,
+    width: 152,
+    align: "right",
   },
   {
     title: "Summa",
     dataIndex: "amountCents",
     key: "amountCents",
-    width: 120,
-    render: (v: number) => formatMoney(v),
+    width: 220,
+    align: "right",
+    render: (v: number) => (
+      <span style={{ whiteSpace: "nowrap" }}>{formatMoney(v)}</span>
+    ),
   },
   {
     title: "Ulush %",
     dataIndex: "sharePercent",
     key: "sharePercent",
-    width: 90,
+    width: 96,
+    align: "right",
   },
 ];
 

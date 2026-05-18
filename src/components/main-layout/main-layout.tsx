@@ -19,8 +19,8 @@ import {
   Space,
   Typography,
 } from "antd";
-import { useMemo, useState } from "react";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "@/constants/permissions";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCanAccess } from "@/hooks/use-can-access";
@@ -35,6 +35,9 @@ import {
   mainLayoutMenu,
   mainLayoutShell,
   mainLayoutSider,
+  mainLayoutSiderBrand,
+  mainLayoutSiderBrandRow,
+  mainLayoutSiderBrandTitle,
   mainLayoutSiderInner,
   mainLayoutUserTrigger,
   mainLayoutUserAvatar,
@@ -46,11 +49,40 @@ import { initialsFromName } from "@/utils/initials-from-name";
 
 const { Header, Content, Sider } = Layout;
 
+function TaskSidebarMark({ size = 36 }: { size?: number }) {
+  const icon = Math.round(size * 0.52);
+  return (
+    <span
+      aria-hidden
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: size,
+        height: size,
+        borderRadius: 10,
+        background: "var(--accent)",
+        color: "#fff",
+        flexShrink: 0,
+      }}
+    >
+      <svg width={icon} height={icon} viewBox="0 0 24 24" fill="none">
+        <path
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
 export function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const screens = Grid.useBreakpoint();
-  const [collapsed, setCollapsed] = useState(false);
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const canDashboard = useCanAccess(PERMISSIONS.DASHBOARD_READ);
@@ -136,17 +168,22 @@ export function MainLayout() {
 
   return (
     <Layout style={mainLayoutShell}>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
-        breakpoint="lg"
-        width={232}
-        collapsedWidth={72}
-        theme="light"
-        style={mainLayoutSider}
-      >
+      <Sider width={232} theme="light" style={mainLayoutSider}>
         <div style={mainLayoutSiderInner}>
+          <Link
+            to={PATHS.DASHBOARD}
+            aria-label="TASK — Dashboard"
+            style={{
+              ...mainLayoutSiderBrand,
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            <span style={mainLayoutSiderBrandRow}>
+              <TaskSidebarMark />
+              <span style={mainLayoutSiderBrandTitle}>TASK</span>
+            </span>
+          </Link>
           <Menu
             mode="inline"
             selectedKeys={[location.pathname]}

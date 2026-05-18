@@ -1,8 +1,4 @@
-import {
-  DesktopOutlined,
-  MoonOutlined,
-  SunOutlined,
-} from "@ant-design/icons";
+import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { Radio, Select, Space } from "antd";
 import type { SettingsCopy } from "@/constants/settings-copy";
 import type { UiLocale } from "@/constants/ui-languages";
@@ -48,9 +44,6 @@ export function SettingsGeneralFields({
             </Radio.Button>
             <Radio.Button value="dark">
               <MoonOutlined /> {t.themeDark}
-            </Radio.Button>
-            <Radio.Button value="system">
-              <DesktopOutlined /> {t.themeSystem}
             </Radio.Button>
           </Space>
         </Radio.Group>

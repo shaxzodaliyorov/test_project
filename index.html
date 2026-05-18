@@ -11,21 +11,24 @@
           var prefKey = 'theme-preference'
           var legacyKey = 'theme-mode'
           var p = localStorage.getItem(prefKey)
-          if (p !== 'light' && p !== 'dark' && p !== 'system') {
+          if (p === 'system') {
+            p = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+            localStorage.setItem(prefKey, p)
+          }
+          if (p !== 'light' && p !== 'dark') {
             var leg = localStorage.getItem(legacyKey)
             if (leg === 'light' || leg === 'dark') {
               p = leg
               localStorage.setItem(prefKey, leg)
             } else {
-              p = 'system'
-            }
-          }
-          var m =
-            p === 'system'
-              ? window.matchMedia('(prefers-color-scheme: dark)').matches
+              p = window.matchMedia('(prefers-color-scheme: dark)').matches
                 ? 'dark'
                 : 'light'
-              : p
+            }
+          }
+          var m = p === 'light' || p === 'dark' ? p : 'light'
           document.documentElement.dataset.theme = m
           document.documentElement.style.colorScheme = m
         } catch (e) {}

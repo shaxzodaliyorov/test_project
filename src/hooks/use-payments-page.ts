@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { PaymentStatus, PaymentsListResponse } from '@/types/payment'
 import { PAYMENTS_DEFAULT_PAGE_SIZE } from '@/constants/payments-list'
+import { useAuthStore } from '@/hooks/auth-store'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { apiGet } from '@/utils/http-client'
 
@@ -29,6 +30,9 @@ function paymentsListUrl(
 export type PaymentsStatusFilter = PaymentStatus | ''
 
 export function usePaymentsPage() {
+  const preferredCurrency = useAuthStore(
+    (s) => s.user?.preferredCurrency ?? 'USD',
+  )
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(PAYMENTS_DEFAULT_PAGE_SIZE)
   const [search, setSearch] = useState('')
@@ -37,7 +41,16 @@ export function usePaymentsPage() {
   const debouncedSearch = useDebouncedValue(search, 350)
 
   const query = useQuery({
-    queryKey: ['payments', { page, pageSize, search: debouncedSearch, status }],
+    queryKey: [
+      'payments',
+      {
+        page,
+        pageSize,
+        search: debouncedSearch,
+        status,
+        preferredCurrency,
+      },
+    ],
     queryFn: () =>
       apiGet<PaymentsListResponse>(
         paymentsListUrl(page, pageSize, debouncedSearch, status),

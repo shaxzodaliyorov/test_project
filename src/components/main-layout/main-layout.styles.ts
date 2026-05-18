@@ -32,22 +32,21 @@ export const mainLayoutSiderBrand: CSSProperties = {
   transition: 'background 0.15s ease, border-color 0.15s ease',
 }
 
-export const mainLayoutSiderBrandCollapsed: CSSProperties = {
-  ...mainLayoutSiderBrand,
-  padding: 8,
+export const mainLayoutSiderBrandRow: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  gap: 12,
+  minWidth: 0,
 }
 
 export const mainLayoutSiderBrandTitle: CSSProperties = {
   display: 'block',
   margin: 0,
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 22,
+  fontWeight: 700,
   color: 'var(--text-h)',
-  letterSpacing: '-0.02em',
-  lineHeight: 1.25,
+  letterSpacing: '0.06em',
+  lineHeight: 1.1,
 }
 
 export const mainLayoutSiderBrandSubtitle: CSSProperties = {

@@ -1,9 +1,15 @@
 import { App, Button, Divider, Flex, Space, Typography } from "antd";
 import { useEffect, useMemo, useState } from "react";
+import type { CurrencyCode } from "@/constants/currencies";
 import { getSettingsCopy } from "@/constants/settings-copy";
+import type { UiLocale } from "@/constants/ui-languages";
 import { DEFAULT_UI_LOCALE } from "@/constants/ui-languages";
+import { useAuthStore } from "@/hooks/auth-store";
+import { useUiPreferencesStore } from "@/hooks/ui-preferences-store";
+import type { User } from "@/types/user";
+import { apiPatch } from "@/utils/http-client";
 import {
-  commitDraftToStores,
+  commitThemeAndAppearanceToStores,
   isDraftDirty,
   readDraftFromStores,
   type SettingsDraft,
@@ -21,17 +27,23 @@ import {
 export function SettingsPage() {
   const { message } = App.useApp();
   const t = useMemo(() => getSettingsCopy(DEFAULT_UI_LOCALE), []);
+  const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
 
   const [committed, setCommitted] = useState<SettingsDraft>(() =>
     readDraftFromStores(),
   );
   const [draft, setDraft] = useState<SettingsDraft>(() => readDraftFromStores());
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (!user?.id) return;
     const s = readDraftFromStores();
-    setCommitted(s);
-    setDraft(s);
-  }, []);
+    queueMicrotask(() => {
+      setCommitted(s);
+      setDraft(s);
+    });
+  }, [user?.id]);
 
   const dirty = isDraftDirty(committed, draft);
 
@@ -43,10 +55,29 @@ export function SettingsPage() {
     setDraft({ ...committed });
   };
 
-  const handleSave = () => {
-    commitDraftToStores(draft);
-    setCommitted({ ...draft });
-    message.success(t.saveSuccess);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const updated = await apiPatch<
+        User,
+        { preferredCurrency: CurrencyCode; preferredLocale: UiLocale }
+      >("/api/auth/me/preferences", {
+        preferredCurrency: draft.currency,
+        preferredLocale: draft.locale,
+      });
+      setUser(updated);
+      useUiPreferencesStore.getState().setLocale(updated.preferredLocale);
+      useUiPreferencesStore.getState().setCurrency(updated.preferredCurrency);
+      commitThemeAndAppearanceToStores(draft);
+      const next = readDraftFromStores();
+      setCommitted(next);
+      setDraft(next);
+      message.success(t.saveSuccess);
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : "Xato");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -80,7 +111,12 @@ export function SettingsPage() {
             <Button onClick={handleCancel} disabled={!dirty}>
               {t.cancelButton}
             </Button>
-            <Button type="primary" onClick={handleSave} disabled={!dirty}>
+            <Button
+              type="primary"
+              onClick={() => void handleSave()}
+              disabled={!dirty}
+              loading={saving}
+            >
               {t.saveButton}
             </Button>
           </Flex>

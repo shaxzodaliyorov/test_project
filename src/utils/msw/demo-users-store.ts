@@ -1,5 +1,9 @@
+import type { CurrencyCode } from '@/constants/currencies'
+import { DEFAULT_CURRENCY_CODE } from '@/constants/currencies'
 import { PERMISSIONS } from '@/constants/permissions'
 import type { Permission } from '@/constants/permissions'
+import type { UiLocale } from '@/constants/ui-languages'
+import { DEFAULT_UI_LOCALE } from '@/constants/ui-languages'
 import type { Role } from '@/types/role'
 import type { User } from '@/types/user'
 
@@ -9,6 +13,8 @@ export type DemoRow = {
   name: string
   password: string
   roles: Role[]
+  preferredLocale?: UiLocale
+  preferredCurrency?: CurrencyCode
 }
 
 function permissionsForRoles(roles: Role[]): readonly Permission[] {
@@ -42,6 +48,8 @@ export function rowToUser(row: DemoRow): User {
     name: row.name,
     roles: row.roles,
     permissions: permissionsForRoles(row.roles),
+    preferredLocale: row.preferredLocale ?? DEFAULT_UI_LOCALE,
+    preferredCurrency: row.preferredCurrency ?? DEFAULT_CURRENCY_CODE,
   }
 }
 
@@ -131,7 +139,17 @@ export function insertRow(row: DemoRow): void {
 
 export function updateRow(
   id: string,
-  patch: Partial<Pick<DemoRow, 'email' | 'name' | 'password' | 'roles'>>,
+  patch: Partial<
+    Pick<
+      DemoRow,
+      | 'email'
+      | 'name'
+      | 'password'
+      | 'roles'
+      | 'preferredLocale'
+      | 'preferredCurrency'
+    >
+  >,
 ): boolean {
   const i = rows.findIndex((r) => r.id === id)
   if (i === -1) return false

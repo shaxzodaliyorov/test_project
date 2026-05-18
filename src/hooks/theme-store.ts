@@ -1,21 +1,30 @@
 import { create } from 'zustand'
 
 export type ThemeMode = 'light' | 'dark'
-export type ThemePreference = 'light' | 'dark' | 'system'
+export type ThemePreference = ThemeMode
 
 const PREFERENCE_KEY = 'theme-preference'
 const LEGACY_MODE_KEY = 'theme-mode'
+const RESOLVED_KEY = 'theme-resolved'
 
 function systemPrefersDark(): boolean {
   if (typeof window === 'undefined') return false
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-/** No stored keys: default to system (same as old un-set behaviour). */
+/**
+ * Birinchi kirish: saqlangan qiymat bo‘lmasa yoki `system` bo‘lsa — OS `prefers-color-scheme`
+ * bo‘yicha `light`/`dark` tanlanadi va `theme-preference` ga yoziladi (UI da "Tizim" yo‘q).
+ */
 function readStoredPreferenceWithLegacyDefaults(): ThemePreference {
   if (typeof window === 'undefined') return 'light'
-  const pref = localStorage.getItem(PREFERENCE_KEY)
-  if (pref === 'light' || pref === 'dark' || pref === 'system') {
+  let pref = localStorage.getItem(PREFERENCE_KEY)
+  if (pref === 'system') {
+    const migrated: ThemePreference = systemPrefersDark() ? 'dark' : 'light'
+    localStorage.setItem(PREFERENCE_KEY, migrated)
+    pref = migrated
+  }
+  if (pref === 'light' || pref === 'dark') {
     return pref
   }
   const legacy = localStorage.getItem(LEGACY_MODE_KEY)
@@ -23,43 +32,44 @@ function readStoredPreferenceWithLegacyDefaults(): ThemePreference {
     localStorage.setItem(PREFERENCE_KEY, legacy)
     return legacy
   }
-  return 'system'
+  const initial: ThemePreference = systemPrefersDark() ? 'dark' : 'light'
+  try {
+    localStorage.setItem(PREFERENCE_KEY, initial)
+  } catch {
+    /* private mode */
+  }
+  return initial
 }
 
-export function resolveThemeMode(preference: ThemePreference): ThemeMode {
-  if (preference === 'system') {
-    return systemPrefersDark() ? 'dark' : 'light'
+function persistResolvedTheme(mode: ThemeMode): void {
+  if (typeof localStorage === 'undefined') return
+  try {
+    localStorage.setItem(RESOLVED_KEY, mode)
+    localStorage.setItem(LEGACY_MODE_KEY, mode)
+  } catch {
+    /* private mode / quota */
   }
-  return preference
 }
 
 export function applyThemeToDocument(mode: ThemeMode): void {
   if (typeof document === 'undefined') return
   document.documentElement.dataset.theme = mode
   document.documentElement.style.setProperty('color-scheme', mode)
+  persistResolvedTheme(mode)
 }
 
-let systemMql: MediaQueryList | null = null
-
-function onSystemColorSchemeChange(): void {
-  const { preference } = useThemeStore.getState()
-  if (preference !== 'system') return
-  const resolved = systemPrefersDark() ? 'dark' : 'light'
-  applyThemeToDocument(resolved)
-  useThemeStore.setState({ resolvedMode: resolved })
+function onThemeStorageEvent(e: StorageEvent): void {
+  if (e.storageArea !== localStorage) return
+  if (e.key !== PREFERENCE_KEY) return
+  const v = e.newValue
+  if (v !== 'light' && v !== 'dark') return
+  applyThemeToDocument(v)
+  useThemeStore.setState({ preference: v, resolvedMode: v })
 }
 
-function syncSystemMediaListener(preference: ThemePreference): void {
+function initThemeCrossTabSync(): void {
   if (typeof window === 'undefined') return
-  if (preference === 'system') {
-    if (!systemMql) {
-      systemMql = window.matchMedia('(prefers-color-scheme: dark)')
-      systemMql.addEventListener('change', onSystemColorSchemeChange)
-    }
-  } else if (systemMql) {
-    systemMql.removeEventListener('change', onSystemColorSchemeChange)
-    systemMql = null
-  }
+  window.addEventListener('storage', onThemeStorageEvent)
 }
 
 type ThemeState = {
@@ -70,18 +80,17 @@ type ThemeState = {
 }
 
 const initialPreference = readStoredPreferenceWithLegacyDefaults()
-const initialResolved = resolveThemeMode(initialPreference)
-applyThemeToDocument(initialResolved)
+
+applyThemeToDocument(initialPreference)
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
   preference: initialPreference,
-  resolvedMode: initialResolved,
+  resolvedMode: initialPreference,
   setPreference: (preference) => {
-    const resolvedMode = resolveThemeMode(preference)
+    if (preference !== 'light' && preference !== 'dark') return
     localStorage.setItem(PREFERENCE_KEY, preference)
-    applyThemeToDocument(resolvedMode)
-    syncSystemMediaListener(preference)
-    set({ preference, resolvedMode })
+    applyThemeToDocument(preference)
+    set({ preference, resolvedMode: preference })
   },
   toggleResolved: () => {
     const next: ThemeMode =
@@ -90,4 +99,4 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   },
 }))
 
-syncSystemMediaListener(initialPreference)
+initThemeCrossTabSync()

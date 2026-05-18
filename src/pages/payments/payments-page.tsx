@@ -3,6 +3,7 @@ import { Alert, Button, Input, Select, Space, Table, Tag, Typography } from "ant
 import type { ColumnsType } from "antd/es/table";
 import type { Payment, PaymentStatus } from "@/types/payment";
 import { usePaymentsPage } from "@/hooks/use-payments-page";
+import { formatCurrencyMinorUnits } from "@/utils/format-currency";
 
 const STATUS_OPTIONS: { label: string; value: PaymentStatus }[] = [
   { label: "Kutilmoqda", value: "pending" },
@@ -39,13 +40,22 @@ export function PaymentsPage() {
         key: "amount",
         width: 120,
         render: (_, row) =>
-          `${(row.amountCents / 100).toFixed(2)} ${row.currency}`,
+          formatCurrencyMinorUnits(row.amountCents, {
+            currency: row.currency,
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+          }),
       },
       {
         title: "Komissiya",
         key: "fee",
         width: 100,
-        render: (_, row) => `${(row.feeCents / 100).toFixed(2)}`,
+        render: (_, row) =>
+          formatCurrencyMinorUnits(row.feeCents, {
+            currency: row.currency,
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+          }),
       },
       {
         title: "Holat",
