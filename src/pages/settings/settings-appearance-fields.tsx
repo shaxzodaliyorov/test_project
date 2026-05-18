@@ -2,8 +2,12 @@ import { Flex, Select, Space } from "antd";
 import { useTranslation } from "react-i18next";
 import { FONT_PRESETS } from "@/constants/font-presets";
 import { THEME_COLOR_PRESETS } from "@/constants/theme-color-presets";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import type { SettingsDraft } from "./settings-draft";
-import { settingsSwatch } from "./settings-page.styles";
+import {
+  settingsFieldWidthWide,
+  settingsSwatch,
+} from "./settings-page.styles";
 import { SettingsRow } from "./settings-row";
 
 function presetLabel(id: string): string {
@@ -20,11 +24,16 @@ export function SettingsAppearanceFields({
   onDraftChange,
 }: SettingsAppearanceFieldsProps) {
   const { t } = useTranslation("settings");
+  const isCompact = useCompactLayout();
 
   return (
-    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+    <Space
+      direction="vertical"
+      size={isCompact ? "middle" : "large"}
+      style={{ width: "100%" }}
+    >
       <SettingsRow label={t("primaryColorLabel")}>
-        <Flex wrap="wrap" gap={10} justify="flex-end">
+        <Flex wrap="wrap" gap={10} justify={isCompact ? "flex-start" : "flex-end"}>
           {THEME_COLOR_PRESETS.map((p) => {
             const selected = draft.primaryPresetId === p.id;
             return (
@@ -50,7 +59,7 @@ export function SettingsAppearanceFields({
       <SettingsRow label={t("fontLabel")}>
         <Select
           value={draft.fontPresetId}
-          style={{ minWidth: 260 }}
+          style={settingsFieldWidthWide(isCompact)}
           options={FONT_PRESETS.map((f) => ({
             label: (
               <span style={{ fontFamily: f.fontFamily }}>{f.label}</span>

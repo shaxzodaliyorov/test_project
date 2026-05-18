@@ -94,6 +94,12 @@ async function updateUserFromRequest(
         { status: 400 },
       )
     }
+    if (body.roles.includes('admin')) {
+      return HttpResponse.json(
+        { errorKey: API_ERROR_KEYS.USERS_ADMIN_FORBIDDEN_ON_UPDATE },
+        { status: 400 },
+      )
+    }
     patch.roles = body.roles
   }
   if (Object.keys(patch).length === 0) {

@@ -139,6 +139,8 @@ export const uz = {
     colRef: 'Ref',
     colCity: 'Shahar',
     colCreated: 'Yaratilgan',
+    emptySearch: 'Filtrlaringizga mos to‘lov topilmadi.',
+    emptyDefault: "Ko'rsatish uchun to'lovlar yo'q.",
   },
   reports: {
     title: 'Hisobotlar',
@@ -201,6 +203,7 @@ export const uz = {
       invalidRolesPatch: 'Rollar to‘g‘ri rollar ro‘yxati bo‘lishi kerak.',
       invalidRolesCreate: 'Rollar to‘g‘ri rol kodlari ro‘yxati bo‘lishi kerak.',
       adminForbiddenOnCreate: 'Yangi foydalanuvchiga Admin roli berib bo‘lmaydi.',
+      adminForbiddenOnUpdate: 'Foydalanuvchini tahrirlashda Admin roli berib bo‘lmaydi.',
       createMissingFields: 'Email, ism va parol majburiy.',
       cannotDeleteSelf: 'O‘z profilingizni o‘chirib bo‘lmaydi.',
     },
@@ -223,5 +226,6 @@ export const uz = {
     rolesMin: 'Kamida bitta rol tanlang',
     rolesInvalid: 'Mavjud bo‘lmagan rol tanlangan',
     rolesNoAdminCreate: 'Yangi foydalanuvchiga Admin roli berib bo‘lmaydi',
+    rolesNoAdminEdit: 'Foydalanuvchini tahrirlashda Admin roli berib bo‘lmaydi',
   },
 } as const

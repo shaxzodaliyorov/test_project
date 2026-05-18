@@ -10,9 +10,13 @@ import type {
 
 type DashboardActivityChartProps = {
   activity: DashboardActivityByRange;
+  compact?: boolean;
 };
 
-export function DashboardActivityChart({ activity }: DashboardActivityChartProps) {
+export function DashboardActivityChart({
+  activity,
+  compact = false,
+}: DashboardActivityChartProps) {
   const { t } = useTranslation("dashboard");
   const { token } = theme.useToken();
   const [range, setRange] = useState<DashboardActivityRange>("week");
@@ -48,9 +52,10 @@ export function DashboardActivityChart({ activity }: DashboardActivityChartProps
     <Card
       size="small"
       variant="outlined"
+      style={{ width: '100%' }}
       styles={{
         body: {
-          padding: token.paddingMD,
+          padding: compact ? token.paddingSM : token.paddingMD,
           background: token.colorFillQuaternary,
         },
       }}
@@ -64,7 +69,11 @@ export function DashboardActivityChart({ activity }: DashboardActivityChartProps
         >
           <Typography.Title
             level={5}
-            style={{ margin: 0, marginBottom: token.marginSM }}
+            style={{
+              margin: 0,
+              marginBottom: token.marginSM,
+              fontSize: compact ? 14 : undefined,
+            }}
           >
             {t("activityTitle")}
           </Typography.Title>
@@ -73,14 +82,14 @@ export function DashboardActivityChart({ activity }: DashboardActivityChartProps
             style={{
               display: "block",
               marginBottom: token.marginSM,
-              fontSize: token.fontSizeSM,
+              fontSize: compact ? 11 : token.fontSizeSM,
             }}
           >
             {rangeDescription[range]}
           </Typography.Text>
           <Select<DashboardActivityRange>
-            size="middle"
-            style={{ width: "100%", maxWidth: 320 }}
+            size={compact ? "small" : "middle"}
+            style={{ width: "100%", maxWidth: compact ? undefined : 320 }}
             value={range}
             onChange={setRange}
             options={rangeOptions}
@@ -92,7 +101,7 @@ export function DashboardActivityChart({ activity }: DashboardActivityChartProps
             style={{
               width: "100%",
               minWidth: 0,
-              height: 300,
+              height: compact ? 220 : 300,
             }}
           >
             <Column
@@ -100,7 +109,7 @@ export function DashboardActivityChart({ activity }: DashboardActivityChartProps
               data={data}
               xField="period"
               yField="value"
-              height={300}
+              height={compact ? 220 : 300}
               autoFit
               style={{ fill: token.colorPrimary }}
               axis={{

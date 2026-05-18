@@ -102,8 +102,14 @@ export function createRolesRules(
         if (!(v as string[]).every((x) => allow.has(x))) {
           return Promise.reject(new Error(t('validation:rolesInvalid')))
         }
-        if (mode === 'create' && (v as string[]).includes('admin')) {
-          return Promise.reject(new Error(t('validation:rolesNoAdminCreate')))
+        if ((v as string[]).includes('admin')) {
+          return Promise.reject(
+            new Error(
+              mode === 'create'
+                ? t('validation:rolesNoAdminCreate')
+                : t('validation:rolesNoAdminEdit'),
+            ),
+          )
         }
         return Promise.resolve()
       },

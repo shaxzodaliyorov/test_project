@@ -1,20 +1,20 @@
-import type { Dispatch, SetStateAction } from "react";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { Input, Space, Table } from "antd";
-import type { ReportHourlyRow, ReportsTableResponse } from "@/types/reports";
-import type { PagedFilter } from "@/constants/reports-paged-filter";
-import { paginationShowTotal } from "@/utils/pagination-show-total";
-import { buildReportsColumnsHourly } from "./reports-table-columns";
+import type { Dispatch, SetStateAction } from 'react'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { ReportHourlyRow, ReportsTableResponse } from '@/types/reports'
+import type { PagedFilter } from '@/constants/reports-paged-filter'
+import { ReportsPagedTab } from './reports-paged-tab'
+import { ReportHourlyCard } from './reports-row-cards'
+import { buildReportsColumnsHourly } from './reports-table-columns'
 
-type HourlyTable = Extract<ReportsTableResponse, { section: "hourly" }>;
+type HourlyTable = Extract<ReportsTableResponse, { section: 'hourly' }>
 
 type ReportsHourlyTabProps = {
-  filter: PagedFilter;
-  onFilterChange: Dispatch<SetStateAction<PagedFilter>>;
-  data: HourlyTable | null;
-  loading: boolean;
-};
+  filter: PagedFilter
+  onFilterChange: Dispatch<SetStateAction<PagedFilter>>
+  data: HourlyTable | null
+  loading: boolean
+}
 
 export function ReportsHourlyTab({
   filter,
@@ -22,35 +22,21 @@ export function ReportsHourlyTab({
   data,
   loading,
 }: ReportsHourlyTabProps) {
-  const { t } = useTranslation(["reports", "common"]);
-  const columns = useMemo(() => buildReportsColumnsHourly(t), [t]);
-  const showTotal = useMemo(() => paginationShowTotal(t), [t]);
+  const { t } = useTranslation(['reports', 'common'])
+  const columns = useMemo(() => buildReportsColumnsHourly(t), [t])
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
-      <Input.Search
-        allowClear
-        placeholder={t("reports:searchHourly")}
-        value={filter.search}
-        onChange={(e) => {
-          onFilterChange((s) => ({ ...s, search: e.target.value, page: 1 }));
-        }}
-      />
-      <Table<ReportHourlyRow>
-        rowKey="hour"
-        loading={loading}
-        dataSource={data?.items ?? []}
-        size="small"
-        columns={columns}
-        pagination={{
-          current: filter.page,
-          pageSize: filter.pageSize,
-          total: data?.total ?? 0,
-          showSizeChanger: false,
-          showTotal,
-          onChange: (p) => onFilterChange((s) => ({ ...s, page: p })),
-        }}
-      />
-    </Space>
-  );
+    <ReportsPagedTab<ReportHourlyRow>
+      filter={filter}
+      onFilterChange={onFilterChange}
+      items={data?.items ?? []}
+      total={data?.total ?? 0}
+      loading={loading}
+      rowKey="hour"
+      searchPlaceholder={t('reports:searchHourly')}
+      columns={columns}
+      scroll={{ x: 520 }}
+      renderCard={(row) => <ReportHourlyCard row={row} t={t} />}
+    />
+  )
 }

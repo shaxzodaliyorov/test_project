@@ -4,8 +4,10 @@ import {
   CURRENCIES,
   type CurrencyCode,
 } from "@/constants/currencies";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { formatSampleAmount } from "@/utils/format-sample-amount";
 import type { SettingsDraft } from "./settings-draft";
+import { settingsFieldWidth } from "./settings-page.styles";
 import { SettingsRow } from "./settings-row";
 
 type SettingsRegionalFieldsProps = {
@@ -18,13 +20,18 @@ export function SettingsRegionalFields({
   onDraftChange,
 }: SettingsRegionalFieldsProps) {
   const { t } = useTranslation("settings");
+  const isCompact = useCompactLayout();
 
   return (
-    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+    <Space
+      direction="vertical"
+      size={isCompact ? "middle" : "large"}
+      style={{ width: "100%" }}
+    >
       <SettingsRow label={t("currencyLabel")}>
         <Select
           value={draft.currency}
-          style={{ minWidth: 200 }}
+          style={settingsFieldWidth(isCompact)}
           options={CURRENCIES.map((c) => ({
             label: c.labelNative,
             value: c.code,
@@ -33,8 +40,16 @@ export function SettingsRegionalFields({
         />
       </SettingsRow>
       <SettingsRow label={t("previewLabel")}>
-        <Space direction="vertical" size={4} align="end">
-          <Typography.Title level={4} style={{ margin: 0 }}>
+        <Space
+          direction="vertical"
+          size={4}
+          align={isCompact ? "start" : "end"}
+          style={{ width: isCompact ? "100%" : undefined }}
+        >
+          <Typography.Title
+            level={isCompact ? 5 : 4}
+            style={{ margin: 0, fontSize: isCompact ? 18 : undefined }}
+          >
             {formatSampleAmount(draft.locale, draft.currency)}
           </Typography.Title>
           <Typography.Text type="secondary">

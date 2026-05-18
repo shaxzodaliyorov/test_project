@@ -1,9 +1,10 @@
-import { App, Button, Divider, Flex, Space, Typography } from "antd";
+import { App, Button, Divider, Flex, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { CurrencyCode } from "@/constants/currencies";
 import type { UiLocale } from "@/constants/ui-languages";
 import { useAuthStore } from "@/hooks/auth-store";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { useUiPreferencesStore } from "@/hooks/ui-preferences-store";
 import type { User } from "@/types/user";
 import { apiPatch } from "@/utils/http-client";
@@ -18,14 +19,18 @@ import { SettingsGeneralFields } from "./settings-general-fields";
 import { SettingsRegionalFields } from "./settings-regional-fields";
 import {
   settingsFooterBar,
-  settingsPageOuter,
+  settingsFooterBarCompact,
   settingsPagePanel,
+  settingsPagePanelCompact,
+  settingsPageStack,
+  settingsPageStackCompact,
   settingsSectionTitle,
 } from "./settings-page.styles";
 
 export function SettingsPage() {
   const { message } = App.useApp();
   const { t } = useTranslation(["settings", "common"]);
+  const isCompact = useCompactLayout();
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
 
@@ -79,46 +84,75 @@ export function SettingsPage() {
     }
   };
 
+  const sectionDividerMargin = isCompact ? "16px 0" : "24px 0";
+
   return (
-    <div style={settingsPageOuter}>
-      <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-        <Typography.Title level={2} style={{ margin: 0 }}>
+    <div style={isCompact ? settingsPageStackCompact : settingsPageStack}>
+      <div>
+        <Typography.Title
+          level={isCompact ? 4 : 2}
+          style={{ margin: 0, fontSize: isCompact ? 18 : undefined }}
+        >
           {t("settings:pageTitle")}
         </Typography.Title>
-        <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+        <Typography.Paragraph
+          type="secondary"
+          style={{
+            marginBottom: 0,
+            marginTop: isCompact ? 6 : 8,
+            fontSize: isCompact ? 13 : undefined,
+          }}
+        >
           {t("settings:applyOnSaveNote")}
         </Typography.Paragraph>
-      </Space>
+      </div>
 
-      <div style={{ ...settingsPagePanel, marginTop: 20 }}>
+      <div style={isCompact ? settingsPagePanelCompact : settingsPagePanel}>
         <Typography.Title level={5} style={settingsSectionTitle}>
           {t("settings:generalSection")}
         </Typography.Title>
         <SettingsGeneralFields draft={draft} onDraftChange={patchDraft} />
-        <Divider style={{ margin: "24px 0" }} />
+        <Divider style={{ margin: sectionDividerMargin }} />
         <Typography.Title level={5} style={settingsSectionTitle}>
           {t("settings:appearanceSection")}
         </Typography.Title>
         <SettingsAppearanceFields draft={draft} onDraftChange={patchDraft} />
-        <Divider style={{ margin: "24px 0" }} />
+        <Divider style={{ margin: sectionDividerMargin }} />
         <Typography.Title level={5} style={settingsSectionTitle}>
           {t("settings:regionalSection")}
         </Typography.Title>
         <SettingsRegionalFields draft={draft} onDraftChange={patchDraft} />
-        <div style={settingsFooterBar}>
-          <Flex justify="flex-end" gap={12} wrap="wrap">
-            <Button onClick={handleCancel} disabled={!dirty}>
-              {t("settings:cancelButton")}
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => void handleSave()}
-              disabled={!dirty}
-              loading={saving}
-            >
-              {t("settings:saveButton")}
-            </Button>
-          </Flex>
+        <div style={isCompact ? settingsFooterBarCompact : settingsFooterBar}>
+          {isCompact ? (
+            <Flex vertical gap={8}>
+              <Button
+                type="primary"
+                block
+                onClick={() => void handleSave()}
+                disabled={!dirty}
+                loading={saving}
+              >
+                {t("settings:saveButton")}
+              </Button>
+              <Button block onClick={handleCancel} disabled={!dirty}>
+                {t("settings:cancelButton")}
+              </Button>
+            </Flex>
+          ) : (
+            <Flex justify="flex-end" gap={12} wrap="wrap">
+              <Button onClick={handleCancel} disabled={!dirty}>
+                {t("settings:cancelButton")}
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => void handleSave()}
+                disabled={!dirty}
+                loading={saving}
+              >
+                {t("settings:saveButton")}
+              </Button>
+            </Flex>
+          )}
         </div>
       </div>
     </div>

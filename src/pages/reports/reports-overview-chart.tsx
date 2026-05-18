@@ -20,9 +20,14 @@ const LINE_COLORS = ["#1677ff", "#13c2c2", "#722ed1", "#fa8c16"];
 type ReportsOverviewChartProps = {
   chart: ReportsOverviewResponse["chart"] | undefined;
   fetching: boolean;
+  compact?: boolean;
 };
 
-export function ReportsOverviewChart({ chart, fetching }: ReportsOverviewChartProps) {
+export function ReportsOverviewChart({
+  chart,
+  fetching,
+  compact = false,
+}: ReportsOverviewChartProps) {
   const { t } = useTranslation("reports");
   const rows = useMemo(() => buildReportChartRows(chart), [chart]);
   const datasets = chart?.datasets ?? [];
@@ -32,7 +37,7 @@ export function ReportsOverviewChart({ chart, fetching }: ReportsOverviewChartPr
     <Card size="small" title={t("overviewCardTitle")}>
       <Spin spinning={fetching && !showChart}>
         {showChart ? (
-          <div style={{ width: "100%", height: 320 }}>
+          <div style={{ width: "100%", height: compact ? 220 : 320 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={rows}

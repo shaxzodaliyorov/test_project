@@ -10,6 +10,7 @@ export const API_ERROR_KEYS = {
   USERS_INVALID_ROLES_PATCH: "errors:users.invalidRolesPatch",
   USERS_INVALID_ROLES_CREATE: "errors:users.invalidRolesCreate",
   USERS_ADMIN_FORBIDDEN_ON_CREATE: "errors:users.adminForbiddenOnCreate",
+  USERS_ADMIN_FORBIDDEN_ON_UPDATE: "errors:users.adminForbiddenOnUpdate",
   USERS_CREATE_MISSING_FIELDS: "errors:users.createMissingFields",
   USERS_CANNOT_DELETE_SELF: "errors:users.cannotDeleteSelf",
   REPORTS_INVALID_SECTION: "errors:reports.invalidSection",

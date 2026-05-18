@@ -24,8 +24,7 @@ type AdminUserFormFieldsProps = {
 
 export function AdminUserFormFields({ mode, roleOptions }: AdminUserFormFieldsProps) {
   const { t } = useTranslation(["validation", "users"]);
-  const optionsForRoles =
-    mode === "create" ? roleOptions.filter((o) => o.value !== "admin") : roleOptions;
+  const optionsForRoles = roleOptions.filter((o) => o.value !== "admin");
   const allowedSlugs = optionsForRoles.map((o) => o.value);
 
   const firstNameRules = useMemo(() => createFirstNameRules(t), [t]);

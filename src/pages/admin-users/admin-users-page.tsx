@@ -5,6 +5,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import type { TableProps } from "antd";
+import type { CSSProperties } from "react";
 import {
   Alert,
   Button,
@@ -12,7 +13,9 @@ import {
   Form,
   Input,
   Modal,
+  Pagination,
   Space,
+  Spin,
   Table,
   Tag,
   Typography,
@@ -20,11 +23,13 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PERMISSIONS } from "@/constants/permissions";
-import { getRoleSelectOptions } from "@/constants/role-options";
+import { getAssignableRoleSelectOptions } from "@/constants/role-options";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCanAccess } from "@/hooks/use-can-access";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useUsers } from "@/hooks/use-users";
+import { AdminUserCard } from "./admin-user-card";
 import type { UserFormValues } from "@/types/admin-user-form";
 import type { Role } from "@/types/role";
 import type { User } from "@/types/user";
@@ -48,8 +53,29 @@ const ROLE_LABEL_KEY: Record<Role, string> = {
   users: "users:roleUsers",
 };
 
+const usersPageStack: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  gap: 24,
+  textAlign: "left",
+};
+
+const usersPageStackCompact: CSSProperties = {
+  ...usersPageStack,
+  gap: 16,
+};
+
+const usersCardList: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+  width: "100%",
+};
+
 export function AdminUsersPage() {
   const { t } = useTranslation(["users", "common"]);
+  const isCompact = useCompactLayout();
   const canWrite = useCanAccess(PERMISSIONS.USERS_WRITE);
   const currentUserId = useAuthStore((s) => s.user?.id);
 
@@ -72,7 +98,7 @@ export function AdminUsersPage() {
   const [editUser, setEditUser] = useState<User | null>(null);
   const [editForm] = Form.useForm<UserFormValues>();
 
-  const roleOptions = useMemo(() => getRoleSelectOptions(t), [t]);
+  const roleOptions = useMemo(() => getAssignableRoleSelectOptions(t), [t]);
   const showTotal = useMemo(() => paginationShowTotal(t), [t]);
 
   useEffect(() => {
@@ -82,14 +108,14 @@ export function AdminUsersPage() {
       firstName,
       lastName,
       email: editUser.email,
-      roles: [...editUser.roles],
+      roles: editUser.roles.filter((r) => r !== "admin"),
       password: undefined,
     });
   }, [editUser, editForm]);
 
   const openCreate = () => {
     createForm.resetFields();
-    const slugs = roleOptions.map((o) => o.value).filter((s) => s !== "admin");
+    const slugs = roleOptions.map((o) => o.value);
     const defaultRoles: Role[] = slugs.includes("reports")
       ? ["reports"]
       : slugs.includes("payment")
@@ -130,7 +156,7 @@ export function AdminUsersPage() {
     }> = {
       email: v.email.trim(),
       name: fullNameFromForm(v),
-      roles: v.roles,
+      roles: v.roles.filter((r) => r !== "admin"),
     };
     if (v.password?.trim()) body.password = v.password.trim();
     await updateMutation.mutateAsync({ id: editUser.id, body });
@@ -256,41 +282,91 @@ export function AdminUsersPage() {
   const data = listQuery.data?.items ?? [];
   const total = listQuery.data?.total ?? 0;
 
+  const paginationConfig = {
+    current: page,
+    pageSize,
+    total,
+    showSizeChanger: false as const,
+    showTotal,
+    onChange: (p: number) => {
+      setPage(p);
+    },
+  };
+
   return (
     <>
-      <Space
-        direction="vertical"
-        size="large"
-        style={{ width: "100%", display: "flex" }}
-      >
-        <Space
-          align="center"
-          style={{ width: "100%", justifyContent: "space-between" }}
-          wrap
-        >
-          <Typography.Title level={2} style={{ margin: 0 }}>
-            {t("users:title")}
-          </Typography.Title>
-          <Space wrap>
-            <Input
-              allowClear
-              placeholder={t("users:searchPlaceholder")}
-              prefix={<SearchOutlined style={{ color: "var(--text)" }} />}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              style={{ width: 280, maxWidth: "100%" }}
-            />
-            {canWrite ? (
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={openCreate}
-              >
-                {t("users:addUser")}
-              </Button>
-            ) : null}
-          </Space>
-        </Space>
+      <div style={isCompact ? usersPageStackCompact : usersPageStack}>
+        {isCompact ? (
+          <>
+            <Typography.Title
+              level={4}
+              style={{ margin: 0, fontSize: 18 }}
+            >
+              {t("users:title")}
+            </Typography.Title>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                width: "100%",
+              }}
+            >
+              <Input
+                allowClear
+                placeholder={t("users:searchPlaceholder")}
+                prefix={<SearchOutlined style={{ color: "var(--text)" }} />}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                style={{ width: "100%" }}
+              />
+              {canWrite ? (
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={openCreate}
+                  block
+                >
+                  {t("users:addUser")}
+                </Button>
+              ) : null}
+            </div>
+          </>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 8,
+              width: "100%",
+            }}
+          >
+            <Typography.Title level={2} style={{ margin: 0 }}>
+              {t("users:title")}
+            </Typography.Title>
+            <Space wrap>
+              <Input
+                allowClear
+                placeholder={t("users:searchPlaceholder")}
+                prefix={<SearchOutlined style={{ color: "var(--text)" }} />}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                style={{ width: 280, maxWidth: "100%" }}
+              />
+              {canWrite ? (
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={openCreate}
+                >
+                  {t("users:addUser")}
+                </Button>
+              ) : null}
+            </Space>
+          </div>
+        )}
 
         {listQuery.isError ? (
           <Alert
@@ -306,31 +382,56 @@ export function AdminUsersPage() {
           />
         ) : null}
 
-        <Table<User>
-          rowKey="id"
-          loading={listQuery.isLoading}
-          dataSource={data}
-          columns={columns}
-          scroll={{ x: "max-content" }}
-          locale={{
-            emptyText: listQuery.isError ? (
-              <></>
+        {isCompact ? (
+          <Spin spinning={listQuery.isLoading}>
+            {data.length === 0 && !listQuery.isLoading ? (
+              listQuery.isError ? null : (
+                <Empty description={emptyDescription} />
+              )
             ) : (
-              <Empty description={emptyDescription} />
-            ),
-          }}
-          pagination={{
-            current: page,
-            pageSize,
-            total,
-            showSizeChanger: false,
-            showTotal,
-            onChange: (p) => {
-              setPage(p);
-            },
-          }}
-        />
-      </Space>
+              <>
+                <div style={usersCardList}>
+                  {data.map((row, index) => (
+                    <AdminUserCard
+                      key={row.id}
+                      user={row}
+                      index={(page - 1) * pageSize + index + 1}
+                      canWrite={canWrite}
+                      isSelf={row.id === currentUserId}
+                      onEdit={() => setEditUser(row)}
+                      onDelete={() => confirmDelete(row)}
+                      t={t}
+                    />
+                  ))}
+                </div>
+                {total > 0 ? (
+                  <Pagination
+                    {...paginationConfig}
+                    size="small"
+                    style={{ marginTop: 4 }}
+                  />
+                ) : null}
+              </>
+            )}
+          </Spin>
+        ) : (
+          <Table<User>
+            rowKey="id"
+            loading={listQuery.isLoading}
+            dataSource={data}
+            columns={columns}
+            scroll={{ x: "max-content" }}
+            locale={{
+              emptyText: listQuery.isError ? (
+                <></>
+              ) : (
+                <Empty description={emptyDescription} />
+              ),
+            }}
+            pagination={paginationConfig}
+          />
+        )}
+      </div>
 
       <AdminUserCreateModal
         open={createOpen}

@@ -1,10 +1,25 @@
+import type { CSSProperties } from "react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Button, Input, Select, Space, Table, Tag, Typography } from "antd";
+import {
+  Alert,
+  Button,
+  Empty,
+  Input,
+  Pagination,
+  Select,
+  Space,
+  Spin,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { Payment, PaymentStatus } from "@/types/payment";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { usePaymentsPage } from "@/hooks/use-payments-page";
 import { formatCurrencyMinorUnits } from "@/utils/format-currency";
+import { PaymentCard } from "./payment-card";
 
 const STATUS_TAG_COLOR: Record<PaymentStatus, string> = {
   pending: "gold",
@@ -12,8 +27,29 @@ const STATUS_TAG_COLOR: Record<PaymentStatus, string> = {
   failed: "red",
 };
 
+const paymentsPageStack: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  gap: 24,
+  textAlign: "left",
+};
+
+const paymentsPageStackCompact: CSSProperties = {
+  ...paymentsPageStack,
+  gap: 16,
+};
+
+const paymentsCardList: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+  width: "100%",
+};
+
 export function PaymentsPage() {
   const { t } = useTranslation(["payments", "common"]);
+  const isCompact = useCompactLayout();
   const p = usePaymentsPage();
 
   const statusLabels = useMemo(
@@ -32,6 +68,14 @@ export function PaymentsPage() {
         label: statusLabels[value],
       })),
     [statusLabels],
+  );
+
+  const emptyDescription = useMemo(
+    () =>
+      p.search.trim() || p.status
+        ? t("payments:emptySearch")
+        : t("payments:emptyDefault"),
+    [p.search, p.status, t],
   );
 
   const columns: ColumnsType<Payment> = useMemo(
@@ -132,37 +176,79 @@ export function PaymentsPage() {
     [t, p.page, p.pageSize, statusLabels],
   );
 
-  return (
-    <Space
-      direction="vertical"
-      size="large"
-      style={{ width: "100%", display: "flex" }}
-    >
-      <Typography.Title level={2} style={{ margin: 0 }}>
-        {t("payments:title")}
-      </Typography.Title>
+  const paginationConfig = {
+    current: p.page,
+    pageSize: p.pageSize,
+    total: p.total,
+    showSizeChanger: false as const,
+    showTotal: p.showTotal,
+    onChange: p.onPaginationChange,
+  };
 
-      <Space wrap style={{ width: "100%" }} size="middle">
-        <Input.Search
-          allowClear
-          placeholder={t("payments:searchPlaceholder")}
-          style={{ maxWidth: 420, minWidth: 200 }}
-          value={p.search}
-          onChange={(e) => {
-            p.setSearch(e.target.value);
-          }}
-        />
-        <Select
-          style={{ minWidth: 180 }}
-          allowClear
-          placeholder={t("payments:statusPlaceholder")}
-          value={p.status === "" ? undefined : p.status}
-          options={statusOptions}
-          onChange={(v) => {
-            p.setStatus(v ?? "");
-          }}
-        />
-      </Space>
+  return (
+    <div style={isCompact ? paymentsPageStackCompact : paymentsPageStack}>
+      {isCompact ? (
+        <>
+          <Typography.Title level={4} style={{ margin: 0, fontSize: 18 }}>
+            {t("payments:title")}
+          </Typography.Title>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              width: "100%",
+            }}
+          >
+            <Input.Search
+              allowClear
+              placeholder={t("payments:searchPlaceholder")}
+              value={p.search}
+              onChange={(e) => {
+                p.setSearch(e.target.value);
+              }}
+              style={{ width: "100%" }}
+            />
+            <Select
+              allowClear
+              placeholder={t("payments:statusPlaceholder")}
+              value={p.status === "" ? undefined : p.status}
+              options={statusOptions}
+              onChange={(v) => {
+                p.setStatus(v ?? "");
+              }}
+              style={{ width: "100%" }}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <Typography.Title level={2} style={{ margin: 0 }}>
+            {t("payments:title")}
+          </Typography.Title>
+          <Space wrap style={{ width: "100%" }} size="middle">
+            <Input.Search
+              allowClear
+              placeholder={t("payments:searchPlaceholder")}
+              style={{ maxWidth: 420, minWidth: 200 }}
+              value={p.search}
+              onChange={(e) => {
+                p.setSearch(e.target.value);
+              }}
+            />
+            <Select
+              style={{ minWidth: 180 }}
+              allowClear
+              placeholder={t("payments:statusPlaceholder")}
+              value={p.status === "" ? undefined : p.status}
+              options={statusOptions}
+              onChange={(v) => {
+                p.setStatus(v ?? "");
+              }}
+            />
+          </Space>
+        </>
+      )}
 
       {p.query.isError ? (
         <Alert
@@ -178,21 +264,52 @@ export function PaymentsPage() {
         />
       ) : null}
 
-      <Table<Payment>
-        rowKey="id"
-        loading={p.query.isFetching}
-        dataSource={p.items}
-        scroll={{ x: 1480 }}
-        columns={columns}
-        pagination={{
-          current: p.page,
-          pageSize: p.pageSize,
-          total: p.total,
-          showSizeChanger: false,
-          showTotal: p.showTotal,
-          onChange: p.onPaginationChange,
-        }}
-      />
-    </Space>
+      {isCompact ? (
+        <Spin spinning={p.query.isFetching}>
+          {p.items.length === 0 && !p.query.isFetching ? (
+            p.query.isError ? null : (
+              <Empty description={emptyDescription} />
+            )
+          ) : (
+            <>
+              <div style={paymentsCardList}>
+                {p.items.map((row, index) => (
+                  <PaymentCard
+                    key={row.id}
+                    payment={row}
+                    index={(p.page - 1) * p.pageSize + index + 1}
+                    statusLabel={statusLabels[row.status]}
+                    t={t}
+                  />
+                ))}
+              </div>
+              {p.total > 0 ? (
+                <Pagination
+                  {...paginationConfig}
+                  size="small"
+                  style={{ marginTop: 4 }}
+                />
+              ) : null}
+            </>
+          )}
+        </Spin>
+      ) : (
+        <Table<Payment>
+          rowKey="id"
+          loading={p.query.isFetching}
+          dataSource={p.items}
+          scroll={{ x: 1480 }}
+          columns={columns}
+          locale={{
+            emptyText: p.query.isError ? (
+              <></>
+            ) : (
+              <Empty description={emptyDescription} />
+            ),
+          }}
+          pagination={paginationConfig}
+        />
+      )}
+    </div>
   );
 }

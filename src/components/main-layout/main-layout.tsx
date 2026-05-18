@@ -1,13 +1,5 @@
-import {
-  BarChartOutlined,
-  CreditCardOutlined,
-  DashboardOutlined,
-  DownOutlined,
-  LogoutOutlined,
-  SettingOutlined,
-  TeamOutlined,
-} from "@ant-design/icons";
-import type { MenuProps } from "antd";
+import { DownOutlined, LogoutOutlined } from '@ant-design/icons'
+import type { MenuProps } from 'antd'
 import {
   Avatar,
   Button,
@@ -18,19 +10,21 @@ import {
   Modal,
   Space,
   Typography,
-} from "antd";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { PERMISSIONS } from "@/constants/permissions";
-import { useAuthStore } from "@/hooks/auth-store";
-import { useCanAccess } from "@/hooks/use-can-access";
+} from 'antd'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { MainLayoutBottomNav } from './main-layout-bottom-nav'
 import {
   mainLayoutContentArea,
   mainLayoutContentAreaCompact,
   mainLayoutContentTableFriendly,
+  mainLayoutContentWithBottomNav,
   mainLayoutHeaderBar,
+  mainLayoutHeaderBarCompact,
   mainLayoutHeaderBrand,
+  mainLayoutHeaderBrandCompact,
+  mainLayoutHeaderBrandRow,
   mainLayoutHeaderRight,
   mainLayoutInner,
   mainLayoutMenu,
@@ -44,26 +38,29 @@ import {
   mainLayoutUserAvatar,
   mainLayoutUserTriggerChevron,
   mainLayoutUserTriggerName,
-} from "./main-layout.styles";
-import { PATHS } from "@/routes/paths";
-import { initialsFromName } from "@/utils/initials-from-name";
+} from './main-layout.styles'
+import { useAuthStore } from '@/hooks/auth-store'
+import { useCompactLayout } from '@/hooks/use-compact-layout'
+import { useMainNavItems } from '@/hooks/use-main-nav-items'
+import { PATHS } from '@/routes/paths'
+import { initialsFromName } from '@/utils/initials-from-name'
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content, Sider } = Layout
 
 function TaskSidebarMark({ size = 36 }: { size?: number }) {
-  const icon = Math.round(size * 0.52);
+  const icon = Math.round(size * 0.52)
   return (
     <span
       aria-hidden
       style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         width: size,
         height: size,
         borderRadius: 10,
-        background: "var(--accent)",
-        color: "#fff",
+        background: 'var(--accent)',
+        color: '#fff',
         flexShrink: 0,
       }}
     >
@@ -77,171 +74,163 @@ function TaskSidebarMark({ size = 36 }: { size?: number }) {
         />
       </svg>
     </span>
-  );
+  )
 }
 
 export function MainLayout() {
-  const { t } = useTranslation(["nav", "common"]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const screens = Grid.useBreakpoint();
-  const logout = useAuthStore((s) => s.logout);
-  const user = useAuthStore((s) => s.user);
-  const canDashboard = useCanAccess(PERMISSIONS.DASHBOARD_READ);
-  const canUsers = useCanAccess(PERMISSIONS.USERS_READ);
-  const canPayments = useCanAccess(PERMISSIONS.PAYMENTS_READ);
-  const canReports = useCanAccess(PERMISSIONS.REPORTS_READ);
+  const { t } = useTranslation(['nav', 'common'])
+  const navigate = useNavigate()
+  const location = useLocation()
+  const screens = Grid.useBreakpoint()
+  const isCompactNav = useCompactLayout()
+  const navItems = useMainNavItems()
+  const logout = useAuthStore((s) => s.logout)
+  const user = useAuthStore((s) => s.user)
 
-  const menuItems: MenuProps["items"] = useMemo(
-    () => [
-      ...(canDashboard
-        ? [
-            {
-              key: PATHS.DASHBOARD,
-              icon: <DashboardOutlined />,
-              label: t("nav:dashboard"),
-            },
-          ]
-        : []),
-      ...(canUsers
-        ? [
-            {
-              key: PATHS.USERS,
-              icon: <TeamOutlined />,
-              label: t("nav:users"),
-            },
-          ]
-        : []),
-      ...(canPayments
-        ? [
-            {
-              key: PATHS.PAYMENTS,
-              icon: <CreditCardOutlined />,
-              label: t("nav:payments"),
-            },
-          ]
-        : []),
-      ...(canReports
-        ? [
-            {
-              key: PATHS.REPORTS,
-              icon: <BarChartOutlined />,
-              label: t("nav:reports"),
-            },
-          ]
-        : []),
-      {
-        key: PATHS.SETTINGS,
-        icon: <SettingOutlined />,
-        label: t("nav:settings"),
-      },
-    ],
-    [canDashboard, canUsers, canPayments, canReports, t],
-  );
+  const menuItems: MenuProps['items'] = useMemo(
+    () =>
+      navItems.map((item) => ({
+        key: item.key,
+        icon: item.icon,
+        label: item.label,
+      })),
+    [navItems],
+  )
 
-  const userMenuItems: MenuProps["items"] = useMemo(
+  const userMenuItems: MenuProps['items'] = useMemo(
     () => [
       {
-        key: "logout",
+        key: 'logout',
         icon: <LogoutOutlined />,
-        label: t("nav:logout"),
+        label: t('nav:logout'),
         danger: true,
       },
     ],
     [t],
-  );
+  )
 
   const contentStyle = useMemo(() => {
-    const compact = screens.md === false;
+    const compactPadding = isCompactNav || screens.md === false
     return {
       ...mainLayoutContentArea,
-      ...(compact ? mainLayoutContentAreaCompact : {}),
+      ...(compactPadding ? mainLayoutContentAreaCompact : {}),
+      ...(isCompactNav ? mainLayoutContentWithBottomNav : {}),
       ...(location.pathname === PATHS.USERS ||
       location.pathname === PATHS.PAYMENTS ||
       location.pathname === PATHS.REPORTS
         ? mainLayoutContentTableFriendly
         : {}),
-    };
-  }, [screens.md, location.pathname]);
+    }
+  }, [isCompactNav, screens.md, location.pathname])
+
+  const handleLogoutClick = () => {
+    Modal.confirm({
+      title: t('nav:logoutConfirmTitle'),
+      content: t('nav:logoutConfirmBody'),
+      okText: t('common:ok'),
+      cancelText: t('common:cancel'),
+      onOk: () => {
+        logout()
+        void navigate(PATHS.LOGIN)
+      },
+    })
+  }
 
   if (user && user.permissions.length === 0) {
-    return <Navigate to={PATHS.FORBIDDEN} replace />;
+    return <Navigate to={PATHS.FORBIDDEN} replace />
   }
 
   return (
     <Layout style={mainLayoutShell}>
-      <Sider width={232} theme="light" style={mainLayoutSider}>
-        <div style={mainLayoutSiderInner}>
-          <Link
-            to={PATHS.DASHBOARD}
-            aria-label={t("nav:taskAria")}
-            style={{
-              ...mainLayoutSiderBrand,
-              display: "block",
-              width: "100%",
-              boxSizing: "border-box",
-              textDecoration: "none",
-              color: "inherit",
-            }}
-          >
-            <span style={mainLayoutSiderBrandRow}>
-              <TaskSidebarMark />
-              <span style={mainLayoutSiderBrandTitle}>TASK</span>
-            </span>
-          </Link>
-          <Menu
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={menuItems}
-            onClick={({ key }) => {
-              void navigate(String(key));
-            }}
-            style={mainLayoutMenu}
-          />
-        </div>
-      </Sider>
-      <Layout style={mainLayoutInner}>
-        <Header style={mainLayoutHeaderBar}>
-          <Typography.Title level={4} style={mainLayoutHeaderBrand}>
-            {t("nav:headerBrand")}
-          </Typography.Title>
-          <div style={mainLayoutHeaderRight}>
-            <Dropdown
-              menu={{
-                items: userMenuItems,
-                onClick: ({ key }) => {
-                  if (key === "logout") {
-                    Modal.confirm({
-                      title: t("nav:logoutConfirmTitle"),
-                      content: t("nav:logoutConfirmBody"),
-                      okText: t("common:ok"),
-                      cancelText: t("common:cancel"),
-                      onOk: () => {
-                        logout();
-                        void navigate(PATHS.LOGIN);
-                      },
-                    });
-                  }
-                },
+      {!isCompactNav ? (
+        <Sider width={232} theme="light" style={mainLayoutSider}>
+          <div style={mainLayoutSiderInner}>
+            <Link
+              to={PATHS.DASHBOARD}
+              aria-label={t('nav:taskAria')}
+              style={{
+                ...mainLayoutSiderBrand,
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                textDecoration: 'none',
+                color: 'inherit',
               }}
-              trigger={["click"]}
             >
-              <Button type="default" style={mainLayoutUserTrigger}>
-                <Space size={10} align="center" style={{ width: "100%" }}>
-                  <Avatar size={28} style={mainLayoutUserAvatar}>
-                    {initialsFromName(user?.name)}
-                  </Avatar>
-                  <span style={mainLayoutUserTriggerName}>{user?.name}</span>
-                  <DownOutlined style={mainLayoutUserTriggerChevron} />
-                </Space>
-              </Button>
-            </Dropdown>
+              <span style={mainLayoutSiderBrandRow}>
+                <TaskSidebarMark />
+                <span style={mainLayoutSiderBrandTitle}>TASK</span>
+              </span>
+            </Link>
+            <Menu
+              mode="inline"
+              selectedKeys={[location.pathname]}
+              items={menuItems}
+              onClick={({ key }) => {
+                void navigate(String(key))
+              }}
+              style={mainLayoutMenu}
+            />
           </div>
+        </Sider>
+      ) : null}
+      <Layout style={mainLayoutInner}>
+        <Header
+          style={isCompactNav ? mainLayoutHeaderBarCompact : mainLayoutHeaderBar}
+        >
+          {isCompactNav ? (
+            <Link
+              to={PATHS.DASHBOARD}
+              aria-label={t('nav:taskAria')}
+              style={{
+                ...mainLayoutHeaderBrandRow,
+                textDecoration: 'none',
+                color: 'inherit',
+              }}
+            >
+              <TaskSidebarMark size={32} />
+              <span style={mainLayoutHeaderBrandCompact}>TASK</span>
+            </Link>
+          ) : (
+            <Typography.Title level={4} style={mainLayoutHeaderBrand}>
+              {t('nav:headerBrand')}
+            </Typography.Title>
+          )}
+          {!isCompactNav ? (
+            <div style={mainLayoutHeaderRight}>
+              <Dropdown
+                menu={{
+                  items: userMenuItems,
+                  onClick: ({ key }) => {
+                    if (key === 'logout') {
+                      handleLogoutClick()
+                    }
+                  },
+                }}
+                trigger={['click']}
+              >
+                <Button
+                  type="default"
+                  style={mainLayoutUserTrigger}
+                  aria-label={user?.name ?? t('nav:logout')}
+                >
+                  <Space size={10} align="center" style={{ width: '100%' }}>
+                    <Avatar size={28} style={mainLayoutUserAvatar}>
+                      {initialsFromName(user?.name)}
+                    </Avatar>
+                    <span style={mainLayoutUserTriggerName}>{user?.name}</span>
+                    <DownOutlined style={mainLayoutUserTriggerChevron} />
+                  </Space>
+                </Button>
+              </Dropdown>
+            </div>
+          ) : null}
         </Header>
         <Content style={contentStyle}>
           <Outlet />
         </Content>
       </Layout>
+      {isCompactNav ? <MainLayoutBottomNav items={navItems} /> : null}
     </Layout>
-  );
+  )
 }

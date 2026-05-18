@@ -139,6 +139,8 @@ export const ru = {
     colRef: 'Ref',
     colCity: 'Город',
     colCreated: 'Создан',
+    emptySearch: 'Нет платежей по вашему запросу.',
+    emptyDefault: 'Нет платежей для отображения.',
   },
   reports: {
     title: 'Отчёты',
@@ -201,6 +203,7 @@ export const ru = {
       invalidRolesPatch: 'Роли должны быть непустым списком допустимых ролей.',
       invalidRolesCreate: 'Роли должны быть непустым списком допустимых кодов ролей.',
       adminForbiddenOnCreate: 'Роль Admin нельзя назначить новому пользователю.',
+      adminForbiddenOnUpdate: 'Роль Admin нельзя назначить при редактировании пользователя.',
       createMissingFields: 'Нужны email, имя и пароль.',
       cannotDeleteSelf: 'Нельзя удалить собственную учётную запись.',
     },
@@ -223,5 +226,6 @@ export const ru = {
     rolesMin: 'Выберите хотя бы одну роль',
     rolesInvalid: 'Выбрана недопустимая роль',
     rolesNoAdminCreate: 'Роль Admin нельзя назначить новому пользователю',
+    rolesNoAdminEdit: 'Роль Admin нельзя назначить при редактировании пользователя',
   },
 } as const

@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Radio, Select, Space } from "antd";
 import type { UiLocale } from "@/constants/ui-languages";
 import { UI_LOCALES } from "@/constants/ui-languages";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import type { ThemePreference } from "@/hooks/theme-store";
 import type { SettingsDraft } from "./settings-draft";
+import { settingsFieldWidth } from "./settings-page.styles";
 import { SettingsRow } from "./settings-row";
 
 type SettingsGeneralFieldsProps = {
@@ -17,13 +19,18 @@ export function SettingsGeneralFields({
   onDraftChange,
 }: SettingsGeneralFieldsProps) {
   const { t } = useTranslation("settings");
+  const isCompact = useCompactLayout();
 
   return (
-    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+    <Space
+      direction="vertical"
+      size={isCompact ? "middle" : "large"}
+      style={{ width: "100%" }}
+    >
       <SettingsRow label={t("languageLabel")}>
         <Select
           value={draft.locale}
-          style={{ minWidth: 200 }}
+          style={settingsFieldWidth(isCompact)}
           options={UI_LOCALES.map((l) => ({
             label: l.labelNative,
             value: l.code,

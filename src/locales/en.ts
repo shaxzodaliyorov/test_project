@@ -138,6 +138,8 @@ export const en = {
     colRef: 'Ref',
     colCity: 'City',
     colCreated: 'Created',
+    emptySearch: 'No payments match your filters.',
+    emptyDefault: 'No payments to display.',
   },
   reports: {
     title: 'Reports',
@@ -200,6 +202,7 @@ export const en = {
       invalidRolesPatch: 'Roles must be a non-empty list of valid roles.',
       invalidRolesCreate: 'Roles must be a non-empty list of valid role codes.',
       adminForbiddenOnCreate: 'Admin role cannot be assigned to new users.',
+      adminForbiddenOnUpdate: 'Admin role cannot be assigned when editing a user.',
       createMissingFields: 'Email, name, and password are required.',
       cannotDeleteSelf: 'You cannot delete your own account.',
     },
@@ -222,5 +225,6 @@ export const en = {
     rolesMin: 'Select at least one role',
     rolesInvalid: 'An invalid role was selected',
     rolesNoAdminCreate: 'Admin role cannot be assigned to new users',
+    rolesNoAdminEdit: 'Admin role cannot be assigned when editing a user',
   },
 } as const

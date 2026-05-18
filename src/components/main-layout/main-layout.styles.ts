@@ -101,6 +101,8 @@ export const mainLayoutInner: CSSProperties = {
 export const mainLayoutContentArea: CSSProperties = {
   flex: 1,
   minHeight: 0,
+  width: '100%',
+  boxSizing: 'border-box',
   overflowY: 'auto',
   WebkitOverflowScrolling: 'touch',
   padding: '16px 24px',
@@ -182,4 +184,121 @@ export const mainLayoutUserTriggerChevron: CSSProperties = {
   fontSize: 10,
   flexShrink: 0,
   color: 'var(--text)',
+}
+
+export const mainLayoutHeaderBarCompact: CSSProperties = {
+  ...mainLayoutHeaderBar,
+  paddingInline: 16,
+  height: 56,
+  lineHeight: '56px',
+}
+
+export const mainLayoutHeaderBrandRow: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  minWidth: 0,
+}
+
+export const mainLayoutHeaderBrandCompact: CSSProperties = {
+  margin: 0,
+  fontSize: 16,
+  fontWeight: 700,
+  color: 'var(--text-h)',
+  letterSpacing: '0.06em',
+  lineHeight: 1.1,
+}
+
+export const mainLayoutUserTriggerCompact: CSSProperties = {
+  ...mainLayoutUserTrigger,
+  paddingInline: 6,
+  minWidth: 40,
+  maxWidth: 40,
+  justifyContent: 'center',
+}
+
+/** Tab bar (56px) + safe area + gap so scroll content does not sit under the bar. */
+export const mainLayoutContentWithBottomNav: CSSProperties = {
+  paddingBottom:
+    'calc(56px + env(safe-area-inset-bottom, 0px) + 20px)',
+}
+
+export const mainLayoutBottomNav: CSSProperties = {
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  zIndex: 100,
+  display: 'flex',
+  alignItems: 'stretch',
+  minHeight: 56,
+  paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+  background: 'color-mix(in srgb, var(--bg) 82%, transparent)',
+  backdropFilter: 'saturate(180%) blur(12px)',
+  WebkitBackdropFilter: 'saturate(180%) blur(12px)',
+  borderTop: '1px solid var(--border)',
+  boxSizing: 'border-box',
+}
+
+export const mainLayoutBottomNavItem: CSSProperties = {
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 2,
+  minWidth: 0,
+  minHeight: 56,
+  padding: '6px 4px',
+  border: 'none',
+  background: 'transparent',
+  cursor: 'pointer',
+  color: 'var(--text)',
+  fontFamily: 'inherit',
+  fontSize: 10,
+  fontWeight: 500,
+  lineHeight: 1.2,
+  WebkitTapHighlightColor: 'transparent',
+  transition: 'color 0.15s ease',
+}
+
+export const mainLayoutBottomNavItemActive: CSSProperties = {
+  color: 'var(--accent)',
+}
+
+export const mainLayoutBottomNavIcon: CSSProperties = {
+  fontSize: 20,
+  lineHeight: 1,
+}
+
+export const mainLayoutBottomNavLabel: CSSProperties = {
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  textAlign: 'center',
+}
+
+export const mainLayoutBottomNavProfile: CSSProperties = {
+  flex: '0 0 56px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 56,
+  borderLeft: '1px solid var(--border)',
+  boxSizing: 'border-box',
+}
+
+export const mainLayoutBottomNavProfileButton: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 40,
+  height: 40,
+  padding: 0,
+  border: 'none',
+  borderRadius: '50%',
+  background: 'transparent',
+  cursor: 'pointer',
+  WebkitTapHighlightColor: 'transparent',
 }
