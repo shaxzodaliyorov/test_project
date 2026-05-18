@@ -1,0 +1,49 @@
+import { Flex, Spin } from 'antd'
+import { Navigate, Outlet, useMatches } from 'react-router-dom'
+import { useAuthStore } from '@/hooks/auth-store'
+import { useAuthSession } from '@/hooks/use-auth-session'
+import { PATHS } from '@/routes/paths'
+import type { AppRouteHandle } from '@/types/app-route-handle'
+import type { User } from '@/types/user'
+import type { Role } from '@/types/role'
+
+function userHasRequiredRole(user: User | null, required?: Role[]): boolean {
+  if (!required?.length) return true
+  if (!user?.roles?.length) return false
+  return required.some((r) => user.roles.includes(r))
+}
+
+export function ProtectedRoute() {
+  const token = useAuthStore((s) => s.token)
+  const user = useAuthStore((s) => s.user)
+  const me = useAuthSession()
+  const matches = useMatches()
+
+  if (!token) {
+    return <Navigate to={PATHS.LOGIN} replace />
+  }
+
+  const sessionUser = user ?? me.data ?? null
+
+  if (me.isPending && !sessionUser) {
+    return (
+      <Flex align="center" justify="center" style={{ minHeight: '100vh' }}>
+        <Spin size="large" />
+      </Flex>
+    )
+  }
+
+  if (me.isError) {
+    return <Navigate to={PATHS.LOGIN} replace />
+  }
+
+  const leaf = matches[matches.length - 1]
+  const handle = leaf?.handle as AppRouteHandle | undefined
+  const requiredRoles = handle?.roles
+
+  if (!userHasRequiredRole(sessionUser, requiredRoles)) {
+    return <Navigate to={PATHS.FORBIDDEN} replace />
+  }
+
+  return <Outlet />
+}
