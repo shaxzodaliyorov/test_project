@@ -3,7 +3,6 @@ import { PATHS } from '@/routes/paths'
 import type { User } from '@/types/user'
 import { hasPermission } from '@/utils/rbac-utils'
 
-/** Birinchi ochiladigan sahifa (dashboard bo‘lmasa — boshqa ruxsat). */
 export function postLoginPath(user: User): string {
   if (hasPermission(user, PERMISSIONS.DASHBOARD_READ)) return PATHS.DASHBOARD
   if (hasPermission(user, PERMISSIONS.USERS_READ)) return PATHS.USERS

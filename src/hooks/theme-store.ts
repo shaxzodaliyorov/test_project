@@ -12,10 +12,6 @@ function systemPrefersDark(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-/**
- * Birinchi kirish: saqlangan qiymat bo‘lmasa yoki `system` bo‘lsa — OS `prefers-color-scheme`
- * bo‘yicha `light`/`dark` tanlanadi va `theme-preference` ga yoziladi (UI da "Tizim" yo‘q).
- */
 function readStoredPreferenceWithLegacyDefaults(): ThemePreference {
   if (typeof window === 'undefined') return 'light'
   let pref = localStorage.getItem(PREFERENCE_KEY)
@@ -36,7 +32,7 @@ function readStoredPreferenceWithLegacyDefaults(): ThemePreference {
   try {
     localStorage.setItem(PREFERENCE_KEY, initial)
   } catch {
-    /* private mode */
+    void 0
   }
   return initial
 }
@@ -47,7 +43,7 @@ function persistResolvedTheme(mode: ThemeMode): void {
     localStorage.setItem(RESOLVED_KEY, mode)
     localStorage.setItem(LEGACY_MODE_KEY, mode)
   } catch {
-    /* private mode / quota */
+    void 0
   }
 }
 

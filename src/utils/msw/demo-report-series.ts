@@ -1,6 +1,5 @@
 import type { ReportDailyPoint, ReportMonthlyRow } from '@/types/reports'
 
-/** Hisobotlar MSW bilan bir xil oylik daromad seriyasi. */
 export function seriesRevenueByMonth(count: number): ReportMonthlyRow[] {
   const out: ReportMonthlyRow[] = []
   const end = new Date(Date.UTC(2025, 4, 1))
@@ -17,7 +16,6 @@ export function seriesRevenueByMonth(count: number): ReportMonthlyRow[] {
   return out
 }
 
-/** Hisobotlar MSW bilan bir xil kunlik trend. */
 export function seriesDaily(days: number): ReportDailyPoint[] {
   return Array.from({ length: days }, (_, i) => {
     const d = new Date(Date.UTC(2025, 3, 1 + i))

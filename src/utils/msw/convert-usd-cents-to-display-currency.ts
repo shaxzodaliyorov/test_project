@@ -1,10 +1,8 @@
 import type { CurrencyCode } from '@/constants/currencies'
 
-/** Mock kurslar: kanonik qiymatlar USD sentlarida. */
 export const USD_TO_UZS_MOCK = 12_650
 export const USD_TO_RUB_MOCK = 92
 
-/** USD sentlarini tanlangan valyutaning kichik birligiga (sent / tiyin / …) o‘tkazadi. */
 export function convertUsdCentsToDisplayCurrency(
   usdCents: number,
   target: CurrencyCode,

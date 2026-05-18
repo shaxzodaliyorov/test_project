@@ -6,7 +6,6 @@ import { PATHS } from '@/routes/paths'
 type RequirePermissionProps = {
   permission: string
   children: ReactNode
-  /** When denied; default is forbidden (403). */
   redirectTo?: string
 }
 

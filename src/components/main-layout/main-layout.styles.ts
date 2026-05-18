@@ -97,7 +97,6 @@ export const mainLayoutInner: CSSProperties = {
   textAlign: 'left',
 }
 
-/** Main scroll area around `<Outlet />` — light padding from header / edges. */
 export const mainLayoutContentArea: CSSProperties = {
   flex: 1,
   minHeight: 0,
@@ -112,7 +111,6 @@ export const mainLayoutContentAreaCompact: CSSProperties = {
   padding: '12px 16px',
 }
 
-/** Wide tables (e.g. admin users): horizontal scroll inside padded content. */
 export const mainLayoutContentTableFriendly: CSSProperties = {
   overflowX: 'auto',
 }
@@ -217,7 +215,6 @@ export const mainLayoutUserTriggerCompact: CSSProperties = {
   justifyContent: 'center',
 }
 
-/** Tab bar (56px) + safe area + gap so scroll content does not sit under the bar. */
 export const mainLayoutContentWithBottomNav: CSSProperties = {
   paddingBottom:
     'calc(56px + env(safe-area-inset-bottom, 0px) + 20px)',

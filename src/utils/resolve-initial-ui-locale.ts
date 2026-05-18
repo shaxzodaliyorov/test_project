@@ -27,7 +27,6 @@ function mapNavigatorToUiLocale(): UiLocale {
   return 'uz'
 }
 
-/** Used by i18n init and ui-preferences store initial state (no circular imports). */
 export function resolveInitialUiLocale(): UiLocale {
   const stored = readStoredLocaleRaw()
   if (isUiLocale(stored)) return stored

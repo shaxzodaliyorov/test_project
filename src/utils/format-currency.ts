@@ -8,7 +8,6 @@ function intlLocaleForUi(ui: UiLocale): string {
   return "en-US";
 }
 
-/** Ba’zi locale’lar `Intl` da `$ 71` kabi belgi va raqam orasiga bo‘sh joy qo‘shadi — olib tashlash. */
 export function normalizeCurrencySpacing(formatted: string): string {
   return formatted.replace(
     /^(-?)(\p{Sc})[\s\u00A0\u202F\u2009]+(?=\d)/u,

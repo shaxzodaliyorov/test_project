@@ -1,4 +1,3 @@
-/** Reads `errorKey` from JSON error bodies returned by the API. */
 export function parseApiErrorKeyFromBody(text: string): string | null {
   const trimmed = text.trim()
   if (!trimmed.startsWith("{")) return null
@@ -8,7 +7,7 @@ export function parseApiErrorKeyFromBody(text: string): string | null {
       return parsed.errorKey
     }
   } catch {
-    /* ignore */
+    void 0
   }
   return null
 }

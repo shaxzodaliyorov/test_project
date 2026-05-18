@@ -26,14 +26,12 @@ export function getRoleSelectOptions(
   }))
 }
 
-/** Roles that can be assigned via create/edit user forms (not admin). */
 export function getAssignableRoleSelectOptions(
   t: TFunction,
 ): { label: string; value: Role }[] {
   return getRoleSelectOptions(t).filter((o) => o.value !== 'admin')
 }
 
-/** Mock API `/api/roles` — fixed English labels for MSW contract */
 export const ROLE_OPTIONS_MSW: { label: string; value: Role }[] = [
   { label: 'Admin', value: 'admin' },
   { label: 'Payments', value: 'payment' },

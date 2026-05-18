@@ -5,7 +5,6 @@ export const loginRootFlex: CSSProperties = {
   position: "relative",
 };
 
-/** Fixed bar: language + theme on the login screen */
 export const loginTopBar: CSSProperties = {
   position: "fixed",
   top: 16,

@@ -48,7 +48,7 @@ function readTokenFromStorage(): string | null {
       }
     }
   } catch {
-    /* ignore */
+    void 0
   }
 
   try {
@@ -67,7 +67,7 @@ function readTokenFromStorage(): string | null {
       return t
     }
   } catch {
-    /* ignore */
+    void 0
   }
 
   return null

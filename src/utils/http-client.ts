@@ -11,7 +11,7 @@ function errorMessageFromBody(text: string, fallback: string): string {
     const json = JSON.parse(text) as { message?: unknown }
     if (typeof json?.message === 'string') return json.message
   } catch {
-    /* use raw text */
+    void 0
   }
   return text
 }

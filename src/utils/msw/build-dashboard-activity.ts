@@ -16,10 +16,6 @@ const MONTH_UZ = [
   'Dek',
 ] as const
 
-/**
- * Dashboard grafigi — `/api/reports` bilan bir xil demo generatorlardan
- * (hisobotlar jadvali / overview bilan sinxron raqamlar).
- */
 export function buildDashboardActivityFromReportDemoSeries(): DashboardActivityByRange {
   const daily = seriesDaily(45)
   const week: DashboardActivityPoint[] = daily.slice(-7).map((p) => ({

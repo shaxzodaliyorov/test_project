@@ -13,7 +13,7 @@ function tryParseJsonMessage(text: string): string | null {
     if (typeof parsed?.errorKey === "string") return parsed.errorKey;
     if (typeof parsed?.message === "string") return parsed.message;
   } catch {
-    /* ignore */
+    void 0
   }
   return null;
 }
@@ -27,10 +27,6 @@ function translateIfErrorKey(raw: string): string {
   return trimmed;
 }
 
-/**
- * Human-readable message for UI (toast, alerts). If the API sent an `errorKey`
- * (`errors:...`), it is translated with the current i18n language.
- */
 export function getApiErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     const fromJson = tryParseJsonMessage(error.message);

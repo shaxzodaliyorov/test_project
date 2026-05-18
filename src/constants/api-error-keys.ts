@@ -1,4 +1,3 @@
-/** Server / MSW JSON: `{ "errorKey": "<one of these>" }` — UI translates via i18n `errors` namespace. */
 export const API_ERROR_KEYS = {
   AUTH_INVALID_CREDENTIALS: "errors:auth.invalidCredentials",
   HTTP_UNAUTHORIZED: "errors:http.unauthorized",

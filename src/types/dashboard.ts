@@ -16,7 +16,6 @@ export type DashboardStats = {
   generatedAt: string
 }
 
-/** Grafik uchun nuqta; hisobotlar sahifasidagi Recharts dan mustaqil. */
 export type DashboardActivityPoint = {
   period: string
   value: number
@@ -33,6 +32,5 @@ export type DashboardActivityByRange = {
 export type DashboardResponse = {
   profile: DashboardProfile
   stats: DashboardStats
-  /** Kunlik/oylik/yillik seriyalar — hisobotlar API bilan mos ma’lumotdan hisoblansin (MSW: `buildDashboardActivityFromReportDemoSeries`). */
   activity: DashboardActivityByRange
 }

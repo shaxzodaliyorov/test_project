@@ -7,7 +7,6 @@ import { buildDashboardActivityFromReportDemoSeries } from '@/utils/msw/build-da
 import { getUserFromAuthHeader } from '@/utils/msw/handlers/auth'
 import { mswLatency } from '@/utils/msw/msw-latency'
 
-/** Mock hisobotlar bilan mos raqamlar (reports MSW generatorlari). */
 const MOCK_PAYMENT_RECORDS = 88
 const MOCK_REPORT_CATEGORIES = 56
 const MOCK_REPORT_MERCHANTS = 42

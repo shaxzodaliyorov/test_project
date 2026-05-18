@@ -1,6 +1,5 @@
 import type { ReportsOverviewResponse } from "@/types/reports";
 
-/** Recharts `Line` uchun `dataKey`: s0, s1, … */
 export const REPORT_CHART_SERIES_KEY = (index: number) => `s${index}`;
 
 export type ReportChartRow = {

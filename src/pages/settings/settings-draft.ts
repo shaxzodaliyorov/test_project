@@ -28,7 +28,6 @@ export function readDraftFromStores(): SettingsDraft {
   }
 }
 
-/** Theme + appearance only (currency/locale come from `/api/auth/me/preferences`). */
 export function commitThemeAndAppearanceToStores(draft: SettingsDraft): void {
   useThemeStore.getState().setPreference(draft.themePreference)
   useAppearanceStore.getState().setPrimaryPresetId(draft.primaryPresetId)
