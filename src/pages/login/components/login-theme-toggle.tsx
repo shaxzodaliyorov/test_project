@@ -1,25 +1,26 @@
-import { MoonOutlined, SunOutlined } from '@ant-design/icons'
-import { Flex, Switch } from 'antd'
-import { useThemeStore } from '@/hooks/theme-store'
-import { loginThemeToggleBar } from '../login.styles'
+import { MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { Flex, Switch } from "antd";
+import { useTranslation } from "react-i18next";
+import { useThemeStore } from "@/hooks/theme-store";
 
 export function LoginThemeToggle() {
-  const resolvedMode = useThemeStore((s) => s.resolvedMode)
-  const setPreference = useThemeStore((s) => s.setPreference)
+  const { t } = useTranslation("auth");
+  const resolvedMode = useThemeStore((s) => s.resolvedMode);
+  const setPreference = useThemeStore((s) => s.setPreference);
 
   return (
-    <Flex align="center" gap="small" style={loginThemeToggleBar}>
+    <Flex align="center" gap="small">
       <Switch
-        checked={resolvedMode === 'dark'}
+        checked={resolvedMode === "dark"}
         onChange={(checked) => {
-          setPreference(checked ? 'dark' : 'light')
+          setPreference(checked ? "dark" : "light");
         }}
         checkedChildren={<MoonOutlined />}
         unCheckedChildren={<SunOutlined />}
         aria-label={
-          resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+          resolvedMode === "dark" ? t("themeAriaDark") : t("themeAriaLight")
         }
       />
     </Flex>
-  )
+  );
 }

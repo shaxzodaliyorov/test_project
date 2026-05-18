@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw'
+import { API_ERROR_KEYS } from '@/constants/api-error-keys'
 import type { DashboardResponse } from '@/types/dashboard'
 import { PERMISSIONS } from '@/constants/permissions'
 import { getDemoRowsCount } from '@/utils/msw/demo-users-store'
@@ -16,10 +17,10 @@ export const dashboardHandlers = [
     await mswLatency()
     const user = getUserFromAuthHeader(request.headers.get('authorization'))
     if (!user) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_UNAUTHORIZED }, { status: 401 })
     }
     if (!user.permissions.includes(PERMISSIONS.DASHBOARD_READ)) {
-      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_FORBIDDEN }, { status: 403 })
     }
 
     const stats: DashboardResponse['stats'] = {

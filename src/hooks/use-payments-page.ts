@@ -1,15 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PaymentStatus, PaymentsListResponse } from '@/types/payment'
 import { PAYMENTS_DEFAULT_PAGE_SIZE } from '@/constants/payments-list'
 import { useAuthStore } from '@/hooks/auth-store'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { paginationShowTotal } from '@/utils/pagination-show-total'
 import { apiGet } from '@/utils/http-client'
-
-function paymentsShowTotal() {
-  return (total: number, range: [number, number]) =>
-    total === 0 ? '0 ta' : `${range[0]}-${range[1]} / ${total}`
-}
 
 function paymentsListUrl(
   page: number,
@@ -30,6 +27,7 @@ function paymentsListUrl(
 export type PaymentsStatusFilter = PaymentStatus | ''
 
 export function usePaymentsPage() {
+  const { t } = useTranslation('common')
   const preferredCurrency = useAuthStore(
     (s) => s.user?.preferredCurrency ?? 'USD',
   )
@@ -95,7 +93,7 @@ export function usePaymentsPage() {
     void query.refetch()
   }, [query])
 
-  const showTotal = useMemo(() => paymentsShowTotal(), [])
+  const showTotal = useMemo(() => paginationShowTotal(t), [t])
 
   return {
     page,

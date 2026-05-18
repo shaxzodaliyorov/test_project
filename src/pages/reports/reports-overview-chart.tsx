@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, Spin } from "antd";
 import type { ReportsOverviewResponse } from "@/types/reports";
 import {
@@ -18,17 +19,17 @@ const LINE_COLORS = ["#1677ff", "#13c2c2", "#722ed1", "#fa8c16"];
 
 type ReportsOverviewChartProps = {
   chart: ReportsOverviewResponse["chart"] | undefined;
-  /** Overview qayta yuklanganda (masalan, `range` o‘zgarganda) */
   fetching: boolean;
 };
 
 export function ReportsOverviewChart({ chart, fetching }: ReportsOverviewChartProps) {
+  const { t } = useTranslation("reports");
   const rows = useMemo(() => buildReportChartRows(chart), [chart]);
   const datasets = chart?.datasets ?? [];
   const showChart = rows.length > 0;
 
   return (
-    <Card size="small" title="Oy bo‘yicha daromad">
+    <Card size="small" title={t("overviewCardTitle")}>
       <Spin spinning={fetching && !showChart}>
         {showChart ? (
           <div style={{ width: "100%", height: 320 }}>
@@ -53,7 +54,9 @@ export function ReportsOverviewChart({ chart, fetching }: ReportsOverviewChartPr
                 />
                 <Tooltip
                   formatter={(value) => formatMoney(Number(value))}
-                  labelFormatter={(label) => `Oy: ${label}`}
+                  labelFormatter={(label) =>
+                    t("tooltipMonth", { label: String(label) })
+                  }
                 />
                 <Legend />
                 {datasets.map((ds, i) => (
@@ -73,7 +76,7 @@ export function ReportsOverviewChart({ chart, fetching }: ReportsOverviewChartPr
           </div>
         ) : fetching ? null : (
           <div style={{ color: "var(--ant-color-text-secondary)", fontSize: 13 }}>
-            Grafik uchun ma’lumot yo‘q.
+            {t("overviewEmpty")}
           </div>
         )}
       </Spin>

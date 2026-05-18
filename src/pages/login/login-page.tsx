@@ -2,11 +2,13 @@ import {
   LockOutlined,
   MailOutlined,
   SafetyCertificateOutlined,
-} from '@ant-design/icons'
-import { useMutation } from '@tanstack/react-query'
-import { App, Button, Divider, Flex, Form, Input, Space, Tag, Typography } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import { LoginThemeToggle } from './components/login-theme-toggle'
+} from "@ant-design/icons";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { App, Button, Divider, Flex, Form, Input, Space, Tag, Typography } from "antd";
+import { useNavigate } from "react-router-dom";
+import { LoginLocaleSelect } from "./components/login-locale-select";
+import { LoginThemeToggle } from "./components/login-theme-toggle";
 import {
   loginCertIcon,
   loginDemoDividerText,
@@ -22,40 +24,51 @@ import {
   loginRootFlex,
   loginSubtitle,
   loginTitle,
-} from './login.styles'
-import { useAuthStore } from '@/hooks/auth-store'
-import type { User } from '@/types/user'
-import { postLoginPath } from '@/utils/post-login-path'
-import { getApiErrorMessage } from '@/utils/api-error'
-import { apiPost } from '@/utils/http-client'
+  loginTopBar,
+} from "./login.styles";
+import { useAuthStore } from "@/hooks/auth-store";
+import type { User } from "@/types/user";
+import { postLoginPath } from "@/utils/post-login-path";
+import { getApiErrorMessage } from "@/utils/api-error";
+import { apiPost } from "@/utils/http-client";
 
-type LoginResponse = { token: string; user: User }
+type LoginResponse = { token: string; user: User };
 
 export function LoginPage() {
-  const navigate = useNavigate()
-  const { message } = App.useApp()
-  const setToken = useAuthStore((s) => s.setToken)
-  const setUser = useAuthStore((s) => s.setUser)
+  const { t } = useTranslation("auth");
+  const navigate = useNavigate();
+  const { message } = App.useApp();
+  const setToken = useAuthStore((s) => s.setToken);
+  const setUser = useAuthStore((s) => s.setUser);
 
   const login = useMutation({
     mutationFn: (values: { email: string; password: string }) =>
       apiPost<LoginResponse, { email: string; password: string }>(
-        '/api/auth/login',
+        "/api/auth/login",
         values,
       ),
     onSuccess: (data) => {
-      setToken(data.token)
-      setUser(data.user)
-      void navigate(postLoginPath(data.user))
+      setToken(data.token);
+      setUser(data.user);
+      void navigate(postLoginPath(data.user));
     },
     onError: (error) => {
-      message.error(getApiErrorMessage(error))
+      message.error(getApiErrorMessage(error));
     },
-  })
+  });
 
   return (
     <Flex justify="center" align="center" style={loginRootFlex}>
-      <LoginThemeToggle />
+      <Flex
+        align="center"
+        gap="small"
+        justify="flex-end"
+        wrap="wrap"
+        style={loginTopBar}
+      >
+        <LoginLocaleSelect />
+        <LoginThemeToggle />
+      </Flex>
       <div style={loginRing}>
         <div style={loginPanel}>
           <Flex vertical align="center" gap="small" style={loginHeroFlex}>
@@ -63,10 +76,10 @@ export function LoginPage() {
               <LockOutlined aria-hidden />
             </div>
             <Typography.Title level={2} style={loginTitle}>
-              Welcome back
+              {t("welcomeTitle")}
             </Typography.Title>
             <Typography.Paragraph type="secondary" style={loginSubtitle}>
-              Sign in to continue to RBAC demo.
+              {t("welcomeSubtitle")}
             </Typography.Paragraph>
           </Flex>
 
@@ -75,14 +88,14 @@ export function LoginPage() {
             requiredMark={false}
             size="large"
             onFinish={(values) => {
-              login.mutate(values)
+              login.mutate(values);
             }}
             disabled={login.isPending}
           >
             <Form.Item
               name="email"
-              label={<span style={loginFieldLabel}>Email</span>}
-              rules={[{ required: true, message: 'Email is required' }]}
+              label={<span style={loginFieldLabel}>{t("email")}</span>}
+              rules={[{ required: true, message: t("emailRequired") }]}
             >
               <Input
                 type="email"
@@ -93,8 +106,8 @@ export function LoginPage() {
             </Form.Item>
             <Form.Item
               name="password"
-              label={<span style={loginFieldLabel}>Password</span>}
-              rules={[{ required: true, message: 'Password is required' }]}
+              label={<span style={loginFieldLabel}>{t("password")}</span>}
+              rules={[{ required: true, message: t("passwordRequired") }]}
             >
               <Input.Password
                 autoComplete="current-password"
@@ -108,13 +121,13 @@ export function LoginPage() {
               size="large"
               loading={login.isPending}
             >
-              Continue
+              {t("continue")}
             </Button>
           </Form>
 
           <Divider plain style={loginDivider}>
             <Typography.Text type="secondary" style={loginDemoDividerText}>
-              Demo sign-in
+              {t("demoDivider")}
             </Typography.Text>
           </Divider>
 
@@ -122,35 +135,35 @@ export function LoginPage() {
             <Flex align="center" gap={8} wrap="wrap">
               <SafetyCertificateOutlined style={loginCertIcon} />
               <Typography.Text strong style={loginDemoStrong}>
-                Admin
+                {t("demoAdmin")}
               </Typography.Text>
               <Tag>admin@test.com</Tag>
               <Tag>Admin@123</Tag>
             </Flex>
             <Flex align="center" gap={8} wrap="wrap">
               <Typography.Text strong style={loginDemoStrong}>
-                Payment
+                {t("demoPayment")}
               </Typography.Text>
               <Tag>payment@test.com</Tag>
               <Tag>Payment@1</Tag>
             </Flex>
             <Flex align="center" gap={8} wrap="wrap">
               <Typography.Text strong style={loginDemoStrong}>
-                Reports
+                {t("demoReports")}
               </Typography.Text>
               <Tag>reports@test.com</Tag>
               <Tag>Reports@1</Tag>
             </Flex>
             <Flex align="center" gap={8} wrap="wrap">
               <Typography.Text strong style={loginDemoStrong}>
-                Users (faqat)
+                {t("demoUsersOnly")}
               </Typography.Text>
               <Tag>usersonly@test.com</Tag>
               <Tag>Users@123</Tag>
             </Flex>
             <Flex align="center" gap={8} wrap="wrap">
               <Typography.Text strong style={loginDemoStrong}>
-                User (rol yoq)
+                {t("demoNoRoles")}
               </Typography.Text>
               <Tag>user@test.com</Tag>
               <Tag>User@1234</Tag>
@@ -159,5 +172,5 @@ export function LoginPage() {
         </div>
       </div>
     </Flex>
-  )
+  );
 }

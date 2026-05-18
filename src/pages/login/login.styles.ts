@@ -5,12 +5,14 @@ export const loginRootFlex: CSSProperties = {
   position: "relative",
 };
 
-export const loginThemeToggleBar: CSSProperties = {
+/** Fixed bar: language + theme on the login screen */
+export const loginTopBar: CSSProperties = {
   position: "fixed",
   top: 16,
   right: 16,
   zIndex: 10,
   borderRadius: 999,
+  padding: "6px 8px 6px 12px",
   background: "color-mix(in srgb, var(--bg) 88%, transparent)",
   border: "1px solid var(--border)",
   boxShadow: "var(--shadow)",

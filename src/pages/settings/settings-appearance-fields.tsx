@@ -1,5 +1,5 @@
 import { Flex, Select, Space } from "antd";
-import type { SettingsCopy } from "@/constants/settings-copy";
+import { useTranslation } from "react-i18next";
 import { FONT_PRESETS } from "@/constants/font-presets";
 import { THEME_COLOR_PRESETS } from "@/constants/theme-color-presets";
 import type { SettingsDraft } from "./settings-draft";
@@ -13,17 +13,17 @@ function presetLabel(id: string): string {
 type SettingsAppearanceFieldsProps = {
   draft: SettingsDraft;
   onDraftChange: (patch: Partial<SettingsDraft>) => void;
-  t: SettingsCopy;
 };
 
 export function SettingsAppearanceFields({
   draft,
   onDraftChange,
-  t,
 }: SettingsAppearanceFieldsProps) {
+  const { t } = useTranslation("settings");
+
   return (
     <Space direction="vertical" size="large" style={{ width: "100%" }}>
-      <SettingsRow label={t.primaryColorLabel}>
+      <SettingsRow label={t("primaryColorLabel")}>
         <Flex wrap="wrap" gap={10} justify="flex-end">
           {THEME_COLOR_PRESETS.map((p) => {
             const selected = draft.primaryPresetId === p.id;
@@ -47,7 +47,7 @@ export function SettingsAppearanceFields({
           })}
         </Flex>
       </SettingsRow>
-      <SettingsRow label={t.fontLabel}>
+      <SettingsRow label={t("fontLabel")}>
         <Select
           value={draft.fontPresetId}
           style={{ minWidth: 260 }}

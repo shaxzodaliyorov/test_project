@@ -1,6 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { App, ConfigProvider, theme as antdTheme } from 'antd'
+import enUS from 'antd/locale/en_US'
+import ruRU from 'antd/locale/ru_RU'
 import { useEffect } from 'react'
+import { I18nextProvider } from 'react-i18next'
 import { RouterProvider } from 'react-router-dom'
 import { FONT_PRESETS, getFontPresetById } from '@/constants/font-presets'
 import {
@@ -9,6 +12,8 @@ import {
 } from '@/constants/theme-color-presets'
 import { useAppearanceStore } from '@/hooks/appearance-store'
 import { useThemeStore } from '@/hooks/theme-store'
+import { useUiPreferencesStore } from '@/hooks/ui-preferences-store'
+import i18n from '@/i18n/i18n'
 import { appRouter } from '@/routes/app-routes'
 import {
   applyAccentCssVars,
@@ -26,6 +31,7 @@ function ThemedTree() {
   const isDark = resolvedMode === 'dark'
   const primaryPresetId = useAppearanceStore((s) => s.primaryPresetId)
   const fontPresetId = useAppearanceStore((s) => s.fontPresetId)
+  const uiLocale = useUiPreferencesStore((s) => s.locale)
 
   const colorPreset =
     getThemeColorPresetById(primaryPresetId) ?? THEME_COLOR_PRESETS[0]
@@ -35,6 +41,10 @@ function ThemedTree() {
     resolvedMode === 'dark'
       ? colorPreset.colorPrimaryDark
       : colorPreset.colorPrimaryLight
+
+  useEffect(() => {
+    document.documentElement.lang = uiLocale
+  }, [uiLocale])
 
   useEffect(() => {
     applyAccentCssVars(
@@ -52,8 +62,11 @@ function ThemedTree() {
     applyFontCssVars(fontPreset.fontFamily)
   }, [fontPreset.fontFamily])
 
+  const antdLocale = uiLocale === 'ru' ? ruRU : enUS
+
   return (
     <ConfigProvider
+      locale={antdLocale}
       theme={{
         algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
@@ -77,7 +90,9 @@ function ThemedTree() {
 export function AppProviders() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemedTree />
+      <I18nextProvider i18n={i18n}>
+        <ThemedTree />
+      </I18nextProvider>
     </QueryClientProvider>
   )
 }

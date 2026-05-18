@@ -1,6 +1,6 @@
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { Radio, Select, Space } from "antd";
-import type { SettingsCopy } from "@/constants/settings-copy";
 import type { UiLocale } from "@/constants/ui-languages";
 import { UI_LOCALES } from "@/constants/ui-languages";
 import type { ThemePreference } from "@/hooks/theme-store";
@@ -10,17 +10,17 @@ import { SettingsRow } from "./settings-row";
 type SettingsGeneralFieldsProps = {
   draft: SettingsDraft;
   onDraftChange: (patch: Partial<SettingsDraft>) => void;
-  t: SettingsCopy;
 };
 
 export function SettingsGeneralFields({
   draft,
   onDraftChange,
-  t,
 }: SettingsGeneralFieldsProps) {
+  const { t } = useTranslation("settings");
+
   return (
     <Space direction="vertical" size="large" style={{ width: "100%" }}>
-      <SettingsRow label={t.languageLabel}>
+      <SettingsRow label={t("languageLabel")}>
         <Select
           value={draft.locale}
           style={{ minWidth: 200 }}
@@ -31,7 +31,7 @@ export function SettingsGeneralFields({
           onChange={(v) => onDraftChange({ locale: v as UiLocale })}
         />
       </SettingsRow>
-      <SettingsRow label={t.themeLabel}>
+      <SettingsRow label={t("themeLabel")}>
         <Radio.Group
           value={draft.themePreference}
           onChange={(e) =>
@@ -40,10 +40,10 @@ export function SettingsGeneralFields({
         >
           <Space wrap size={8}>
             <Radio.Button value="light">
-              <SunOutlined /> {t.themeLight}
+              <SunOutlined /> {t("themeLight")}
             </Radio.Button>
             <Radio.Button value="dark">
-              <MoonOutlined /> {t.themeDark}
+              <MoonOutlined /> {t("themeDark")}
             </Radio.Button>
           </Space>
         </Radio.Group>

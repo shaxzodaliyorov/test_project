@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { DEFAULT_CURRENCY_CODE, type CurrencyCode } from '@/constants/currencies'
-import { DEFAULT_UI_LOCALE, type UiLocale } from '@/constants/ui-languages'
+import type { UiLocale } from '@/constants/ui-languages'
+import i18n from '@/i18n/i18n'
+import { resolveInitialUiLocale } from '@/utils/resolve-initial-ui-locale'
 
 const STORAGE_KEY = 'ui-preferences'
 
@@ -26,18 +28,12 @@ function persist(partial: Stored): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...prev, ...partial }))
 }
 
-function isLocale(x: string | undefined): x is UiLocale {
-  return x === 'uz' || x === 'ru' || x === 'en'
-}
-
 function isCurrency(x: string | undefined): x is CurrencyCode {
   return x === 'UZS' || x === 'USD' || x === 'RUB'
 }
 
 const stored = readStored()
-const initialLocale: UiLocale = isLocale(stored.locale)
-  ? stored.locale
-  : DEFAULT_UI_LOCALE
+const initialLocale: UiLocale = resolveInitialUiLocale()
 const initialCurrency: CurrencyCode = isCurrency(stored.currency)
   ? stored.currency
   : DEFAULT_CURRENCY_CODE
@@ -55,6 +51,7 @@ export const useUiPreferencesStore = create<UiPreferencesState>((set) => ({
   setLocale: (locale) => {
     persist({ locale })
     set({ locale })
+    void i18n.changeLanguage(locale)
   },
   setCurrency: (currency) => {
     persist({ currency })

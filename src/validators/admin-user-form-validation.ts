@@ -1,32 +1,52 @@
+import type { TFunction } from 'i18next'
 import type { Rule } from 'antd/es/form'
 
-/** Faqat harflar (lotin, kirill va h.k., Unicode harflar). */
 const LETTERS_ONLY = /^[\p{L}]+$/u
 
 const NAME_LEN = { min: 2, max: 50 } as const
 
-export const firstNameRules: Rule[] = [
-  { required: true, message: 'Ism majburiy' },
-  { min: NAME_LEN.min, max: NAME_LEN.max, message: '2–50 belgi bo‘lishi kerak' },
-  {
-    pattern: LETTERS_ONLY,
-    message: 'Faqat harflar',
-  },
-]
+export function createFirstNameRules(t: TFunction): Rule[] {
+  return [
+    { required: true, message: t('validation:firstNameRequired') },
+    {
+      min: NAME_LEN.min,
+      max: NAME_LEN.max,
+      message: t('validation:nameLength', {
+        min: NAME_LEN.min,
+        max: NAME_LEN.max,
+      }),
+    },
+    {
+      pattern: LETTERS_ONLY,
+      message: t('validation:lettersOnly'),
+    },
+  ]
+}
 
-export const lastNameRules: Rule[] = [
-  { required: true, message: 'Familiya majburiy' },
-  { min: NAME_LEN.min, max: NAME_LEN.max, message: '2–50 belgi bo‘lishi kerak' },
-  {
-    pattern: LETTERS_ONLY,
-    message: 'Faqat harflar',
-  },
-]
+export function createLastNameRules(t: TFunction): Rule[] {
+  return [
+    { required: true, message: t('validation:lastNameRequired') },
+    {
+      min: NAME_LEN.min,
+      max: NAME_LEN.max,
+      message: t('validation:nameLength', {
+        min: NAME_LEN.min,
+        max: NAME_LEN.max,
+      }),
+    },
+    {
+      pattern: LETTERS_ONLY,
+      message: t('validation:lettersOnly'),
+    },
+  ]
+}
 
-export const emailRules: Rule[] = [
-  { required: true, message: 'Email majburiy' },
-  { type: 'email', message: 'Standart email (user@domain.com)' },
-]
+export function createEmailRules(t: TFunction): Rule[] {
+  return [
+    { required: true, message: t('validation:emailRequired') },
+    { type: 'email', message: t('validation:emailInvalid') },
+  ]
+}
 
 const SPECIALS = '!@#$%^&*()_+-=[]{};\':"|,.<>?/~`'
 
@@ -34,36 +54,41 @@ function hasSpecialChar(s: string): boolean {
   return [...s].some((ch) => SPECIALS.includes(ch))
 }
 
-function validatePasswordValue(s: string): string | null {
-  if (s.length < 8) return 'Minimum 8 belgi'
-  if (!/[A-Z]/.test(s)) return 'Kamida 1 ta katta harf (A–Z)'
-  if (!hasSpecialChar(s)) return 'Kamida 1 ta maxsus belgi (!@# va boshqalar)'
+function validatePasswordValue(s: string, t: TFunction): string | null {
+  if (s.length < 8) return t('validation:passwordMin')
+  if (!/[A-Z]/.test(s)) return t('validation:passwordUpper')
+  if (!hasSpecialChar(s)) return t('validation:passwordSpecial')
   return null
 }
 
-export const passwordRulesCreate: Rule[] = [
-  { required: true, message: 'Parol majburiy' },
-  {
-    validator: (_: unknown, v: unknown) => {
-      const s = typeof v === 'string' ? v : ''
-      const err = validatePasswordValue(s)
-      return err ? Promise.reject(new Error(err)) : Promise.resolve()
+export function createPasswordRulesCreate(t: TFunction): Rule[] {
+  return [
+    { required: true, message: t('validation:passwordRequired') },
+    {
+      validator: (_: unknown, v: unknown) => {
+        const s = typeof v === 'string' ? v : ''
+        const err = validatePasswordValue(s, t)
+        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+      },
     },
-  },
-]
+  ]
+}
 
-export const passwordRulesEdit: Rule[] = [
-  {
-    validator: (_: unknown, v: unknown) => {
-      const s = typeof v === 'string' ? v : ''
-      if (!s.trim()) return Promise.resolve()
-      const err = validatePasswordValue(s)
-      return err ? Promise.reject(new Error(err)) : Promise.resolve()
+export function createPasswordRulesEdit(t: TFunction): Rule[] {
+  return [
+    {
+      validator: (_: unknown, v: unknown) => {
+        const s = typeof v === 'string' ? v : ''
+        if (!s.trim()) return Promise.resolve()
+        const err = validatePasswordValue(s, t)
+        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+      },
     },
-  },
-]
+  ]
+}
 
-export function rolesRules(
+export function createRolesRules(
+  t: TFunction,
   allowedRoleValues: readonly string[],
   mode: 'create' | 'edit',
 ): Rule[] {
@@ -72,15 +97,13 @@ export function rolesRules(
     {
       validator: (_: unknown, v: unknown) => {
         if (!Array.isArray(v) || v.length === 0) {
-          return Promise.reject(new Error('Kamida bitta rol tanlang'))
+          return Promise.reject(new Error(t('validation:rolesMin')))
         }
         if (!(v as string[]).every((x) => allow.has(x))) {
-          return Promise.reject(new Error('Mavjud bo‘lmagan rol tanlangan'))
+          return Promise.reject(new Error(t('validation:rolesInvalid')))
         }
         if (mode === 'create' && (v as string[]).includes('admin')) {
-          return Promise.reject(
-            new Error('Yangi foydalanuvchiga Admin roli berib bo‘lmaydi'),
-          )
+          return Promise.reject(new Error(t('validation:rolesNoAdminCreate')))
         }
         return Promise.resolve()
       },

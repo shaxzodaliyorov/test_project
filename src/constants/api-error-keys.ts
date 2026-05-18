@@ -1,0 +1,18 @@
+/** Server / MSW JSON: `{ "errorKey": "<one of these>" }` — UI translates via i18n `errors` namespace. */
+export const API_ERROR_KEYS = {
+  AUTH_INVALID_CREDENTIALS: "errors:auth.invalidCredentials",
+  HTTP_UNAUTHORIZED: "errors:http.unauthorized",
+  HTTP_FORBIDDEN: "errors:http.forbidden",
+  HTTP_NOT_FOUND: "errors:http.notFound",
+  PREFERENCES_INVALID_PAYLOAD: "errors:preferences.invalidPayload",
+  USERS_EMAIL_IN_USE: "errors:users.emailInUse",
+  USERS_PASSWORD_POLICY: "errors:users.passwordPolicy",
+  USERS_INVALID_ROLES_PATCH: "errors:users.invalidRolesPatch",
+  USERS_INVALID_ROLES_CREATE: "errors:users.invalidRolesCreate",
+  USERS_ADMIN_FORBIDDEN_ON_CREATE: "errors:users.adminForbiddenOnCreate",
+  USERS_CREATE_MISSING_FIELDS: "errors:users.createMissingFields",
+  USERS_CANNOT_DELETE_SELF: "errors:users.cannotDeleteSelf",
+  REPORTS_INVALID_SECTION: "errors:reports.invalidSection",
+  REPORTS_INVALID_PART: "errors:reports.invalidPart",
+  GENERIC: "errors:generic",
+} as const

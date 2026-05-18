@@ -1,15 +1,10 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Button, Input, Select, Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { Payment, PaymentStatus } from "@/types/payment";
 import { usePaymentsPage } from "@/hooks/use-payments-page";
 import { formatCurrencyMinorUnits } from "@/utils/format-currency";
-
-const STATUS_OPTIONS: { label: string; value: PaymentStatus }[] = [
-  { label: "Kutilmoqda", value: "pending" },
-  { label: "To‘langan", value: "paid" },
-  { label: "Muvaffaqiyatsiz", value: "failed" },
-];
 
 const STATUS_TAG_COLOR: Record<PaymentStatus, string> = {
   pending: "gold",
@@ -17,26 +12,47 @@ const STATUS_TAG_COLOR: Record<PaymentStatus, string> = {
   failed: "red",
 };
 
-function paymentStatusLabel(status: PaymentStatus): string {
-  return STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
-}
-
 export function PaymentsPage() {
+  const { t } = useTranslation(["payments", "common"]);
   const p = usePaymentsPage();
+
+  const statusLabels = useMemo(
+    () => ({
+      pending: t("payments:statusPending"),
+      paid: t("payments:statusPaid"),
+      failed: t("payments:statusFailed"),
+    }),
+    [t],
+  );
+
+  const statusOptions = useMemo(
+    () =>
+      (["pending", "paid", "failed"] as const).map((value) => ({
+        value,
+        label: statusLabels[value],
+      })),
+    [statusLabels],
+  );
 
   const columns: ColumnsType<Payment> = useMemo(
     () => [
       {
-        title: "№",
+        title: t("payments:colNo"),
         key: "index",
         width: 56,
         fixed: "left",
         align: "center",
         render: (_, __, index) => (p.page - 1) * p.pageSize + index + 1,
       },
-      { title: "ID", dataIndex: "id", key: "id", width: 120, fixed: "left" },
       {
-        title: "Summa",
+        title: t("payments:colId"),
+        dataIndex: "id",
+        key: "id",
+        width: 120,
+        fixed: "left",
+      },
+      {
+        title: t("payments:colAmount"),
         key: "amount",
         width: 120,
         render: (_, row) =>
@@ -47,7 +63,7 @@ export function PaymentsPage() {
           }),
       },
       {
-        title: "Komissiya",
+        title: t("payments:colFee"),
         key: "fee",
         width: 100,
         render: (_, row) =>
@@ -58,50 +74,62 @@ export function PaymentsPage() {
           }),
       },
       {
-        title: "Holat",
+        title: t("payments:colStatus"),
         dataIndex: "status",
         key: "status",
         width: 130,
         render: (status: PaymentStatus) => (
-          <Tag color={STATUS_TAG_COLOR[status]}>{paymentStatusLabel(status)}</Tag>
+          <Tag color={STATUS_TAG_COLOR[status]}>
+            {statusLabels[status] ?? status}
+          </Tag>
         ),
       },
-      { title: "Usul", dataIndex: "method", key: "method", width: 120 },
       {
-        title: "Kategoriya",
+        title: t("payments:colMethod"),
+        dataIndex: "method",
+        key: "method",
+        width: 120,
+      },
+      {
+        title: t("payments:colCategory"),
         dataIndex: "category",
         key: "category",
         width: 120,
       },
       {
-        title: "Merchant",
+        title: t("payments:colMerchant"),
         dataIndex: "merchantName",
         key: "merchantName",
         width: 140,
       },
       {
-        title: "Mijoz",
+        title: t("payments:colCustomer"),
         dataIndex: "customerEmail",
         key: "customerEmail",
         ellipsis: true,
         width: 200,
       },
       {
-        title: "Ref",
+        title: t("payments:colRef"),
         dataIndex: "externalRef",
         key: "externalRef",
         width: 160,
       },
-      { title: "Shahar", dataIndex: "city", key: "city", width: 100 },
       {
-        title: "Yaratilgan",
+        title: t("payments:colCity"),
+        dataIndex: "city",
+        key: "city",
+        width: 100,
+      },
+      {
+        title: t("payments:colCreated"),
         dataIndex: "createdAt",
         key: "createdAt",
         width: 180,
         render: (v: string) => new Date(v).toLocaleString(),
       },
     ],
-    [p.page, p.pageSize],
+    [t, p.page, p.pageSize, statusLabels],
   );
 
   return (
@@ -111,13 +139,13 @@ export function PaymentsPage() {
       style={{ width: "100%", display: "flex" }}
     >
       <Typography.Title level={2} style={{ margin: 0 }}>
-        To‘lovlar
+        {t("payments:title")}
       </Typography.Title>
 
       <Space wrap style={{ width: "100%" }} size="middle">
         <Input.Search
           allowClear
-          placeholder="ID, mijoz, merchant, kategoriya, ref, shahar, usul, holat…"
+          placeholder={t("payments:searchPlaceholder")}
           style={{ maxWidth: 420, minWidth: 200 }}
           value={p.search}
           onChange={(e) => {
@@ -127,9 +155,9 @@ export function PaymentsPage() {
         <Select
           style={{ minWidth: 180 }}
           allowClear
-          placeholder="Holat (barchasi)"
+          placeholder={t("payments:statusPlaceholder")}
           value={p.status === "" ? undefined : p.status}
-          options={STATUS_OPTIONS}
+          options={statusOptions}
           onChange={(v) => {
             p.setStatus(v ?? "");
           }}
@@ -140,11 +168,11 @@ export function PaymentsPage() {
         <Alert
           type="error"
           showIcon
-          message="Ma'lumot yuklanmadi"
+          message={t("common:loadFailed")}
           description={p.errorDescription}
           action={
             <Button size="small" onClick={() => void p.refetch()}>
-              Qayta urinish
+              {t("common:retry")}
             </Button>
           }
         />

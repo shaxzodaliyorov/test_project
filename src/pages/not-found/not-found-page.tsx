@@ -1,19 +1,21 @@
-import { Button, Result } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import { PATHS } from '@/routes/paths'
+import { Button, Result } from "antd";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "@/routes/paths";
 
 export function NotFoundPage() {
-  const navigate = useNavigate()
+  const { t } = useTranslation("common");
+  const navigate = useNavigate();
   return (
     <Result
       status="404"
-      title="404"
-      subTitle="This page does not exist or you do not have access."
+      title={t("notFoundTitle")}
+      subTitle={t("notFoundSubtitle")}
       extra={
         <Button type="primary" onClick={() => void navigate(PATHS.DASHBOARD)}>
-          Back to dashboard
+          {t("backToDashboard")}
         </Button>
       }
     />
-  )
+  );
 }

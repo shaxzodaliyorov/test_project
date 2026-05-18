@@ -1,9 +1,11 @@
 import type { Dispatch, SetStateAction } from "react";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Space, Table } from "antd";
 import type { ReportCategoryRow, ReportsTableResponse } from "@/types/reports";
 import type { PagedFilter } from "@/constants/reports-paged-filter";
-import { reportsShowTotal } from "./reports-format";
-import { reportsColumnsCategory } from "./reports-table-columns";
+import { paginationShowTotal } from "@/utils/pagination-show-total";
+import { buildReportsColumnsCategory } from "./reports-table-columns";
 
 type CategoriesTable = Extract<ReportsTableResponse, { section: "categories" }>;
 
@@ -20,11 +22,15 @@ export function ReportsCategoriesTab({
   data,
   loading,
 }: ReportsCategoriesTabProps) {
+  const { t } = useTranslation(["reports", "common"]);
+  const columns = useMemo(() => buildReportsColumnsCategory(t), [t]);
+  const showTotal = useMemo(() => paginationShowTotal(t), [t]);
+
   return (
     <Space direction="vertical" style={{ width: "100%" }}>
       <Input.Search
         allowClear
-        placeholder="Kategoriya yoki tranzaksiya soni"
+        placeholder={t("reports:searchCategory")}
         value={filter.search}
         onChange={(e) => {
           onFilterChange((s) => ({ ...s, search: e.target.value, page: 1 }));
@@ -35,14 +41,14 @@ export function ReportsCategoriesTab({
         loading={loading}
         dataSource={data?.items ?? []}
         size="small"
-        columns={reportsColumnsCategory}
+        columns={columns}
         scroll={{ y: 400, x: 900 }}
         pagination={{
           current: filter.page,
           pageSize: filter.pageSize,
           total: data?.total ?? 0,
           showSizeChanger: false,
-          showTotal: reportsShowTotal(),
+          showTotal,
           onChange: (p) => onFilterChange((s) => ({ ...s, page: p })),
         }}
       />

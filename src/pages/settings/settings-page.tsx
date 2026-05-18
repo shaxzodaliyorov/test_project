@@ -1,9 +1,8 @@
 import { App, Button, Divider, Flex, Space, Typography } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { CurrencyCode } from "@/constants/currencies";
-import { getSettingsCopy } from "@/constants/settings-copy";
 import type { UiLocale } from "@/constants/ui-languages";
-import { DEFAULT_UI_LOCALE } from "@/constants/ui-languages";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useUiPreferencesStore } from "@/hooks/ui-preferences-store";
 import type { User } from "@/types/user";
@@ -26,7 +25,7 @@ import {
 
 export function SettingsPage() {
   const { message } = App.useApp();
-  const t = useMemo(() => getSettingsCopy(DEFAULT_UI_LOCALE), []);
+  const { t } = useTranslation(["settings", "common"]);
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
 
@@ -72,9 +71,9 @@ export function SettingsPage() {
       const next = readDraftFromStores();
       setCommitted(next);
       setDraft(next);
-      message.success(t.saveSuccess);
+      message.success(t("settings:saveSuccess"));
     } catch (e) {
-      message.error(e instanceof Error ? e.message : "Xato");
+      message.error(e instanceof Error ? e.message : t("common:error"));
     } finally {
       setSaving(false);
     }
@@ -84,32 +83,32 @@ export function SettingsPage() {
     <div style={settingsPageOuter}>
       <Space direction="vertical" size="middle" style={{ width: "100%" }}>
         <Typography.Title level={2} style={{ margin: 0 }}>
-          {t.pageTitle}
+          {t("settings:pageTitle")}
         </Typography.Title>
         <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-          {t.applyOnSaveNote}
+          {t("settings:applyOnSaveNote")}
         </Typography.Paragraph>
       </Space>
 
       <div style={{ ...settingsPagePanel, marginTop: 20 }}>
         <Typography.Title level={5} style={settingsSectionTitle}>
-          {t.generalSection}
+          {t("settings:generalSection")}
         </Typography.Title>
-        <SettingsGeneralFields draft={draft} onDraftChange={patchDraft} t={t} />
+        <SettingsGeneralFields draft={draft} onDraftChange={patchDraft} />
         <Divider style={{ margin: "24px 0" }} />
         <Typography.Title level={5} style={settingsSectionTitle}>
-          {t.appearanceSection}
+          {t("settings:appearanceSection")}
         </Typography.Title>
-        <SettingsAppearanceFields draft={draft} onDraftChange={patchDraft} t={t} />
+        <SettingsAppearanceFields draft={draft} onDraftChange={patchDraft} />
         <Divider style={{ margin: "24px 0" }} />
         <Typography.Title level={5} style={settingsSectionTitle}>
-          {t.regionalSection}
+          {t("settings:regionalSection")}
         </Typography.Title>
-        <SettingsRegionalFields draft={draft} onDraftChange={patchDraft} t={t} />
+        <SettingsRegionalFields draft={draft} onDraftChange={patchDraft} />
         <div style={settingsFooterBar}>
           <Flex justify="flex-end" gap={12} wrap="wrap">
             <Button onClick={handleCancel} disabled={!dirty}>
-              {t.cancelButton}
+              {t("settings:cancelButton")}
             </Button>
             <Button
               type="primary"
@@ -117,7 +116,7 @@ export function SettingsPage() {
               disabled={!dirty}
               loading={saving}
             >
-              {t.saveButton}
+              {t("settings:saveButton")}
             </Button>
           </Flex>
         </div>

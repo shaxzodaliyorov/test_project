@@ -1,28 +1,44 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, Empty, Flex, Select, theme, Typography } from "antd";
 import { Column } from "@ant-design/plots";
-import { DASHBOARD_ACTIVITY_RANGE_OPTIONS } from "@/constants/dashboard-activity-range-options";
+import { DASHBOARD_ACTIVITY_RANGE_VALUES } from "@/constants/dashboard-activity-range-options";
 import type {
   DashboardActivityByRange,
   DashboardActivityRange,
 } from "@/types/dashboard";
-
-const RANGE_DESCRIPTION: Record<DashboardActivityRange, string> = {
-  week:
-    "Oxirgi 7 kun — kunlik hisobot demosi bilan bir xil generator: buyurtmalar soni.",
-  month:
-    "So‘nggi 12 oy — oylik hisobot jadvali bilan bir xil generator: daromad summasi.",
-  year:
-    "So‘nggi yillar — oylik qatorlar yig‘indisi (hisobot demosi bilan sinxron).",
-};
 
 type DashboardActivityChartProps = {
   activity: DashboardActivityByRange;
 };
 
 export function DashboardActivityChart({ activity }: DashboardActivityChartProps) {
+  const { t } = useTranslation("dashboard");
   const { token } = theme.useToken();
   const [range, setRange] = useState<DashboardActivityRange>("week");
+
+  const rangeDescription = useMemo(
+    () => ({
+      week: t("rangeWeekDesc"),
+      month: t("rangeMonthDesc"),
+      year: t("rangeYearDesc"),
+    }),
+    [t],
+  );
+
+  const rangeOptions = useMemo(
+    () =>
+      DASHBOARD_ACTIVITY_RANGE_VALUES.map((value) => ({
+        value,
+        label:
+          value === "week"
+            ? t("rangeWeek")
+            : value === "month"
+              ? t("rangeMonth")
+              : t("rangeYear"),
+      })),
+    [t],
+  );
 
   const data = activity[range];
 
@@ -46,21 +62,28 @@ export function DashboardActivityChart({ activity }: DashboardActivityChartProps
             borderBottom: `1px solid ${token.colorBorderSecondary}`,
           }}
         >
-          <Typography.Title level={5} style={{ margin: 0, marginBottom: token.marginSM }}>
-            Hisobotlar bo‘yicha
+          <Typography.Title
+            level={5}
+            style={{ margin: 0, marginBottom: token.marginSM }}
+          >
+            {t("activityTitle")}
           </Typography.Title>
           <Typography.Text
             type="secondary"
-            style={{ display: "block", marginBottom: token.marginSM, fontSize: token.fontSizeSM }}
+            style={{
+              display: "block",
+              marginBottom: token.marginSM,
+              fontSize: token.fontSizeSM,
+            }}
           >
-            {RANGE_DESCRIPTION[range]}
+            {rangeDescription[range]}
           </Typography.Text>
           <Select<DashboardActivityRange>
             size="middle"
             style={{ width: "100%", maxWidth: 320 }}
             value={range}
             onChange={setRange}
-            options={DASHBOARD_ACTIVITY_RANGE_OPTIONS}
+            options={rangeOptions}
           />
         </div>
 
@@ -96,7 +119,10 @@ export function DashboardActivityChart({ activity }: DashboardActivityChartProps
             />
           </div>
         ) : (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Grafik uchun ma’lumot yo‘q" />
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={t("emptyChart")}
+          />
         )}
       </Flex>
     </Card>

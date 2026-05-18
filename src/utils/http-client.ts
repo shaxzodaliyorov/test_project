@@ -1,9 +1,12 @@
 import { useAuthStore } from '@/hooks/auth-store'
+import { parseApiErrorKeyFromBody } from '@/utils/parse-api-error-body'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
 function errorMessageFromBody(text: string, fallback: string): string {
   if (!text) return fallback
+  const key = parseApiErrorKeyFromBody(text)
+  if (key) return key
   try {
     const json = JSON.parse(text) as { message?: unknown }
     if (typeof json?.message === 'string') return json.message

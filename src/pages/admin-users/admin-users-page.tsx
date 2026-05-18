@@ -18,18 +18,20 @@ import {
   Typography,
 } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PERMISSIONS } from "@/constants/permissions";
-import { ROLE_OPTIONS } from "@/constants/role-options";
+import { getRoleSelectOptions } from "@/constants/role-options";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCanAccess } from "@/hooks/use-can-access";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useUsers } from "@/hooks/use-users";
-import { AdminUserCreateModal } from "./admin-user-create-modal";
-import { AdminUserEditDrawer } from "./admin-user-edit-drawer";
 import type { UserFormValues } from "@/types/admin-user-form";
-import { fullNameFromForm, splitStoredName } from "@/utils/admin-user-name";
 import type { Role } from "@/types/role";
 import type { User } from "@/types/user";
+import { fullNameFromForm, splitStoredName } from "@/utils/admin-user-name";
+import { paginationShowTotal } from "@/utils/pagination-show-total";
+import { AdminUserCreateModal } from "./admin-user-create-modal";
+import { AdminUserEditDrawer } from "./admin-user-edit-drawer";
 
 function roleTagColor(role: Role): string | undefined {
   if (role === "admin") return "blue";
@@ -39,7 +41,15 @@ function roleTagColor(role: Role): string | undefined {
   return undefined;
 }
 
+const ROLE_LABEL_KEY: Record<Role, string> = {
+  admin: "users:roleAdmin",
+  payment: "users:rolePayment",
+  reports: "users:roleReports",
+  users: "users:roleUsers",
+};
+
 export function AdminUsersPage() {
+  const { t } = useTranslation(["users", "common"]);
   const canWrite = useCanAccess(PERMISSIONS.USERS_WRITE);
   const currentUserId = useAuthStore((s) => s.user?.id);
 
@@ -62,6 +72,9 @@ export function AdminUsersPage() {
   const [editUser, setEditUser] = useState<User | null>(null);
   const [editForm] = Form.useForm<UserFormValues>();
 
+  const roleOptions = useMemo(() => getRoleSelectOptions(t), [t]);
+  const showTotal = useMemo(() => paginationShowTotal(t), [t]);
+
   useEffect(() => {
     if (!editUser) return;
     const { firstName, lastName } = splitStoredName(editUser.name);
@@ -76,7 +89,7 @@ export function AdminUsersPage() {
 
   const openCreate = () => {
     createForm.resetFields();
-    const slugs = ROLE_OPTIONS.map((o) => o.value).filter((s) => s !== "admin");
+    const slugs = roleOptions.map((o) => o.value).filter((s) => s !== "admin");
     const defaultRoles: Role[] = slugs.includes("reports")
       ? ["reports"]
       : slugs.includes("payment")
@@ -128,34 +141,34 @@ export function AdminUsersPage() {
   const confirmDelete = useCallback(
     (row: User) => {
       Modal.confirm({
-        title: "Delete user?",
-        content: `This will permanently remove ${row.name} (${row.email}).`,
-        okText: "Delete",
+        title: t("users:deleteTitle"),
+        content: t("users:deleteBody", { name: row.name, email: row.email }),
+        okText: t("common:delete"),
         okButtonProps: { danger: true },
-        cancelText: "Cancel",
+        cancelText: t("common:cancel"),
         onOk: () => deleteMutation.mutateAsync(row.id),
       });
     },
-    [deleteMutation],
+    [deleteMutation, t],
   );
 
   const emptyDescription = useMemo(
     () =>
       debouncedSearch.trim()
-        ? "No users match your search."
-        : "No users to display.",
-    [debouncedSearch],
+        ? t("users:emptySearch")
+        : t("users:emptyDefault"),
+    [debouncedSearch, t],
   );
 
   const errorDescription =
     listQuery.error instanceof Error
       ? listQuery.error.message
-      : String(listQuery.error ?? "Unknown error");
+      : String(listQuery.error ?? t("common:unknownError"));
 
   const columns = useMemo<TableProps<User>["columns"]>(
     () => [
       {
-        title: "#",
+        title: t("users:columnIndex"),
         key: "index",
         width: 56,
         align: "center" as const,
@@ -163,29 +176,29 @@ export function AdminUsersPage() {
           (page - 1) * pageSize + index + 1,
       },
       {
-        title: "Name",
+        title: t("users:columnName"),
         dataIndex: "name",
         key: "name",
         ellipsis: true,
       },
       {
-        title: "Email",
+        title: t("users:columnEmail"),
         dataIndex: "email",
         key: "email",
         ellipsis: true,
       },
       {
-        title: "Roles",
+        title: t("users:columnRoles"),
         dataIndex: "roles",
         key: "roles",
         render: (roles: Role[]) => (
           <Space size={[4, 4]} wrap>
             {roles.length === 0 ? (
-              <Tag color="default">Rol yoq → 403</Tag>
+              <Tag color="default">{t("users:noRoleTag")}</Tag>
             ) : (
               roles.map((r) => (
                 <Tag key={r} color={roleTagColor(r)}>
-                  {r}
+                  {t(ROLE_LABEL_KEY[r])}
                 </Tag>
               ))
             )}
@@ -195,7 +208,7 @@ export function AdminUsersPage() {
       ...(canWrite
         ? [
             {
-              title: "Actions",
+              title: t("users:columnActions"),
               key: "actions",
               width: 160,
               fixed: "right" as const,
@@ -207,7 +220,7 @@ export function AdminUsersPage() {
                     icon={<EditOutlined />}
                     onClick={() => setEditUser(row)}
                   >
-                    Edit
+                    {t("users:edit")}
                   </Button>
                   <Button
                     type="link"
@@ -217,7 +230,7 @@ export function AdminUsersPage() {
                     icon={<DeleteOutlined />}
                     onClick={() => confirmDelete(row)}
                   >
-                    Delete
+                    {t("users:delete")}
                   </Button>
                 </Space>
               ),
@@ -225,7 +238,7 @@ export function AdminUsersPage() {
           ]
         : []),
     ],
-    [canWrite, currentUserId, confirmDelete, page],
+    [canWrite, confirmDelete, currentUserId, page, pageSize, t],
   );
 
   if (debouncedSearch !== prevDebouncedSearch) {
@@ -256,12 +269,12 @@ export function AdminUsersPage() {
           wrap
         >
           <Typography.Title level={2} style={{ margin: 0 }}>
-            Users
+            {t("users:title")}
           </Typography.Title>
           <Space wrap>
             <Input
               allowClear
-              placeholder="Search by name or email"
+              placeholder={t("users:searchPlaceholder")}
               prefix={<SearchOutlined style={{ color: "var(--text)" }} />}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
@@ -273,7 +286,7 @@ export function AdminUsersPage() {
                 icon={<PlusOutlined />}
                 onClick={openCreate}
               >
-                Add user
+                {t("users:addUser")}
               </Button>
             ) : null}
           </Space>
@@ -283,11 +296,11 @@ export function AdminUsersPage() {
           <Alert
             type="error"
             showIcon
-            message="Failed to load users"
+            message={t("users:loadError")}
             description={errorDescription}
             action={
               <Button size="small" onClick={() => void listQuery.refetch()}>
-                Retry
+                {t("common:retry")}
               </Button>
             }
           />
@@ -311,7 +324,7 @@ export function AdminUsersPage() {
             pageSize,
             total,
             showSizeChanger: false,
-            showTotal: (t, range) => `${range[0]}-${range[1]} of ${t}`,
+            showTotal,
             onChange: (p) => {
               setPage(p);
             },
@@ -322,7 +335,7 @@ export function AdminUsersPage() {
       <AdminUserCreateModal
         open={createOpen}
         form={createForm}
-        roleOptions={ROLE_OPTIONS}
+        roleOptions={roleOptions}
         confirmLoading={createMutation.isPending}
         onCancel={() => {
           setCreateOpen(false);
@@ -334,7 +347,7 @@ export function AdminUsersPage() {
       <AdminUserEditDrawer
         user={editUser}
         form={editForm}
-        roleOptions={ROLE_OPTIONS}
+        roleOptions={roleOptions}
         loading={updateMutation.isPending}
         onClose={() => {
           setEditUser(null);

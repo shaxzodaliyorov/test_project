@@ -1,16 +1,17 @@
-import { Form, Modal } from 'antd'
-import type { FormInstance } from 'antd/es/form'
-import { AdminUserFormFields } from './admin-user-form-fields'
-import type { UserFormValues } from '@/types/admin-user-form'
+import { Form, Modal } from "antd";
+import type { FormInstance } from "antd/es/form";
+import { useTranslation } from "react-i18next";
+import { AdminUserFormFields } from "./admin-user-form-fields";
+import type { UserFormValues } from "@/types/admin-user-form";
 
 export type AdminUserCreateModalProps = {
-  open: boolean
-  form: FormInstance<UserFormValues>
-  roleOptions: { label: string; value: string }[]
-  confirmLoading: boolean
-  onCancel: () => void
-  onSubmit: () => void
-}
+  open: boolean;
+  form: FormInstance<UserFormValues>;
+  roleOptions: { label: string; value: string }[];
+  confirmLoading: boolean;
+  onCancel: () => void;
+  onSubmit: () => void;
+};
 
 export function AdminUserCreateModal({
   open,
@@ -20,12 +21,14 @@ export function AdminUserCreateModal({
   onCancel,
   onSubmit,
 }: AdminUserCreateModalProps) {
+  const { t } = useTranslation("users");
+
   return (
     <Modal
-      title="New user"
+      title={t("newUserTitle")}
       open={open}
       onCancel={onCancel}
-      okText="Create"
+      okText={t("create")}
       confirmLoading={confirmLoading}
       onOk={() => void onSubmit()}
       destroyOnHidden
@@ -35,5 +38,5 @@ export function AdminUserCreateModal({
         <AdminUserFormFields mode="create" roleOptions={roleOptions} />
       </Form>
     </Modal>
-  )
+  );
 }

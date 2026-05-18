@@ -1,17 +1,18 @@
-import { Button, Drawer, Form, Space } from 'antd'
-import type { FormInstance } from 'antd/es/form'
-import { AdminUserFormFields } from './admin-user-form-fields'
-import type { UserFormValues } from '@/types/admin-user-form'
-import type { User } from '@/types/user'
+import { Button, Drawer, Form, Space } from "antd";
+import type { FormInstance } from "antd/es/form";
+import { useTranslation } from "react-i18next";
+import { AdminUserFormFields } from "./admin-user-form-fields";
+import type { UserFormValues } from "@/types/admin-user-form";
+import type { User } from "@/types/user";
 
 export type AdminUserEditDrawerProps = {
-  user: User | null
-  form: FormInstance<UserFormValues>
-  roleOptions: { label: string; value: string }[]
-  loading: boolean
-  onClose: () => void
-  onSubmit: () => void
-}
+  user: User | null;
+  form: FormInstance<UserFormValues>;
+  roleOptions: { label: string; value: string }[];
+  loading: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+};
 
 export function AdminUserEditDrawer({
   user,
@@ -21,18 +22,20 @@ export function AdminUserEditDrawer({
   onClose,
   onSubmit,
 }: AdminUserEditDrawerProps) {
+  const { t } = useTranslation("users");
+
   return (
     <Drawer
-      title="Edit user"
+      title={t("editUserTitle")}
       width={420}
       open={Boolean(user)}
       onClose={onClose}
       destroyOnHidden
       extra={
         <Space>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{t("cancelDrawer")}</Button>
           <Button type="primary" loading={loading} onClick={() => void onSubmit()}>
-            Save
+            {t("save")}
           </Button>
         </Space>
       }
@@ -41,5 +44,5 @@ export function AdminUserEditDrawer({
         <AdminUserFormFields mode="edit" roleOptions={roleOptions} />
       </Form>
     </Drawer>
-  )
+  );
 }

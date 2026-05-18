@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import type { DefaultBodyType, HttpResponseResolver, PathParams } from 'msw'
+import { API_ERROR_KEYS } from '@/constants/api-error-keys'
 import { VALID_ROLE_SLUGS } from '@/constants/role-options'
 import { PERMISSIONS } from '@/constants/permissions'
 import type { Role } from '@/types/role'
@@ -39,15 +40,15 @@ async function updateUserFromRequest(
 ): Promise<Response> {
   const user = getUserFromAuthHeader(request.headers.get('authorization'))
   if (!user) {
-    return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_UNAUTHORIZED }, { status: 401 })
   }
   if (!user.permissions.includes(PERMISSIONS.USERS_WRITE)) {
-    return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+    return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_FORBIDDEN }, { status: 403 })
   }
   const id = String(params.id)
   const existing = findRowById(id)
   if (!existing) {
-    return HttpResponse.json({ message: 'Not found' }, { status: 404 })
+    return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_NOT_FOUND }, { status: 404 })
   }
   const body = (await request.json()) as {
     email?: string
@@ -66,7 +67,7 @@ async function updateUserFromRequest(
     if (next && next.toLowerCase() !== existing.email.toLowerCase()) {
       if (findRowByEmail(next)) {
         return HttpResponse.json(
-          { message: 'Email already in use' },
+          { errorKey: API_ERROR_KEYS.USERS_EMAIL_IN_USE },
           { status: 409 },
         )
       }
@@ -80,10 +81,7 @@ async function updateUserFromRequest(
   if (typeof body.password === 'string' && body.password.length > 0) {
     if (!passwordMeetsPolicy(body.password)) {
       return HttpResponse.json(
-        {
-          message:
-            'Password must be at least 8 characters with one uppercase and one special character',
-        },
+        { errorKey: API_ERROR_KEYS.USERS_PASSWORD_POLICY },
         { status: 400 },
       )
     }
@@ -92,7 +90,7 @@ async function updateUserFromRequest(
   if (body.roles !== undefined) {
     if (!isRoleArray(body.roles)) {
       return HttpResponse.json(
-        { message: 'roles must be a non-empty array of admin|user' },
+        { errorKey: API_ERROR_KEYS.USERS_INVALID_ROLES_PATCH },
         { status: 400 },
       )
     }
@@ -119,10 +117,10 @@ export const usersHandlers = [
     await mswLatency()
     const user = getUserFromAuthHeader(request.headers.get('authorization'))
     if (!user) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_UNAUTHORIZED }, { status: 401 })
     }
     if (!user.permissions.includes(PERMISSIONS.USERS_READ)) {
-      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_FORBIDDEN }, { status: 403 })
     }
     const url = new URL(request.url)
     const page = Math.max(1, parseIntParam(url.searchParams.get('page'), 1))
@@ -139,10 +137,10 @@ export const usersHandlers = [
     await mswLatency()
     const user = getUserFromAuthHeader(request.headers.get('authorization'))
     if (!user) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_UNAUTHORIZED }, { status: 401 })
     }
     if (!user.permissions.includes(PERMISSIONS.USERS_WRITE)) {
-      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_FORBIDDEN }, { status: 403 })
     }
     const body = (await request.json()) as {
       email?: string
@@ -156,34 +154,31 @@ export const usersHandlers = [
       typeof body.password === 'string' ? body.password : undefined
     if (!email || !name || !password) {
       return HttpResponse.json(
-        { message: 'email, name, and password are required' },
+        { errorKey: API_ERROR_KEYS.USERS_CREATE_MISSING_FIELDS },
         { status: 400 },
       )
     }
     if (!isRoleArray(body.roles)) {
       return HttpResponse.json(
-        { message: 'roles must be a non-empty array of valid role slugs' },
+        { errorKey: API_ERROR_KEYS.USERS_INVALID_ROLES_CREATE },
         { status: 400 },
       )
     }
     if (body.roles.includes('admin')) {
       return HttpResponse.json(
-        { message: 'Admin role cannot be assigned to new users' },
+        { errorKey: API_ERROR_KEYS.USERS_ADMIN_FORBIDDEN_ON_CREATE },
         { status: 400 },
       )
     }
     if (!passwordMeetsPolicy(password)) {
       return HttpResponse.json(
-        {
-          message:
-            'Password must be at least 8 characters with one uppercase and one special character',
-        },
+        { errorKey: API_ERROR_KEYS.USERS_PASSWORD_POLICY },
         { status: 400 },
       )
     }
     if (findRowByEmail(email)) {
       return HttpResponse.json(
-        { message: 'Email already in use' },
+        { errorKey: API_ERROR_KEYS.USERS_EMAIL_IN_USE },
         { status: 409 },
       )
     }
@@ -206,20 +201,20 @@ export const usersHandlers = [
     await mswLatency()
     const user = getUserFromAuthHeader(request.headers.get('authorization'))
     if (!user) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_UNAUTHORIZED }, { status: 401 })
     }
     if (!user.permissions.includes(PERMISSIONS.USERS_WRITE)) {
-      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_FORBIDDEN }, { status: 403 })
     }
     const id = String(params.id)
     if (id === user.id) {
       return HttpResponse.json(
-        { message: 'You cannot delete your own account' },
+        { errorKey: API_ERROR_KEYS.USERS_CANNOT_DELETE_SELF },
         { status: 403 },
       )
     }
     if (!findRowById(id)) {
-      return HttpResponse.json({ message: 'Not found' }, { status: 404 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_NOT_FOUND }, { status: 404 })
     }
     removeRow(id)
     return new HttpResponse(null, { status: 204 })

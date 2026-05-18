@@ -20,6 +20,7 @@ import {
   Typography,
 } from "antd";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "@/constants/permissions";
 import { useAuthStore } from "@/hooks/auth-store";
@@ -80,6 +81,7 @@ function TaskSidebarMark({ size = 36 }: { size?: number }) {
 }
 
 export function MainLayout() {
+  const { t } = useTranslation(["nav", "common"]);
   const navigate = useNavigate();
   const location = useLocation();
   const screens = Grid.useBreakpoint();
@@ -97,7 +99,7 @@ export function MainLayout() {
             {
               key: PATHS.DASHBOARD,
               icon: <DashboardOutlined />,
-              label: "Dashboard",
+              label: t("nav:dashboard"),
             },
           ]
         : []),
@@ -106,7 +108,7 @@ export function MainLayout() {
             {
               key: PATHS.USERS,
               icon: <TeamOutlined />,
-              label: "Users",
+              label: t("nav:users"),
             },
           ]
         : []),
@@ -115,7 +117,7 @@ export function MainLayout() {
             {
               key: PATHS.PAYMENTS,
               icon: <CreditCardOutlined />,
-              label: "Payments",
+              label: t("nav:payments"),
             },
           ]
         : []),
@@ -124,17 +126,17 @@ export function MainLayout() {
             {
               key: PATHS.REPORTS,
               icon: <BarChartOutlined />,
-              label: "Reports",
+              label: t("nav:reports"),
             },
           ]
         : []),
       {
         key: PATHS.SETTINGS,
         icon: <SettingOutlined />,
-        label: "Settings",
+        label: t("nav:settings"),
       },
     ],
-    [canDashboard, canUsers, canPayments, canReports],
+    [canDashboard, canUsers, canPayments, canReports, t],
   );
 
   const userMenuItems: MenuProps["items"] = useMemo(
@@ -142,11 +144,11 @@ export function MainLayout() {
       {
         key: "logout",
         icon: <LogoutOutlined />,
-        label: "Logout",
+        label: t("nav:logout"),
         danger: true,
       },
     ],
-    [],
+    [t],
   );
 
   const contentStyle = useMemo(() => {
@@ -172,7 +174,7 @@ export function MainLayout() {
         <div style={mainLayoutSiderInner}>
           <Link
             to={PATHS.DASHBOARD}
-            aria-label="TASK — Dashboard"
+            aria-label={t("nav:taskAria")}
             style={{
               ...mainLayoutSiderBrand,
               display: "block",
@@ -201,7 +203,7 @@ export function MainLayout() {
       <Layout style={mainLayoutInner}>
         <Header style={mainLayoutHeaderBar}>
           <Typography.Title level={4} style={mainLayoutHeaderBrand}>
-            TEST PROJECT
+            {t("nav:headerBrand")}
           </Typography.Title>
           <div style={mainLayoutHeaderRight}>
             <Dropdown
@@ -210,10 +212,10 @@ export function MainLayout() {
                 onClick: ({ key }) => {
                   if (key === "logout") {
                     Modal.confirm({
-                      title: "Log out?",
-                      content: "Are you sure you want to log out?",
-                      okText: "OK",
-                      cancelText: "Cancel",
+                      title: t("nav:logoutConfirmTitle"),
+                      content: t("nav:logoutConfirmBody"),
+                      okText: t("common:ok"),
+                      cancelText: t("common:cancel"),
                       onOk: () => {
                         logout();
                         void navigate(PATHS.LOGIN);

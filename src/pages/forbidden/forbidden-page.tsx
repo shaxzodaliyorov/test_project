@@ -1,19 +1,21 @@
-import { Button, Result } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import { PATHS } from '@/routes/paths'
+import { Button, Result } from "antd";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "@/routes/paths";
 
 export function ForbiddenPage() {
-  const navigate = useNavigate()
+  const { t } = useTranslation("common");
+  const navigate = useNavigate();
   return (
     <Result
       status="403"
-      title="403"
-      subTitle="You do not have permission to view this page."
+      title={t("forbiddenTitle")}
+      subTitle={t("forbiddenSubtitle")}
       extra={
         <Button type="primary" onClick={() => void navigate(PATHS.DASHBOARD)}>
-          Back to dashboard
+          {t("backToDashboard")}
         </Button>
       }
     />
-  )
+  );
 }

@@ -1,5 +1,7 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Button, Select, Space, Tabs, Typography } from "antd";
-import { REPORTS_RANGE_SELECT_OPTIONS } from "@/constants/reports-range-options";
+import { REPORTS_RANGE_VALUES } from "@/constants/reports-range-options";
 import { useReportsPage } from "@/hooks/use-reports-page";
 import { ReportsCategoriesTab } from "./reports-categories-tab";
 import { ReportsDailyTab } from "./reports-daily-tab";
@@ -9,78 +11,94 @@ import { ReportsMonthlyTab } from "./reports-monthly-tab";
 import { ReportsOverviewChart } from "./reports-overview-chart";
 import { ReportsSummaryTab } from "./reports-summary-tab";
 
+const RANGE_LABEL_NS: Record<(typeof REPORTS_RANGE_VALUES)[number], string> = {
+  default: "reports:rangeDefault",
+  "12m": "reports:range12m",
+  "30d": "reports:range30d",
+};
+
 export function ReportsPage() {
+  const { t } = useTranslation(["reports", "common"]);
   const r = useReportsPage();
 
+  const rangeOptions = useMemo(
+    () =>
+      REPORTS_RANGE_VALUES.map((value) => ({
+        value,
+        label: t(RANGE_LABEL_NS[value]),
+      })),
+    [t],
+  );
+
   const tabItems = [
-    {
-      key: "summary",
-      label: "Xulosa",
-      children: (
-        <ReportsSummaryTab overview={r.overview} spinning={r.summarySpinning} />
-      ),
-    },
-    {
-      key: "monthly",
-      label: "Oylik",
-      children: (
-        <ReportsMonthlyTab
-          filter={r.monthly}
-          onFilterChange={r.setMonthly}
-          data={r.monthlyData}
-          loading={r.monthlyLoading}
-        />
-      ),
-    },
-    {
-      key: "daily",
-      label: "Kunlik",
-      children: (
-        <ReportsDailyTab
-          filter={r.daily}
-          onFilterChange={r.setDaily}
-          data={r.dailyData}
-          loading={r.dailyLoading}
-        />
-      ),
-    },
-    {
-      key: "categories",
-      label: "Kategoriyalar",
-      children: (
-        <ReportsCategoriesTab
-          filter={r.categories}
-          onFilterChange={r.setCategories}
-          data={r.categoriesData}
-          loading={r.categoriesLoading}
-        />
-      ),
-    },
-    {
-      key: "merchants",
-      label: "Merchantlar",
-      children: (
-        <ReportsMerchantsTab
-          filter={r.merchants}
-          onFilterChange={r.setMerchants}
-          data={r.merchantsData}
-          loading={r.merchantsLoading}
-        />
-      ),
-    },
-    {
-      key: "hourly",
-      label: "Soatlik",
-      children: (
-        <ReportsHourlyTab
-          filter={r.hourly}
-          onFilterChange={r.setHourly}
-          data={r.hourlyData}
-          loading={r.hourlyLoading}
-        />
-      ),
-    },
-  ];
+      {
+        key: "summary",
+        label: t("reports:tabSummary"),
+        children: (
+          <ReportsSummaryTab overview={r.overview} spinning={r.summarySpinning} />
+        ),
+      },
+      {
+        key: "monthly",
+        label: t("reports:tabMonthly"),
+        children: (
+          <ReportsMonthlyTab
+            filter={r.monthly}
+            onFilterChange={r.setMonthly}
+            data={r.monthlyData}
+            loading={r.monthlyLoading}
+          />
+        ),
+      },
+      {
+        key: "daily",
+        label: t("reports:tabDaily"),
+        children: (
+          <ReportsDailyTab
+            filter={r.daily}
+            onFilterChange={r.setDaily}
+            data={r.dailyData}
+            loading={r.dailyLoading}
+          />
+        ),
+      },
+      {
+        key: "categories",
+        label: t("reports:tabCategories"),
+        children: (
+          <ReportsCategoriesTab
+            filter={r.categories}
+            onFilterChange={r.setCategories}
+            data={r.categoriesData}
+            loading={r.categoriesLoading}
+          />
+        ),
+      },
+      {
+        key: "merchants",
+        label: t("reports:tabMerchants"),
+        children: (
+          <ReportsMerchantsTab
+            filter={r.merchants}
+            onFilterChange={r.setMerchants}
+            data={r.merchantsData}
+            loading={r.merchantsLoading}
+          />
+        ),
+      },
+      {
+        key: "hourly",
+        label: t("reports:tabHourly"),
+        children: (
+          <ReportsHourlyTab
+            filter={r.hourly}
+            onFilterChange={r.setHourly}
+            data={r.hourlyData}
+            loading={r.hourlyLoading}
+          />
+        ),
+      },
+    ];
 
   return (
     <Space
@@ -89,7 +107,7 @@ export function ReportsPage() {
       style={{ width: "100%", display: "flex" }}
     >
       <Typography.Title level={2} style={{ margin: 0 }}>
-        Hisobotlar
+        {t("reports:title")}
       </Typography.Title>
 
       <Space
@@ -97,12 +115,14 @@ export function ReportsPage() {
         align="center"
         style={{ width: "100%", justifyContent: "flex-end" }}
       >
-        <Typography.Text type="secondary">Davr: </Typography.Text>
+        <Typography.Text type="secondary">
+          {t("common:period")}:{" "}
+        </Typography.Text>
         <Select
           style={{ minWidth: 200 }}
           value={r.range || "default"}
           onChange={r.onRangeChange}
-          options={REPORTS_RANGE_SELECT_OPTIONS}
+          options={rangeOptions}
         />
       </Space>
 
@@ -112,11 +132,11 @@ export function ReportsPage() {
         <Alert
           type="error"
           showIcon
-          message="Ma'lumot yuklanmadi"
+          message={t("reports:loadError")}
           description={r.errorDescription}
           action={
             <Button size="small" onClick={() => void r.refetchAll()}>
-              Qayta urinish
+              {t("common:retry")}
             </Button>
           }
         />

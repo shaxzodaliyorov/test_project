@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw'
+import { API_ERROR_KEYS } from '@/constants/api-error-keys'
 import type {
   ReportCategoryRow,
   ReportDailyPoint,
@@ -291,10 +292,10 @@ export const reportsHandlers = [
     await mswLatency()
     const user = getUserFromAuthHeader(request.headers.get('authorization'))
     if (!user) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_UNAUTHORIZED }, { status: 401 })
     }
     if (!user.permissions.includes(PERMISSIONS.REPORTS_READ)) {
-      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+      return HttpResponse.json({ errorKey: API_ERROR_KEYS.HTTP_FORBIDDEN }, { status: 403 })
     }
 
     const url = new URL(request.url)
@@ -315,7 +316,7 @@ export const reportsHandlers = [
       const sectionRaw = url.searchParams.get('section')
       if (!isTableSection(sectionRaw)) {
         return HttpResponse.json(
-          { message: 'Invalid or missing section' },
+          { errorKey: API_ERROR_KEYS.REPORTS_INVALID_SECTION },
           { status: 400 },
         )
       }
@@ -368,6 +369,6 @@ export const reportsHandlers = [
       return HttpResponse.json(payload)
     }
 
-    return HttpResponse.json({ message: 'Invalid part' }, { status: 400 })
+    return HttpResponse.json({ errorKey: API_ERROR_KEYS.REPORTS_INVALID_PART }, { status: 400 })
   }),
 ]
