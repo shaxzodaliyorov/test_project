@@ -12,7 +12,7 @@ type UsersListResponse = {
   pageSize: number
 }
 
-export type UseUsersArgs = {
+type UseUsersArgs = {
   page: number
   pageSize: number
   search: string

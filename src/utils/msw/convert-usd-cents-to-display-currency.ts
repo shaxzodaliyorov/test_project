@@ -1,7 +1,7 @@
 import type { CurrencyCode } from '@/constants/currencies'
 
-export const USD_TO_UZS_MOCK = 12_650
-export const USD_TO_RUB_MOCK = 92
+const USD_TO_UZS_MOCK = 12_650
+const USD_TO_RUB_MOCK = 92
 
 export function convertUsdCentsToDisplayCurrency(
   usdCents: number,

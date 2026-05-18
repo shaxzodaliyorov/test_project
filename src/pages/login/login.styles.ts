@@ -92,7 +92,3 @@ export const loginCertIcon: CSSProperties = {
 export const loginDemoStrong: CSSProperties = {
   color: "var(--text-h)",
 };
-
-export const loginDemoPermissionNote: CSSProperties = {
-  fontSize: 13,
-};

@@ -2,7 +2,7 @@ import type { ReportsOverviewResponse } from "@/types/reports";
 
 export const REPORT_CHART_SERIES_KEY = (index: number) => `s${index}`;
 
-export type ReportChartRow = {
+type ReportChartRow = {
   name: string;
 } & Record<string, string | number>;
 

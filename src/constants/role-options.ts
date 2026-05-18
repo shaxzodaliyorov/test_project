@@ -1,7 +1,7 @@
 import type { TFunction } from 'i18next'
 import type { Role } from '@/types/role'
 
-export const ROLE_ORDER: readonly Role[] = [
+const ROLE_ORDER: readonly Role[] = [
   'admin',
   'payment',
   'reports',
@@ -17,7 +17,7 @@ const ROLE_LABEL_KEY: Record<Role, string> = {
   users: 'users:roleUsers',
 }
 
-export function getRoleSelectOptions(
+function getRoleSelectOptions(
   t: TFunction,
 ): { label: string; value: Role }[] {
   return ROLE_ORDER.map((value) => ({

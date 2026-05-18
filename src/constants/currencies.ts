@@ -13,9 +13,3 @@ export const CURRENCIES: readonly CurrencyOption[] = [
 ] as const
 
 export const DEFAULT_CURRENCY_CODE: CurrencyCode = 'UZS'
-
-export function getCurrencyOption(
-  code: CurrencyCode,
-): CurrencyOption | undefined {
-  return CURRENCIES.find((c) => c.code === code)
-}

@@ -7,7 +7,7 @@ import { DEFAULT_UI_LOCALE } from '@/constants/ui-languages'
 import type { Role } from '@/types/role'
 import type { User } from '@/types/user'
 
-export type DemoRow = {
+type DemoRow = {
   id: string
   email: string
   name: string

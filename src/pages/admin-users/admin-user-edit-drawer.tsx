@@ -5,7 +5,7 @@ import { AdminUserFormFields } from "./admin-user-form-fields";
 import type { UserFormValues } from "@/types/admin-user-form";
 import type { User } from "@/types/user";
 
-export type AdminUserEditDrawerProps = {
+type AdminUserEditDrawerProps = {
   user: User | null;
   form: FormInstance<UserFormValues>;
   roleOptions: { label: string; value: string }[];

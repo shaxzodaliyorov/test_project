@@ -12,7 +12,7 @@ import {
   type PagedFilter,
 } from "@/constants/reports-paged-filter";
 
-export type ReportsRangeParam = "" | "30d" | "12m";
+type ReportsRangeParam = "" | "30d" | "12m";
 
 function reportsOverviewUrl(range: ReportsRangeParam): string {
   const p = new URLSearchParams();

@@ -47,7 +47,7 @@ function persistResolvedTheme(mode: ThemeMode): void {
   }
 }
 
-export function applyThemeToDocument(mode: ThemeMode): void {
+function applyThemeToDocument(mode: ThemeMode): void {
   if (typeof document === 'undefined') return
   document.documentElement.dataset.theme = mode
   document.documentElement.style.setProperty('color-scheme', mode)

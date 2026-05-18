@@ -5,9 +5,9 @@ import { ru } from "@/locales/ru";
 import { uz } from "@/locales/uz";
 import { resolveInitialUiLocale } from "@/utils/resolve-initial-ui-locale";
 
-export const defaultNS = "common" as const;
+const defaultNS = "common" as const;
 
-export const namespaces = [
+const namespaces = [
   "common",
   "nav",
   "settings",

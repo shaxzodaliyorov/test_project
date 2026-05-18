@@ -5,7 +5,7 @@ import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { AdminUserFormFields } from "./admin-user-form-fields";
 import type { UserFormValues } from "@/types/admin-user-form";
 
-export type AdminUserCreateModalProps = {
+type AdminUserCreateModalProps = {
   open: boolean;
   form: FormInstance<UserFormValues>;
   roleOptions: { label: string; value: string }[];

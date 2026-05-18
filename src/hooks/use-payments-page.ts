@@ -24,7 +24,7 @@ function paymentsListUrl(
   return `/api/payments?${p.toString()}`
 }
 
-export type PaymentsStatusFilter = PaymentStatus | ''
+type PaymentsStatusFilter = PaymentStatus | ''
 
 export function usePaymentsPage() {
   const { t } = useTranslation('common')

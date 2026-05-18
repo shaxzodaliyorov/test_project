@@ -62,21 +62,6 @@ export const mainLayoutSiderBrandTitle: CSSProperties = {
   lineHeight: 1.1,
 }
 
-export const mainLayoutSiderBrandSubtitle: CSSProperties = {
-  margin: '4px 0 0',
-  fontSize: 12,
-  color: 'var(--text)',
-  lineHeight: 1.2,
-}
-
-export const mainLayoutSiderBrandAccent: CSSProperties = {
-  height: 2,
-  marginTop: 8,
-  borderRadius: 2,
-  background: 'var(--accent)',
-  opacity: 0.85,
-}
-
 export const mainLayoutMenu: CSSProperties = {
   flex: 1,
   border: 'none',
@@ -205,14 +190,6 @@ export const mainLayoutHeaderBrandCompact: CSSProperties = {
   color: 'var(--text-h)',
   letterSpacing: '0.06em',
   lineHeight: 1.1,
-}
-
-export const mainLayoutUserTriggerCompact: CSSProperties = {
-  ...mainLayoutUserTrigger,
-  paddingInline: 6,
-  minWidth: 40,
-  maxWidth: 40,
-  justifyContent: 'center',
 }
 
 export const mainLayoutContentWithBottomNav: CSSProperties = {

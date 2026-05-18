@@ -1,6 +1,6 @@
 import type { Role } from '@/types/role'
 
-export type DashboardProfile = {
+type DashboardProfile = {
   id: string
   email: string
   name: string
@@ -8,7 +8,7 @@ export type DashboardProfile = {
   permissionCount: number
 }
 
-export type DashboardStats = {
+type DashboardStats = {
   demoUsersTotal: number
   demoPaymentRecords?: number
   demoReportCategories?: number
