@@ -118,3 +118,29 @@ export const settingsSwatch: CSSProperties = {
   padding: 0,
   flexShrink: 0,
 };
+
+export const settingsFieldsStack: CSSProperties = {
+  width: "100%",
+};
+
+export function settingsColorSwatchesSelected(
+  background: string,
+): CSSProperties {
+  return {
+    ...settingsSwatch,
+    background,
+    boxShadow: "0 0 0 2px var(--bg), 0 0 0 4px var(--accent)",
+  };
+}
+
+export function settingsFontOptionLabel(fontFamily: string): CSSProperties {
+  return { fontFamily };
+}
+
+export function settingsPreviewStack(compact: boolean): CSSProperties {
+  return { width: compact ? "100%" : undefined };
+}
+
+export function settingsPreviewTitle(compact: boolean): CSSProperties {
+  return { margin: 0, fontSize: compact ? 18 : undefined };
+}

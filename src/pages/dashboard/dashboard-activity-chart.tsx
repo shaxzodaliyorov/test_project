@@ -7,6 +7,16 @@ import type {
   DashboardActivityByRange,
   DashboardActivityRange,
 } from "@/types/dashboard";
+import {
+  dashboardActivityChartBody,
+  dashboardActivityChartDescription,
+  dashboardActivityChartFlex,
+  dashboardActivityChartHeader,
+  dashboardActivityChartPlot,
+  dashboardActivityChartSelect,
+  dashboardActivityChartTitle,
+  dashboardActivityChartWidth,
+} from "./dashboard-activity-chart.styles";
 
 type DashboardActivityChartProps = {
   activity: DashboardActivityByRange;
@@ -52,44 +62,26 @@ export function DashboardActivityChart({
     <Card
       size="small"
       variant="outlined"
-      style={{ width: '100%' }}
-      styles={{
-        body: {
-          padding: compact ? token.paddingSM : token.paddingMD,
-          background: token.colorFillQuaternary,
-        },
-      }}
+      style={dashboardActivityChartWidth}
+      styles={{ body: dashboardActivityChartBody(token, compact) }}
     >
-      <Flex vertical gap={token.marginMD} style={{ width: "100%" }}>
-        <div
-          style={{
-            paddingBottom: token.paddingSM,
-            borderBottom: `1px solid ${token.colorBorderSecondary}`,
-          }}
-        >
+      <Flex vertical gap={token.marginMD} style={dashboardActivityChartFlex}>
+        <div style={dashboardActivityChartHeader(token)}>
           <Typography.Title
             level={5}
-            style={{
-              margin: 0,
-              marginBottom: token.marginSM,
-              fontSize: compact ? 14 : undefined,
-            }}
+            style={dashboardActivityChartTitle(token, compact)}
           >
             {t("activityTitle")}
           </Typography.Title>
           <Typography.Text
             type="secondary"
-            style={{
-              display: "block",
-              marginBottom: token.marginSM,
-              fontSize: compact ? 11 : token.fontSizeSM,
-            }}
+            style={dashboardActivityChartDescription(token, compact)}
           >
             {rangeDescription[range]}
           </Typography.Text>
           <Select<DashboardActivityRange>
             size={compact ? "small" : "middle"}
-            style={{ width: "100%", maxWidth: compact ? undefined : 320 }}
+            style={dashboardActivityChartSelect(compact)}
             value={range}
             onChange={setRange}
             options={rangeOptions}
@@ -97,13 +89,7 @@ export function DashboardActivityChart({
         </div>
 
         {data.length > 0 ? (
-          <div
-            style={{
-              width: "100%",
-              minWidth: 0,
-              height: compact ? 220 : 300,
-            }}
-          >
+          <div style={dashboardActivityChartPlot(compact)}>
             <Column
               key={range}
               data={data}

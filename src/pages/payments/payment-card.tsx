@@ -3,6 +3,24 @@ import type { ReactNode } from 'react'
 import { Card, Tag, Typography, theme } from 'antd'
 import type { Payment, PaymentStatus } from '@/types/payment'
 import { formatCurrencyMinorUnits } from '@/utils/format-currency'
+import {
+  paymentCardBody,
+  paymentCardEmail,
+  paymentCardFieldGrid,
+  paymentCardFieldLabel,
+  paymentCardFieldRoot,
+  paymentCardFieldValue,
+  paymentCardHeaderAside,
+  paymentCardHeaderMain,
+  paymentCardHeaderRow,
+  paymentCardIndex,
+  paymentCardMerchantTitle,
+  paymentCardStack,
+  paymentCardSubtitle,
+  paymentCardTag,
+  paymentCardTitle,
+  paymentCardWidth,
+} from './payment-card.styles'
 
 const STATUS_TAG_COLOR: Record<PaymentStatus, string> = {
   pending: 'gold',
@@ -25,24 +43,11 @@ function CardField({
   value: ReactNode
 }) {
   return (
-    <div style={{ minWidth: 0 }}>
-      <Typography.Text
-        type="secondary"
-        style={{ fontSize: 10, display: 'block', marginBottom: 2 }}
-      >
+    <div style={paymentCardFieldRoot}>
+      <Typography.Text type="secondary" style={paymentCardFieldLabel}>
         {label}
       </Typography.Text>
-      <Typography.Text
-        style={{
-          fontSize: 11,
-          lineHeight: 1.35,
-          display: 'block',
-          wordBreak: 'break-word',
-          color: 'var(--text-h)',
-        }}
-      >
-        {value}
-      </Typography.Text>
+      <Typography.Text style={paymentCardFieldValue}>{value}</Typography.Text>
     </div>
   )
 }
@@ -69,95 +74,37 @@ export function PaymentCard({
     <Card
       size="small"
       variant="outlined"
-      style={{ width: '100%' }}
-      styles={{
-        body: {
-          padding: token.paddingSM,
-          background: token.colorFillQuaternary,
-        },
-      }}
+      style={paymentCardWidth}
+      styles={{ body: paymentCardBody(token) }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: token.marginXS,
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: 8,
-          }}
-        >
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <Typography.Text
-              strong
-              style={{
-                display: 'block',
-                fontSize: 14,
-                lineHeight: 1.3,
-                color: 'var(--text-h)',
-              }}
-            >
+      <div style={paymentCardStack(token)}>
+        <div style={paymentCardHeaderRow}>
+          <div style={paymentCardHeaderMain}>
+            <Typography.Text strong style={paymentCardTitle}>
               {amount}
             </Typography.Text>
-            <Typography.Text
-              type="secondary"
-              style={{
-                display: 'block',
-                fontSize: 11,
-                lineHeight: 1.35,
-                marginTop: 2,
-              }}
-            >
+            <Typography.Text type="secondary" style={paymentCardSubtitle}>
               {payment.id}
             </Typography.Text>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-end',
-              gap: 4,
-              flexShrink: 0,
-            }}
-          >
-            <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+          <div style={paymentCardHeaderAside}>
+            <Typography.Text type="secondary" style={paymentCardIndex}>
               #{index}
             </Typography.Text>
-            <Tag
-              color={STATUS_TAG_COLOR[payment.status]}
-              style={{ margin: 0, fontSize: 11 }}
-            >
+            <Tag color={STATUS_TAG_COLOR[payment.status]} style={paymentCardTag}>
               {statusLabel}
             </Tag>
           </div>
         </div>
 
-        <Typography.Text
-          strong
-          style={{ fontSize: 13, lineHeight: 1.3, color: 'var(--text-h)' }}
-        >
+        <Typography.Text strong style={paymentCardMerchantTitle}>
           {payment.merchantName}
         </Typography.Text>
-        <Typography.Text
-          type="secondary"
-          style={{ fontSize: 11, wordBreak: 'break-word' }}
-        >
+        <Typography.Text type="secondary" style={paymentCardEmail}>
           {payment.customerEmail}
         </Typography.Text>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-            gap: 10,
-            marginTop: 4,
-          }}
-        >
+        <div style={paymentCardFieldGrid}>
           <CardField label={t('payments:colMethod')} value={payment.method} />
           <CardField label={t('payments:colCategory')} value={payment.category} />
           <CardField label={t('payments:colFee')} value={fee} />

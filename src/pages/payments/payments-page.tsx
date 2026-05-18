@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -20,31 +19,24 @@ import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { usePaymentsPage } from "@/hooks/use-payments-page";
 import { formatCurrencyMinorUnits } from "@/utils/format-currency";
 import { PaymentCard } from "./payment-card";
+import {
+  paymentsCardList,
+  paymentsFullWidth,
+  paymentsPageStack,
+  paymentsPageStackCompact,
+  paymentsPaginationCompact,
+  paymentsSearchDesktop,
+  paymentsSelectDesktop,
+  paymentsSpaceFullWidth,
+  paymentsTitle,
+  paymentsTitleCompact,
+  paymentsToolbarColumn,
+} from "./payments-page.styles";
 
 const STATUS_TAG_COLOR: Record<PaymentStatus, string> = {
   pending: "gold",
   paid: "green",
   failed: "red",
-};
-
-const paymentsPageStack: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-  gap: 24,
-  textAlign: "left",
-};
-
-const paymentsPageStackCompact: CSSProperties = {
-  ...paymentsPageStack,
-  gap: 16,
-};
-
-const paymentsCardList: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 12,
-  width: "100%",
 };
 
 export function PaymentsPage() {
@@ -189,17 +181,10 @@ export function PaymentsPage() {
     <div style={isCompact ? paymentsPageStackCompact : paymentsPageStack}>
       {isCompact ? (
         <>
-          <Typography.Title level={4} style={{ margin: 0, fontSize: 18 }}>
+          <Typography.Title level={4} style={paymentsTitleCompact}>
             {t("payments:title")}
           </Typography.Title>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-              width: "100%",
-            }}
-          >
+          <div style={paymentsToolbarColumn}>
             <Input.Search
               allowClear
               placeholder={t("payments:searchPlaceholder")}
@@ -207,7 +192,7 @@ export function PaymentsPage() {
               onChange={(e) => {
                 p.setSearch(e.target.value);
               }}
-              style={{ width: "100%" }}
+              style={paymentsFullWidth}
             />
             <Select
               allowClear
@@ -217,27 +202,27 @@ export function PaymentsPage() {
               onChange={(v) => {
                 p.setStatus(v ?? "");
               }}
-              style={{ width: "100%" }}
+              style={paymentsFullWidth}
             />
           </div>
         </>
       ) : (
         <>
-          <Typography.Title level={2} style={{ margin: 0 }}>
+          <Typography.Title level={2} style={paymentsTitle}>
             {t("payments:title")}
           </Typography.Title>
-          <Space wrap style={{ width: "100%" }} size="middle">
+          <Space wrap style={paymentsSpaceFullWidth} size="middle">
             <Input.Search
               allowClear
               placeholder={t("payments:searchPlaceholder")}
-              style={{ maxWidth: 420, minWidth: 200 }}
+              style={paymentsSearchDesktop}
               value={p.search}
               onChange={(e) => {
                 p.setSearch(e.target.value);
               }}
             />
             <Select
-              style={{ minWidth: 180 }}
+              style={paymentsSelectDesktop}
               allowClear
               placeholder={t("payments:statusPlaceholder")}
               value={p.status === "" ? undefined : p.status}
@@ -287,7 +272,7 @@ export function PaymentsPage() {
                 <Pagination
                   {...paginationConfig}
                   size="small"
-                  style={{ marginTop: 4 }}
+                  style={paymentsPaginationCompact}
                 />
               ) : null}
             </>

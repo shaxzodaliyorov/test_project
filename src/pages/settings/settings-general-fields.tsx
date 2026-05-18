@@ -6,7 +6,7 @@ import { UI_LOCALES } from "@/constants/ui-languages";
 import { useCompactLayout } from "@/hooks/use-compact-layout";
 import type { ThemePreference } from "@/hooks/theme-store";
 import type { SettingsDraft } from "./settings-draft";
-import { settingsFieldWidth } from "./settings-page.styles";
+import { settingsFieldWidth, settingsFieldsStack } from "./settings-page.styles";
 import { SettingsRow } from "./settings-row";
 
 type SettingsGeneralFieldsProps = {
@@ -25,7 +25,7 @@ export function SettingsGeneralFields({
     <Space
       direction="vertical"
       size={isCompact ? "middle" : "large"}
-      style={{ width: "100%" }}
+      style={settingsFieldsStack}
     >
       <SettingsRow label={t("languageLabel")}>
         <Select

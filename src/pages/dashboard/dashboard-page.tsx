@@ -4,34 +4,20 @@ import {
   ShopOutlined,
   TeamOutlined,
 } from '@ant-design/icons'
-import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, Button, Col, Row, Spin, Typography, theme } from 'antd'
 import { useDashboard } from '@/hooks/use-dashboard'
 import { useAuthSession } from '@/hooks/use-auth-session'
 import { useCompactLayout } from '@/hooks/use-compact-layout'
+import { pageTitleStyle } from '@/styles/page-layout.styles'
 import { DashboardActivityChart } from './dashboard-activity-chart'
 import { DashboardStatTile } from './dashboard-stat-tile'
-
-const dashboardPageStack: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  gap: 24,
-  textAlign: 'left',
-}
-
-const dashboardPageStackCompact: CSSProperties = {
-  ...dashboardPageStack,
-  gap: 16,
-}
-
-const dashboardStatGrid: CSSProperties = {
-  display: 'grid',
-  width: '100%',
-  gap: 12,
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-}
+import {
+  dashboardPageStack,
+  dashboardPageStackCompact,
+  dashboardStatGrid,
+  dashboardStatRow,
+} from './dashboard-page.styles'
 
 export function DashboardPage() {
   const { t } = useTranslation(['dashboard', 'common'])
@@ -92,13 +78,7 @@ export function DashboardPage() {
 
   return (
     <div style={isCompact ? dashboardPageStackCompact : dashboardPageStack}>
-      <Typography.Title
-        level={isCompact ? 4 : 2}
-        style={{
-          margin: 0,
-          fontSize: isCompact ? 18 : undefined,
-        }}
-      >
+      <Typography.Title level={isCompact ? 4 : 2} style={pageTitleStyle(isCompact)}>
         {t('dashboard:title')}
       </Typography.Title>
 
@@ -126,7 +106,7 @@ export function DashboardPage() {
             {isCompact ? (
               <div style={dashboardStatGrid}>{statGrid}</div>
             ) : (
-              <Row gutter={[16, 16]} style={{ width: '100%', margin: 0 }}>
+              <Row gutter={[16, 16]} style={dashboardStatRow}>
                 <Col xs={24} sm={12} md={8} lg={6}>
                   <DashboardStatTile
                     title={t('dashboard:statDemoUsers')}

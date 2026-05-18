@@ -5,7 +5,6 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import type { TableProps } from "antd";
-import type { CSSProperties } from "react";
 import {
   Alert,
   Button,
@@ -37,6 +36,19 @@ import { fullNameFromForm, splitStoredName } from "@/utils/admin-user-name";
 import { paginationShowTotal } from "@/utils/pagination-show-total";
 import { AdminUserCreateModal } from "./admin-user-create-modal";
 import { AdminUserEditDrawer } from "./admin-user-edit-drawer";
+import {
+  usersCardList,
+  usersFullWidth,
+  usersInputPrefix,
+  usersPageStack,
+  usersPageStackCompact,
+  usersPaginationCompact,
+  usersSearchDesktop,
+  usersTitle,
+  usersTitleCompact,
+  usersToolbarColumn,
+  usersToolbarRowBetween,
+} from "./admin-users-page.styles";
 
 function roleTagColor(role: Role): string | undefined {
   if (role === "admin") return "blue";
@@ -51,26 +63,6 @@ const ROLE_LABEL_KEY: Record<Role, string> = {
   payment: "users:rolePayment",
   reports: "users:roleReports",
   users: "users:roleUsers",
-};
-
-const usersPageStack: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-  gap: 24,
-  textAlign: "left",
-};
-
-const usersPageStackCompact: CSSProperties = {
-  ...usersPageStack,
-  gap: 16,
-};
-
-const usersCardList: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 12,
-  width: "100%",
 };
 
 export function AdminUsersPage() {
@@ -298,27 +290,17 @@ export function AdminUsersPage() {
       <div style={isCompact ? usersPageStackCompact : usersPageStack}>
         {isCompact ? (
           <>
-            <Typography.Title
-              level={4}
-              style={{ margin: 0, fontSize: 18 }}
-            >
+            <Typography.Title level={4} style={usersTitleCompact}>
               {t("users:title")}
             </Typography.Title>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                width: "100%",
-              }}
-            >
+            <div style={usersToolbarColumn}>
               <Input
                 allowClear
                 placeholder={t("users:searchPlaceholder")}
-                prefix={<SearchOutlined style={{ color: "var(--text)" }} />}
+                prefix={<SearchOutlined style={usersInputPrefix} />}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                style={{ width: "100%" }}
+                style={usersFullWidth}
               />
               {canWrite ? (
                 <Button
@@ -333,27 +315,18 @@ export function AdminUsersPage() {
             </div>
           </>
         ) : (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 8,
-              width: "100%",
-            }}
-          >
-            <Typography.Title level={2} style={{ margin: 0 }}>
+          <div style={usersToolbarRowBetween}>
+            <Typography.Title level={2} style={usersTitle}>
               {t("users:title")}
             </Typography.Title>
             <Space wrap>
               <Input
                 allowClear
                 placeholder={t("users:searchPlaceholder")}
-                prefix={<SearchOutlined style={{ color: "var(--text)" }} />}
+                prefix={<SearchOutlined style={usersInputPrefix} />}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                style={{ width: 280, maxWidth: "100%" }}
+                style={usersSearchDesktop}
               />
               {canWrite ? (
                 <Button
@@ -408,7 +381,7 @@ export function AdminUsersPage() {
                   <Pagination
                     {...paginationConfig}
                     size="small"
-                    style={{ marginTop: 4 }}
+                    style={usersPaginationCompact}
                   />
                 ) : null}
               </>

@@ -1,4 +1,4 @@
-import type { CSSProperties, Dispatch, ReactNode, SetStateAction } from 'react'
+import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ColumnsType } from 'antd/es/table'
@@ -6,13 +6,12 @@ import { Input, Pagination, Spin, Table } from 'antd'
 import type { PagedFilter } from '@/constants/reports-paged-filter'
 import { useCompactLayout } from '@/hooks/use-compact-layout'
 import { paginationShowTotal } from '@/utils/pagination-show-total'
-
-const reportsCardList: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 12,
-  width: '100%',
-}
+import {
+  reportsPagedTabCardList,
+  reportsPagedTabPagination,
+  reportsPagedTabRootGap,
+  reportsPagedTabSearch,
+} from './reports-paged-tab.styles'
 
 type ReportsPagedTabProps<T extends object> = {
   filter: PagedFilter
@@ -53,14 +52,7 @@ export function ReportsPagedTab<T extends object>({
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: isCompact ? 12 : 16,
-        width: '100%',
-      }}
-    >
+    <div style={reportsPagedTabRootGap(isCompact)}>
       <Input.Search
         allowClear
         placeholder={searchPlaceholder}
@@ -68,15 +60,12 @@ export function ReportsPagedTab<T extends object>({
         onChange={(e) => {
           onFilterChange((s) => ({ ...s, search: e.target.value, page: 1 }))
         }}
-        style={{
-          width: isCompact ? '100%' : undefined,
-          maxWidth: isCompact ? undefined : 420,
-        }}
+        style={reportsPagedTabSearch(isCompact)}
       />
 
       {isCompact ? (
         <Spin spinning={loading}>
-          <div style={reportsCardList}>
+          <div style={reportsPagedTabCardList}>
             {items.map((row) => (
               <div key={String(row[rowKey])}>{renderCard(row)}</div>
             ))}
@@ -85,7 +74,7 @@ export function ReportsPagedTab<T extends object>({
             <Pagination
               {...paginationConfig}
               size="small"
-              style={{ marginTop: 4 }}
+              style={reportsPagedTabPagination}
             />
           ) : null}
         </Spin>

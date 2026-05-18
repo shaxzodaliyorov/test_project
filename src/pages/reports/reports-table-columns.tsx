@@ -8,6 +8,7 @@ import type {
   ReportMonthlyRow,
 } from '@/types/reports'
 import { formatMoney } from './reports-format'
+import { reportsTableNowrap } from './reports-table-columns.styles'
 
 export function buildReportsColumnsMonthly(
   t: TFunction,
@@ -57,7 +58,7 @@ export function buildReportsColumnsCategory(
     },
     {
       title: (
-        <span style={{ whiteSpace: 'nowrap' }}>
+        <span style={reportsTableNowrap}>
           {t('reports:colTransactions')}
         </span>
       ),
@@ -73,7 +74,7 @@ export function buildReportsColumnsCategory(
       width: 220,
       align: 'right',
       render: (v: number) => (
-        <span style={{ whiteSpace: 'nowrap' }}>{formatMoney(v)}</span>
+        <span style={reportsTableNowrap}>{formatMoney(v)}</span>
       ),
     },
     {

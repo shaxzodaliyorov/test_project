@@ -3,6 +3,20 @@ import type { TFunction } from 'i18next'
 import { Button, Card, Space, Tag, Typography, theme } from 'antd'
 import type { Role } from '@/types/role'
 import type { User } from '@/types/user'
+import {
+  adminUserCardActionButton,
+  adminUserCardActions,
+  adminUserCardBody,
+  adminUserCardHeaderMain,
+  adminUserCardHeaderRow,
+  adminUserCardIndex,
+  adminUserCardRolesLabel,
+  adminUserCardStack,
+  adminUserCardSubtitle,
+  adminUserCardTag,
+  adminUserCardTitle,
+  adminUserCardWidth,
+} from './admin-user-card.styles'
 
 const ROLE_LABEL_KEY: Record<Role, string> = {
   admin: 'users:roleAdmin',
@@ -44,81 +58,36 @@ export function AdminUserCard({
     <Card
       size="small"
       variant="outlined"
-      style={{ width: '100%' }}
-      styles={{
-        body: {
-          padding: token.paddingSM,
-          background: token.colorFillQuaternary,
-        },
-      }}
+      style={adminUserCardWidth}
+      styles={{ body: adminUserCardBody(token) }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: token.marginXS,
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: 8,
-          }}
-        >
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <Typography.Text
-              strong
-              style={{
-                display: 'block',
-                fontSize: 14,
-                lineHeight: 1.3,
-                color: 'var(--text-h)',
-              }}
-            >
+      <div style={adminUserCardStack(token)}>
+        <div style={adminUserCardHeaderRow}>
+          <div style={adminUserCardHeaderMain}>
+            <Typography.Text strong style={adminUserCardTitle}>
               {user.name}
             </Typography.Text>
-            <Typography.Text
-              type="secondary"
-              style={{
-                display: 'block',
-                fontSize: 11,
-                lineHeight: 1.35,
-                marginTop: 2,
-                wordBreak: 'break-word',
-              }}
-            >
+            <Typography.Text type="secondary" style={adminUserCardSubtitle}>
               {user.email}
             </Typography.Text>
           </div>
-          <Typography.Text
-            type="secondary"
-            style={{ fontSize: 11, flexShrink: 0 }}
-          >
+          <Typography.Text type="secondary" style={adminUserCardIndex}>
             #{index}
           </Typography.Text>
         </div>
 
         <div>
-          <Typography.Text
-            type="secondary"
-            style={{ fontSize: 10, display: 'block', marginBottom: 4 }}
-          >
+          <Typography.Text type="secondary" style={adminUserCardRolesLabel}>
             {t('users:columnRoles')}
           </Typography.Text>
           <Space size={[4, 4]} wrap>
             {user.roles.length === 0 ? (
-              <Tag color="default" style={{ margin: 0, fontSize: 11 }}>
+              <Tag color="default" style={adminUserCardTag}>
                 {t('users:noRoleTag')}
               </Tag>
             ) : (
               user.roles.map((r) => (
-                <Tag
-                  key={r}
-                  color={roleTagColor(r)}
-                  style={{ margin: 0, fontSize: 11 }}
-                >
+                <Tag key={r} color={roleTagColor(r)} style={adminUserCardTag}>
                   {t(ROLE_LABEL_KEY[r])}
                 </Tag>
               ))
@@ -127,13 +96,13 @@ export function AdminUserCard({
         </div>
 
         {canWrite ? (
-          <Space size={8} style={{ marginTop: 4 }}>
+          <Space size={8} style={adminUserCardActions}>
             <Button
               type="default"
               size="small"
               icon={<EditOutlined />}
               onClick={onEdit}
-              style={{ fontSize: 12 }}
+              style={adminUserCardActionButton}
             >
               {t('users:edit')}
             </Button>
@@ -144,7 +113,7 @@ export function AdminUserCard({
               disabled={isSelf}
               icon={<DeleteOutlined />}
               onClick={onDelete}
-              style={{ fontSize: 12 }}
+              style={adminUserCardActionButton}
             >
               {t('users:delete')}
             </Button>

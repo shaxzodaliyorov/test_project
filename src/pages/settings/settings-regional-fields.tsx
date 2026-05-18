@@ -7,7 +7,12 @@ import {
 import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { formatSampleAmount } from "@/utils/format-sample-amount";
 import type { SettingsDraft } from "./settings-draft";
-import { settingsFieldWidth } from "./settings-page.styles";
+import {
+  settingsFieldWidth,
+  settingsFieldsStack,
+  settingsPreviewStack,
+  settingsPreviewTitle,
+} from "./settings-page.styles";
 import { SettingsRow } from "./settings-row";
 
 type SettingsRegionalFieldsProps = {
@@ -26,7 +31,7 @@ export function SettingsRegionalFields({
     <Space
       direction="vertical"
       size={isCompact ? "middle" : "large"}
-      style={{ width: "100%" }}
+      style={settingsFieldsStack}
     >
       <SettingsRow label={t("currencyLabel")}>
         <Select
@@ -44,11 +49,11 @@ export function SettingsRegionalFields({
           direction="vertical"
           size={4}
           align={isCompact ? "start" : "end"}
-          style={{ width: isCompact ? "100%" : undefined }}
+          style={settingsPreviewStack(isCompact)}
         >
           <Typography.Title
             level={isCompact ? 5 : 4}
-            style={{ margin: 0, fontSize: isCompact ? 18 : undefined }}
+            style={settingsPreviewTitle(isCompact)}
           >
             {formatSampleAmount(draft.locale, draft.currency)}
           </Typography.Title>

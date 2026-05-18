@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Card, Typography, theme } from 'antd'
 import type {
   ReportCategoryRow,
@@ -9,36 +9,28 @@ import type {
   ReportMonthlyRow,
 } from '@/types/reports'
 import { formatMoney } from './reports-format'
+import {
+  listCardBody,
+  listCardFieldLabel,
+  listCardFieldRoot,
+  listCardFieldValue,
+  listCardShellTitleBlock,
+  listCardStack,
+  listCardSubtitleBreak,
+  listCardTitle,
+  listCardWidth,
+  reportsRowCardGrid,
+} from './reports-row-cards.styles'
 
 type ReportsRowCardsT = TFunction<['reports', 'common']>
 
-const cardGrid: CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  gap: 10,
-  marginTop: 4,
-}
-
 function CardField({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div style={{ minWidth: 0 }}>
-      <Typography.Text
-        type="secondary"
-        style={{ fontSize: 10, display: 'block', marginBottom: 2 }}
-      >
+    <div style={listCardFieldRoot}>
+      <Typography.Text type="secondary" style={listCardFieldLabel}>
         {label}
       </Typography.Text>
-      <Typography.Text
-        style={{
-          fontSize: 11,
-          lineHeight: 1.35,
-          display: 'block',
-          wordBreak: 'break-word',
-          color: 'var(--text-h)',
-        }}
-      >
-        {value}
-      </Typography.Text>
+      <Typography.Text style={listCardFieldValue}>{value}</Typography.Text>
     </div>
   )
 }
@@ -58,44 +50,16 @@ function ReportCardShell({
     <Card
       size="small"
       variant="outlined"
-      style={{ width: '100%' }}
-      styles={{
-        body: {
-          padding: token.paddingSM,
-          background: token.colorFillQuaternary,
-        },
-      }}
+      style={listCardWidth}
+      styles={{ body: listCardBody(token) }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: token.marginXS,
-        }}
-      >
-        <div style={{ minWidth: 0 }}>
-          <Typography.Text
-            strong
-            style={{
-              display: 'block',
-              fontSize: 14,
-              lineHeight: 1.3,
-              color: 'var(--text-h)',
-            }}
-          >
+      <div style={listCardStack(token)}>
+        <div style={listCardShellTitleBlock}>
+          <Typography.Text strong style={listCardTitle}>
             {title}
           </Typography.Text>
           {subtitle ? (
-            <Typography.Text
-              type="secondary"
-              style={{
-                display: 'block',
-                fontSize: 11,
-                lineHeight: 1.35,
-                marginTop: 2,
-                wordBreak: 'break-word',
-              }}
-            >
+            <Typography.Text type="secondary" style={listCardSubtitleBreak}>
               {subtitle}
             </Typography.Text>
           ) : null}
@@ -115,7 +79,7 @@ export function ReportMonthlyCard({
 }) {
   return (
     <ReportCardShell title={row.month} subtitle={formatMoney(row.amount)}>
-      <div style={cardGrid}>
+      <div style={reportsRowCardGrid}>
         <CardField label={t('reports:colMonth')} value={row.month} />
         <CardField label={t('reports:colSum')} value={formatMoney(row.amount)} />
       </div>
@@ -132,7 +96,7 @@ export function ReportDailyCard({
 }) {
   return (
     <ReportCardShell title={row.day} subtitle={formatMoney(row.grossCents)}>
-      <div style={cardGrid}>
+      <div style={reportsRowCardGrid}>
         <CardField label={t('reports:colOrders')} value={row.orders} />
         <CardField
           label={t('reports:colGross')}
@@ -153,7 +117,7 @@ export function ReportCategoryCard({
 }) {
   return (
     <ReportCardShell title={row.category} subtitle={`${row.sharePercent}%`}>
-      <div style={cardGrid}>
+      <div style={reportsRowCardGrid}>
         <CardField
           label={t('reports:colTransactions')}
           value={row.transactionCount}
@@ -183,7 +147,7 @@ export function ReportMerchantCard({
       title={row.merchant}
       subtitle={formatMoney(row.revenueCents)}
     >
-      <div style={cardGrid}>
+      <div style={reportsRowCardGrid}>
         <CardField label={t('reports:colOrders')} value={row.orders} />
         <CardField
           label={t('reports:colRevenue')}
@@ -209,7 +173,7 @@ export function ReportHourlyCard({
 
   return (
     <ReportCardShell title={timeLabel}>
-      <div style={cardGrid}>
+      <div style={reportsRowCardGrid}>
         <CardField label={t('reports:colHourUtc')} value={timeLabel} />
         <CardField label={t('reports:colVolume')} value={row.volume} />
         <CardField label={t('reports:colLatencyMs')} value={row.latencyMs} />

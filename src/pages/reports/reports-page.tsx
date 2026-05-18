@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Button, Select, Tabs, Typography } from "antd";
@@ -12,24 +11,22 @@ import { ReportsMerchantsTab } from "./reports-merchants-tab";
 import { ReportsMonthlyTab } from "./reports-monthly-tab";
 import { ReportsOverviewChart } from "./reports-overview-chart";
 import { ReportsSummaryTab } from "./reports-summary-tab";
+import {
+  reportsPageStack,
+  reportsPageStackCompact,
+  reportsPeriodColumn,
+  reportsPeriodLabelCompact,
+  reportsPeriodRow,
+  reportsPeriodSelectCompact,
+  reportsPeriodSelectDesktop,
+  reportsTitle,
+  reportsTitleCompact,
+} from "./reports-page.styles";
 
 const RANGE_LABEL_NS: Record<(typeof REPORTS_RANGE_VALUES)[number], string> = {
   default: "reports:rangeDefault",
   "12m": "reports:range12m",
   "30d": "reports:range30d",
-};
-
-const reportsPageStack: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-  gap: 24,
-  textAlign: "left",
-};
-
-const reportsPageStackCompact: CSSProperties = {
-  ...reportsPageStack,
-  gap: 16,
 };
 
 export function ReportsPage() {
@@ -120,22 +117,15 @@ export function ReportsPage() {
     <div style={isCompact ? reportsPageStackCompact : reportsPageStack}>
       {isCompact ? (
         <>
-          <Typography.Title level={4} style={{ margin: 0, fontSize: 18 }}>
+          <Typography.Title level={4} style={reportsTitleCompact}>
             {t("reports:title")}
           </Typography.Title>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 6,
-              width: "100%",
-            }}
-          >
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          <div style={reportsPeriodColumn}>
+            <Typography.Text type="secondary" style={reportsPeriodLabelCompact}>
               {t("common:period")}
             </Typography.Text>
             <Select
-              style={{ width: "100%" }}
+              style={reportsPeriodSelectCompact}
               value={r.range || "default"}
               onChange={r.onRangeChange}
               options={rangeOptions}
@@ -144,24 +134,15 @@ export function ReportsPage() {
         </>
       ) : (
         <>
-          <Typography.Title level={2} style={{ margin: 0 }}>
+          <Typography.Title level={2} style={reportsTitle}>
             {t("reports:title")}
           </Typography.Title>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              flexWrap: "wrap",
-              gap: 8,
-              width: "100%",
-            }}
-          >
+          <div style={reportsPeriodRow}>
             <Typography.Text type="secondary">
               {t("common:period")}:{" "}
             </Typography.Text>
             <Select
-              style={{ minWidth: 200 }}
+              style={reportsPeriodSelectDesktop}
               value={r.range || "default"}
               onChange={r.onRangeChange}
               options={rangeOptions}

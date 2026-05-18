@@ -14,6 +14,10 @@ import {
 } from "recharts";
 import { buildReportChartRows, REPORT_CHART_SERIES_KEY } from "./reports-chart-data";
 import { formatMoney } from "./reports-format";
+import {
+  reportsOverviewChartEmpty,
+  reportsOverviewChartPlot,
+} from "./reports-overview-chart.styles";
 
 const LINE_COLORS = ["#1677ff", "#13c2c2", "#722ed1", "#fa8c16"];
 
@@ -37,7 +41,7 @@ export function ReportsOverviewChart({
     <Card size="small" title={t("overviewCardTitle")}>
       <Spin spinning={fetching && !showChart}>
         {showChart ? (
-          <div style={{ width: "100%", height: compact ? 220 : 320 }}>
+          <div style={reportsOverviewChartPlot(compact)}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={rows}
@@ -80,9 +84,7 @@ export function ReportsOverviewChart({
             </ResponsiveContainer>
           </div>
         ) : fetching ? null : (
-          <div style={{ color: "var(--ant-color-text-secondary)", fontSize: 13 }}>
-            {t("overviewEmpty")}
-          </div>
+          <div style={reportsOverviewChartEmpty}>{t("overviewEmpty")}</div>
         )}
       </Spin>
     </Card>

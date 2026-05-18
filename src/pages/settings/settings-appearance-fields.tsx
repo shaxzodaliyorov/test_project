@@ -5,7 +5,10 @@ import { THEME_COLOR_PRESETS } from "@/constants/theme-color-presets";
 import { useCompactLayout } from "@/hooks/use-compact-layout";
 import type { SettingsDraft } from "./settings-draft";
 import {
+  settingsColorSwatchesSelected,
   settingsFieldWidthWide,
+  settingsFieldsStack,
+  settingsFontOptionLabel,
   settingsSwatch,
 } from "./settings-page.styles";
 import { SettingsRow } from "./settings-row";
@@ -30,7 +33,7 @@ export function SettingsAppearanceFields({
     <Space
       direction="vertical"
       size={isCompact ? "middle" : "large"}
-      style={{ width: "100%" }}
+      style={settingsFieldsStack}
     >
       <SettingsRow label={t("primaryColorLabel")}>
         <Flex wrap="wrap" gap={10} justify={isCompact ? "flex-start" : "flex-end"}>
@@ -44,13 +47,11 @@ export function SettingsAppearanceFields({
                 aria-label={presetLabel(p.id)}
                 aria-pressed={selected}
                 onClick={() => onDraftChange({ primaryPresetId: p.id })}
-                style={{
-                  ...settingsSwatch,
-                  background: p.colorPrimaryLight,
-                  boxShadow: selected
-                    ? "0 0 0 2px var(--bg), 0 0 0 4px var(--accent)"
-                    : undefined,
-                }}
+                style={
+                  selected
+                    ? settingsColorSwatchesSelected(p.colorPrimaryLight)
+                    : { ...settingsSwatch, background: p.colorPrimaryLight }
+                }
               />
             );
           })}
@@ -62,7 +63,7 @@ export function SettingsAppearanceFields({
           style={settingsFieldWidthWide(isCompact)}
           options={FONT_PRESETS.map((f) => ({
             label: (
-              <span style={{ fontFamily: f.fontFamily }}>{f.label}</span>
+              <span style={settingsFontOptionLabel(f.fontFamily)}>{f.label}</span>
             ),
             value: f.id,
           }))}
