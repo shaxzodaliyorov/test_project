@@ -4,6 +4,7 @@ import {
   DashboardOutlined,
   DownOutlined,
   LogoutOutlined,
+  SettingOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
@@ -95,6 +96,11 @@ export function MainLayout() {
             },
           ]
         : []),
+      {
+        key: PATHS.SETTINGS,
+        icon: <SettingOutlined />,
+        label: "Settings",
+      },
     ],
     [canDashboard, canUsers, canPayments, canReports],
   );

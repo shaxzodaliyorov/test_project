@@ -8,14 +8,24 @@
     <script>
       ;(function () {
         try {
-          var key = 'theme-mode'
-          var t = localStorage.getItem(key)
+          var prefKey = 'theme-preference'
+          var legacyKey = 'theme-mode'
+          var p = localStorage.getItem(prefKey)
+          if (p !== 'light' && p !== 'dark' && p !== 'system') {
+            var leg = localStorage.getItem(legacyKey)
+            if (leg === 'light' || leg === 'dark') {
+              p = leg
+              localStorage.setItem(prefKey, leg)
+            } else {
+              p = 'system'
+            }
+          }
           var m =
-            t === 'light' || t === 'dark'
-              ? t
-              : window.matchMedia('(prefers-color-scheme: dark)').matches
+            p === 'system'
+              ? window.matchMedia('(prefers-color-scheme: dark)').matches
                 ? 'dark'
                 : 'light'
+              : p
           document.documentElement.dataset.theme = m
           document.documentElement.style.colorScheme = m
         } catch (e) {}

@@ -10,6 +10,7 @@ import { PATHS } from "@/routes/paths";
 import type { AppRouteHandle } from "@/types/app-route-handle";
 import { PaymentsPage } from "@/pages/payments/payments-page";
 import { ReportsPage } from "@/pages/reports/reports-page";
+import { SettingsPage } from "@/pages/settings/settings-page";
 import { PERMISSIONS } from "@/constants/permissions";
 
 const usersRoute = {
@@ -28,6 +29,12 @@ const reportsRoute = {
   path: PATHS.REPORTS,
   element: <ReportsPage />,
   handle: { permissions: [PERMISSIONS.REPORTS_READ] } satisfies AppRouteHandle,
+};
+
+const settingsRoute = {
+  path: PATHS.SETTINGS,
+  element: <SettingsPage />,
+  handle: {} satisfies AppRouteHandle,
 };
 
 export const appRouter = createBrowserRouter([
@@ -52,6 +59,7 @@ export const appRouter = createBrowserRouter([
           usersRoute,
           paymentsRoute,
           reportsRoute,
+          settingsRoute,
           {
             path: PATHS.ROOT,
             element: <Navigate to={PATHS.DASHBOARD} replace />,
