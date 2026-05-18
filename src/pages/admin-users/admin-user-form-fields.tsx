@@ -1,5 +1,4 @@
 import { Checkbox, Form, Input } from 'antd'
-import { ROLE_OPTIONS } from '@/constants/role-options'
 import type { UserFormValues } from '@/types/admin-user-form'
 import {
   emailRules,
@@ -10,8 +9,6 @@ import {
   rolesRules,
 } from '@/validators/admin-user-form-validation'
 
-const roleOptionsCreate = ROLE_OPTIONS.filter((o) => o.value !== 'admin')
-
 const checkboxGroupStyle = {
   display: 'flex',
   flexDirection: 'column' as const,
@@ -20,11 +17,13 @@ const checkboxGroupStyle = {
 
 type AdminUserFormFieldsProps = {
   mode: 'create' | 'edit'
+  roleOptions: { label: string; value: string }[]
 }
 
-export function AdminUserFormFields({ mode }: AdminUserFormFieldsProps) {
-  const roleOpts = mode === 'create' ? roleOptionsCreate : ROLE_OPTIONS
-
+export function AdminUserFormFields({ mode, roleOptions }: AdminUserFormFieldsProps) {
+  const optionsForRoles =
+    mode === 'create' ? roleOptions.filter((o) => o.value !== 'admin') : roleOptions
+  const allowedSlugs = optionsForRoles.map((o) => o.value)
   return (
     <>
       <Form.Item<UserFormValues> name="firstName" label="Ism" rules={firstNameRules}>
@@ -53,9 +52,9 @@ export function AdminUserFormFields({ mode }: AdminUserFormFieldsProps) {
       <Form.Item<UserFormValues>
         name="roles"
         label="Rollar"
-        rules={rolesRules(mode)}
+        rules={rolesRules(allowedSlugs, mode)}
       >
-        <Checkbox.Group options={roleOpts} style={checkboxGroupStyle} />
+        <Checkbox.Group options={optionsForRoles} style={checkboxGroupStyle} />
       </Form.Item>
     </>
   )

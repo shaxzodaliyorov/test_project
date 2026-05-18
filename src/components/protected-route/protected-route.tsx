@@ -6,11 +6,22 @@ import { PATHS } from '@/routes/paths'
 import type { AppRouteHandle } from '@/types/app-route-handle'
 import type { User } from '@/types/user'
 import type { Role } from '@/types/role'
+import type { Permission } from '@/constants/permissions'
+import { hasPermission } from '@/utils/rbac-utils'
 
 function userHasRequiredRole(user: User | null, required?: Role[]): boolean {
   if (!required?.length) return true
   if (!user?.roles?.length) return false
   return required.some((r) => user.roles.includes(r))
+}
+
+function userHasAllPermissions(
+  user: User | null,
+  required?: readonly Permission[],
+): boolean {
+  if (!required?.length) return true
+  if (!user) return false
+  return required.every((p) => hasPermission(user, p))
 }
 
 export function ProtectedRoute() {
@@ -39,7 +50,12 @@ export function ProtectedRoute() {
 
   const leaf = matches[matches.length - 1]
   const handle = leaf?.handle as AppRouteHandle | undefined
+  const requiredPermissions = handle?.permissions
   const requiredRoles = handle?.roles
+
+  if (!userHasAllPermissions(sessionUser, requiredPermissions)) {
+    return <Navigate to={PATHS.FORBIDDEN} replace />
+  }
 
   if (!userHasRequiredRole(sessionUser, requiredRoles)) {
     return <Navigate to={PATHS.FORBIDDEN} replace />

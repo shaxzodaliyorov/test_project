@@ -63,17 +63,23 @@ export const passwordRulesEdit: Rule[] = [
   },
 ]
 
-export function rolesRules(mode: 'create' | 'edit'): Rule[] {
+export function rolesRules(
+  allowedRoleValues: readonly string[],
+  mode: 'create' | 'edit',
+): Rule[] {
+  const allow = new Set(allowedRoleValues)
   return [
-    { required: true, message: 'Kamida bitta rol tanlang' },
     {
       validator: (_: unknown, v: unknown) => {
         if (!Array.isArray(v) || v.length === 0) {
           return Promise.reject(new Error('Kamida bitta rol tanlang'))
         }
+        if (!(v as string[]).every((x) => allow.has(x))) {
+          return Promise.reject(new Error('Mavjud bo‘lmagan rol tanlangan'))
+        }
         if (mode === 'create' && (v as string[]).includes('admin')) {
           return Promise.reject(
-            new Error('Yangi foydalanuvchiga ADMIN roli berilmaydi'),
+            new Error('Yangi foydalanuvchiga Admin roli berib bo‘lmaydi'),
           )
         }
         return Promise.resolve()

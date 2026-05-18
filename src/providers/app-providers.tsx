@@ -18,7 +18,14 @@ function ThemedTree() {
     <ConfigProvider
       theme={{
         algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-        token: { colorPrimary: isDark ? '#c084fc' : '#aa3bff' },
+        token: {
+          colorPrimary: isDark ? '#c084fc' : '#aa3bff',
+          fontSize: 15,
+          fontSizeLG: 16,
+          controlHeight: 44,
+          controlHeightLG: 52,
+          controlHeightSM: 36,
+        },
       }}
     >
       <App>

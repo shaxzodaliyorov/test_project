@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/protected-route/protected-route";
 import { MainLayout } from "@/components/main-layout/main-layout";
 import { GuestLayout } from "@/pages/login/components/guest-layout";
+import { AdminRolesPage } from "@/pages/admin-roles/admin-roles-page";
 import { AdminUsersPage } from "@/pages/admin-users/admin-users-page";
 import { DashboardPage } from "@/pages/dashboard/dashboard-page";
 import { ForbiddenPage } from "@/pages/forbidden/forbidden-page";
@@ -10,11 +11,32 @@ import { NotFoundPage } from "@/pages/not-found/not-found-page";
 import { PATHS } from "@/routes/paths";
 import type { AppRouteHandle } from "@/types/app-route-handle";
 import { AccountPage } from "@/pages/account/account-page";
+import { PaymentsPage } from "@/pages/payments/payments-page";
+import { ReportsPage } from "@/pages/reports/reports-page";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const adminUsersRoute = {
   path: PATHS.ADMIN_USERS,
   element: <AdminUsersPage />,
-  handle: { roles: ["admin"] } satisfies AppRouteHandle,
+  handle: { permissions: [PERMISSIONS.USERS_READ] } satisfies AppRouteHandle,
+};
+
+const adminRolesRoute = {
+  path: PATHS.ADMIN_ROLES,
+  element: <AdminRolesPage />,
+  handle: { permissions: [PERMISSIONS.USERS_READ] } satisfies AppRouteHandle,
+};
+
+const paymentsRoute = {
+  path: PATHS.PAYMENTS,
+  element: <PaymentsPage />,
+  handle: { permissions: [PERMISSIONS.PAYMENTS_READ] } satisfies AppRouteHandle,
+};
+
+const reportsRoute = {
+  path: PATHS.REPORTS,
+  element: <ReportsPage />,
+  handle: { permissions: [PERMISSIONS.REPORTS_READ] } satisfies AppRouteHandle,
 };
 
 export const appRouter = createBrowserRouter([
@@ -29,9 +51,16 @@ export const appRouter = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
-          { path: PATHS.DASHBOARD, element: <DashboardPage /> },
+          {
+            path: PATHS.DASHBOARD,
+            element: <DashboardPage />,
+            handle: { permissions: [PERMISSIONS.DASHBOARD_READ] } satisfies AppRouteHandle,
+          },
           { path: PATHS.ACCOUNT, element: <AccountPage /> },
           adminUsersRoute,
+          adminRolesRoute,
+          paymentsRoute,
+          reportsRoute,
           {
             path: PATHS.ROOT,
             element: <Navigate to={PATHS.DASHBOARD} replace />,

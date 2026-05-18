@@ -19,6 +19,7 @@ import {
 } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PERMISSIONS } from "@/constants/permissions";
+import { ROLE_OPTIONS } from "@/constants/role-options";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCanAccess } from "@/hooks/use-can-access";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -29,6 +30,14 @@ import type { UserFormValues } from "@/types/admin-user-form";
 import { fullNameFromForm, splitStoredName } from "@/utils/admin-user-name";
 import type { Role } from "@/types/role";
 import type { User } from "@/types/user";
+
+function roleTagColor(role: Role): string | undefined {
+  if (role === "admin") return "blue";
+  if (role === "payment") return "green";
+  if (role === "reports") return "gold";
+  if (role === "users") return "purple";
+  return undefined;
+}
 
 export function AdminUsersPage() {
   const canWrite = useCanAccess(PERMISSIONS.USERS_WRITE);
@@ -67,7 +76,21 @@ export function AdminUsersPage() {
 
   const openCreate = () => {
     createForm.resetFields();
-    createForm.setFieldsValue({ roles: ["user"], firstName: "", lastName: "" });
+    const slugs = ROLE_OPTIONS.map((o) => o.value).filter((s) => s !== "admin");
+    const defaultRoles: Role[] = slugs.includes("reports")
+      ? ["reports"]
+      : slugs.includes("payment")
+        ? ["payment"]
+        : slugs.includes("users")
+          ? ["users"]
+          : slugs[0]
+            ? [slugs[0] as Role]
+            : [];
+    createForm.setFieldsValue({
+      roles: defaultRoles,
+      firstName: "",
+      lastName: "",
+    });
     setCreateOpen(true);
   };
 
@@ -157,11 +180,15 @@ export function AdminUsersPage() {
         key: "roles",
         render: (roles: Role[]) => (
           <Space size={[4, 4]} wrap>
-            {roles.map((r) => (
-              <Tag key={r} color={r === "admin" ? "blue" : "default"}>
-                {r}
-              </Tag>
-            ))}
+            {roles.length === 0 ? (
+              <Tag color="default">Rol yoq → 403</Tag>
+            ) : (
+              roles.map((r) => (
+                <Tag key={r} color={roleTagColor(r)}>
+                  {r}
+                </Tag>
+              ))
+            )}
           </Space>
         ),
       },
@@ -295,6 +322,7 @@ export function AdminUsersPage() {
       <AdminUserCreateModal
         open={createOpen}
         form={createForm}
+        roleOptions={ROLE_OPTIONS}
         confirmLoading={createMutation.isPending}
         onCancel={() => {
           setCreateOpen(false);
@@ -306,6 +334,7 @@ export function AdminUsersPage() {
       <AdminUserEditDrawer
         user={editUser}
         form={editForm}
+        roleOptions={ROLE_OPTIONS}
         loading={updateMutation.isPending}
         onClose={() => {
           setEditUser(null);

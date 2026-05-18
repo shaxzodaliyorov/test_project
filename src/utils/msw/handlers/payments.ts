@@ -1,35 +1,78 @@
 import { http, HttpResponse } from 'msw'
+import type { Payment, PaymentMethod, PaymentStatus } from '@/types/payment'
+import { PERMISSIONS } from '@/constants/permissions'
 import { getUserFromAuthHeader } from '@/utils/msw/handlers/auth'
 import { mswLatency } from '@/utils/msw/msw-latency'
-
-export type MockPayment = {
-  id: string
-  amountCents: number
-  currency: string
-  status: 'pending' | 'paid' | 'failed'
-  description: string
-  createdAt: string
-}
 
 function parseIntParam(value: string | null, fallback: number): number {
   const n = Number.parseInt(value ?? '', 10)
   return Number.isFinite(n) ? n : fallback
 }
 
-const STATUSES: MockPayment['status'][] = ['pending', 'paid', 'failed']
+const STATUSES: PaymentStatus[] = ['pending', 'paid', 'failed']
+const METHODS: PaymentMethod[] = ['card', 'bank_transfer', 'wallet']
+const CATEGORIES = [
+  'Subscription',
+  'Hardware',
+  'SaaS',
+  'Support',
+  'Consulting',
+  'Marketplace',
+  'Logistics',
+  'Advertising',
+  'Travel',
+  'Education',
+] as const
+const MERCHANTS = [
+  'Acme Cloud',
+  'Globex Retail',
+  'Initech Billing',
+  'Umbrella Labs',
+  'Stark Industries EU',
+  'Wayne Logistics',
+  'Hooli Payments',
+  'Soylent Goods',
+] as const
 
-function buildPayments(): MockPayment[] {
-  const out: MockPayment[] = []
-  for (let i = 0; i < 55; i += 1) {
+function buildPayments(): Payment[] {
+  const out: Payment[] = []
+  const n = 88
+  for (let i = 0; i < n; i += 1) {
     const status = STATUSES[i % STATUSES.length]
-    const amountCents = 5000 + (i * 137) % 250000
+    const method = METHODS[i % METHODS.length]
+    const category = CATEGORIES[i % CATEGORIES.length]
+    const merchantName = MERCHANTS[i % MERCHANTS.length]
+    const amountCents = 4999 + ((i * 1847 + 331) % 480_000)
+    const feeCents = Math.round(amountCents * (0.012 + (i % 7) * 0.0015))
+    const currency = i % 11 === 0 ? 'EUR' : 'USD'
+    const day = 1 + (i % 28)
+    const month = (i % 12) + 1
+    const year = 2024 + (i % 2)
+    const createdAt = new Date(Date.UTC(year, month - 1, day, 8 + (i % 10), (i * 17) % 60, 0)).toISOString()
+    const settledAt =
+      status === 'paid'
+        ? new Date(new Date(createdAt).getTime() + (15 + (i % 120)) * 60 * 1000).toISOString()
+        : null
+    const id = `pay-${String(i + 1).padStart(4, '0')}`
+    const customerEmail = `customer${(i % 240) + 1}@demo.mail`
+    const externalRef = `EXT-${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}-${String(i + 1).padStart(5, '0')}`
+    const city = ['Tashkent', 'Samarkand', 'Bukhara', 'London', 'Berlin', 'Dubai'][i % 6]
+    const description = `${category} — ${merchantName} (#${i + 1}, ${method})`
     out.push({
-      id: `pay-${String(i + 1).padStart(4, '0')}`,
+      id,
       amountCents,
-      currency: 'USD',
+      feeCents,
+      currency,
       status,
-      description: `Mock charge #${i + 1} — ${status}`,
-      createdAt: new Date(Date.UTC(2025, (i % 12) + 1, (i % 27) + 1)).toISOString(),
+      method,
+      category,
+      merchantName,
+      customerEmail,
+      externalRef,
+      city,
+      description,
+      createdAt,
+      settledAt,
     })
   }
   return out
@@ -44,8 +87,11 @@ export const paymentsHandlers = [
     if (!user) {
       return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
+    if (!user.permissions.includes(PERMISSIONS.PAYMENTS_READ)) {
+      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+    }
     const url = new URL(request.url)
-    const page = Math.max(1, parseIntParam(url.searchParams.get('page'), 1))
+    const pageRaw = Math.max(1, parseIntParam(url.searchParams.get('page'), 1))
     const pageSize = Math.min(
       100,
       Math.max(1, parseIntParam(url.searchParams.get('pageSize'), 10)),
@@ -56,17 +102,26 @@ export const paymentsHandlers = [
       .toLowerCase()
 
     let filtered = [...ALL_PAYMENTS]
-    if (statusFilter && STATUSES.includes(statusFilter as MockPayment['status'])) {
+    if (statusFilter && STATUSES.includes(statusFilter as PaymentStatus)) {
       filtered = filtered.filter((p) => p.status === statusFilter)
     }
     if (q) {
       filtered = filtered.filter(
         (p) =>
           p.id.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q),
+          p.description.toLowerCase().includes(q) ||
+          p.merchantName.toLowerCase().includes(q) ||
+          p.customerEmail.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.externalRef.toLowerCase().includes(q) ||
+          p.city.toLowerCase().includes(q) ||
+          p.method.toLowerCase().includes(q) ||
+          p.status.toLowerCase().includes(q),
       )
     }
     const total = filtered.length
+    const maxPage = Math.max(1, Math.ceil(total / pageSize) || 1)
+    const page = Math.min(pageRaw, maxPage)
     const start = Math.max(0, (page - 1) * pageSize)
     const items = filtered.slice(start, start + pageSize)
     return HttpResponse.json({ items, total, page, pageSize })

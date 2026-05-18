@@ -10,7 +10,6 @@ import { LoginThemeToggle } from './components/login-theme-toggle'
 import {
   loginCertIcon,
   loginDemoDividerText,
-  loginDemoPermissionNote,
   loginDemoSpace,
   loginDemoStrong,
   loginDivider,
@@ -24,7 +23,6 @@ import {
   loginSubtitle,
   loginTitle,
 } from './login.styles'
-import { PERMISSIONS } from '@/constants/permissions'
 import { useAuthStore } from '@/hooks/auth-store'
 import type { User } from '@/types/user'
 import { PATHS } from '@/routes/paths'
@@ -127,17 +125,28 @@ export function LoginPage() {
                 Admin
               </Typography.Text>
               <Tag>admin@test.com</Tag>
-              <Tag>Admin1!xx</Tag>
+              <Tag>Admin@123</Tag>
             </Flex>
             <Flex align="center" gap={8} wrap="wrap">
               <Typography.Text strong style={loginDemoStrong}>
-                User
+                Payment
+              </Typography.Text>
+              <Tag>payment@test.com</Tag>
+              <Tag>Payment@1</Tag>
+            </Flex>
+            <Flex align="center" gap={8} wrap="wrap">
+              <Typography.Text strong style={loginDemoStrong}>
+                Reports
+              </Typography.Text>
+              <Tag>reports@test.com</Tag>
+              <Tag>Reports@1</Tag>
+            </Flex>
+            <Flex align="center" gap={8} wrap="wrap">
+              <Typography.Text strong style={loginDemoStrong}>
+                User (rol yoq)
               </Typography.Text>
               <Tag>user@test.com</Tag>
-              <Tag>User1!xx</Tag>
-              <Typography.Text type="secondary" style={loginDemoPermissionNote}>
-                ({PERMISSIONS.DASHBOARD_READ} only)
-              </Typography.Text>
+              <Tag>User@1234</Tag>
             </Flex>
           </Space>
         </div>

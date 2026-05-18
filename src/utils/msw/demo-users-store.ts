@@ -12,10 +12,22 @@ export type DemoRow = {
 }
 
 function permissionsForRoles(roles: Role[]): readonly Permission[] {
-  const set = new Set<Permission>([PERMISSIONS.DASHBOARD_READ])
+  if (!roles?.length) return []
+  const set = new Set<Permission>()
   if (roles.includes('admin')) {
-    set.add(PERMISSIONS.USERS_READ)
-    set.add(PERMISSIONS.USERS_WRITE)
+    for (const p of Object.values(PERMISSIONS)) {
+      set.add(p)
+    }
+    return [...set] as readonly Permission[]
+  }
+  set.add(PERMISSIONS.DASHBOARD_READ)
+  for (const r of roles) {
+    if (r === 'users') {
+      set.add(PERMISSIONS.USERS_READ)
+      set.add(PERMISSIONS.USERS_WRITE)
+    }
+    if (r === 'payment') set.add(PERMISSIONS.PAYMENTS_READ)
+    if (r === 'reports') set.add(PERMISSIONS.REPORTS_READ)
   }
   return [...set] as readonly Permission[]
 }
@@ -35,15 +47,29 @@ const rows: DemoRow[] = [
     id: '1',
     email: 'admin@test.com',
     name: 'Admin Demo',
-    password: 'Admin1!xx',
-    roles: ['admin'],
+    password: 'Admin@123',
+    roles: ['admin', 'payment', 'reports'],
   },
   {
     id: '2',
     email: 'user@test.com',
-    name: 'Regular User',
-    password: 'User1!xx',
-    roles: ['user'],
+    name: 'No-role User',
+    password: 'User@1234',
+    roles: [],
+  },
+  {
+    id: '3',
+    email: 'payment@test.com',
+    name: 'Payment User',
+    password: 'Payment@1',
+    roles: ['payment'],
+  },
+  {
+    id: '4',
+    email: 'reports@test.com',
+    name: 'Reports User',
+    password: 'Reports@1',
+    roles: ['reports'],
   },
 ]
 

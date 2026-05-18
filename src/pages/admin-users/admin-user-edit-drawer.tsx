@@ -7,6 +7,7 @@ import type { User } from '@/types/user'
 export type AdminUserEditDrawerProps = {
   user: User | null
   form: FormInstance<UserFormValues>
+  roleOptions: { label: string; value: string }[]
   loading: boolean
   onClose: () => void
   onSubmit: () => void
@@ -15,6 +16,7 @@ export type AdminUserEditDrawerProps = {
 export function AdminUserEditDrawer({
   user,
   form,
+  roleOptions,
   loading,
   onClose,
   onSubmit,
@@ -36,7 +38,7 @@ export function AdminUserEditDrawer({
       }
     >
       <Form<UserFormValues> form={form} layout="vertical" requiredMark>
-        <AdminUserFormFields mode="edit" />
+        <AdminUserFormFields mode="edit" roleOptions={roleOptions} />
       </Form>
     </Drawer>
   )

@@ -6,6 +6,7 @@ import type { UserFormValues } from '@/types/admin-user-form'
 export type AdminUserCreateModalProps = {
   open: boolean
   form: FormInstance<UserFormValues>
+  roleOptions: { label: string; value: string }[]
   confirmLoading: boolean
   onCancel: () => void
   onSubmit: () => void
@@ -14,6 +15,7 @@ export type AdminUserCreateModalProps = {
 export function AdminUserCreateModal({
   open,
   form,
+  roleOptions,
   confirmLoading,
   onCancel,
   onSubmit,
@@ -30,7 +32,7 @@ export function AdminUserCreateModal({
       width={480}
     >
       <Form<UserFormValues> form={form} layout="vertical" requiredMark>
-        <AdminUserFormFields mode="create" />
+        <AdminUserFormFields mode="create" roleOptions={roleOptions} />
       </Form>
     </Modal>
   )

@@ -1,0 +1,1 @@
+export const PAYMENTS_DEFAULT_PAGE_SIZE = 10

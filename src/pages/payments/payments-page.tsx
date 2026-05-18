@@ -1,0 +1,153 @@
+import { useMemo } from "react";
+import { Alert, Button, Input, Select, Space, Table, Typography } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import type { Payment, PaymentStatus } from "@/types/payment";
+import { usePaymentsPage } from "@/hooks/use-payments-page";
+
+const STATUS_OPTIONS: { label: string; value: PaymentStatus }[] = [
+  { label: "Kutilmoqda", value: "pending" },
+  { label: "To‘langan", value: "paid" },
+  { label: "Muvaffaqiyatsiz", value: "failed" },
+];
+
+export function PaymentsPage() {
+  const p = usePaymentsPage();
+
+  const columns: ColumnsType<Payment> = useMemo(
+    () => [
+      {
+        title: "№",
+        key: "index",
+        width: 56,
+        fixed: "left",
+        align: "center",
+        render: (_, __, index) => (p.page - 1) * p.pageSize + index + 1,
+      },
+      { title: "ID", dataIndex: "id", key: "id", width: 120, fixed: "left" },
+      {
+        title: "Summa",
+        key: "amount",
+        width: 120,
+        render: (_, row) =>
+          `${(row.amountCents / 100).toFixed(2)} ${row.currency}`,
+      },
+      {
+        title: "Komissiya",
+        key: "fee",
+        width: 100,
+        render: (_, row) => `${(row.feeCents / 100).toFixed(2)}`,
+      },
+      { title: "Holat", dataIndex: "status", key: "status", width: 96 },
+      { title: "Usul", dataIndex: "method", key: "method", width: 120 },
+      {
+        title: "Kategoriya",
+        dataIndex: "category",
+        key: "category",
+        width: 120,
+      },
+      {
+        title: "Merchant",
+        dataIndex: "merchantName",
+        key: "merchantName",
+        width: 140,
+      },
+      {
+        title: "Mijoz",
+        dataIndex: "customerEmail",
+        key: "customerEmail",
+        ellipsis: true,
+        width: 200,
+      },
+      {
+        title: "Ref",
+        dataIndex: "externalRef",
+        key: "externalRef",
+        width: 160,
+      },
+      { title: "Shahar", dataIndex: "city", key: "city", width: 100 },
+      {
+        title: "Yaratilgan",
+        dataIndex: "createdAt",
+        key: "createdAt",
+        width: 180,
+        render: (v: string) => new Date(v).toLocaleString(),
+      },
+    ],
+    [p.page, p.pageSize],
+  );
+
+  return (
+    <Space
+      direction="vertical"
+      size="large"
+      style={{ width: "100%", display: "flex" }}
+    >
+      <Space
+        align="baseline"
+        style={{ justifyContent: "space-between", width: "100%" }}
+        wrap
+      >
+        <Typography.Title level={2} style={{ margin: 0 }}>
+          To‘lovlar
+        </Typography.Title>
+        {p.query.isSuccess ? (
+          <Typography.Text type="secondary">
+            Jami {p.total} ta yozuv (backend: qidiruv, holat, pagination)
+          </Typography.Text>
+        ) : null}
+      </Space>
+
+      <Space wrap style={{ width: "100%" }} size="middle">
+        <Input.Search
+          allowClear
+          placeholder="ID, mijoz, merchant, kategoriya, ref, shahar, usul, holat…"
+          style={{ maxWidth: 420, minWidth: 200 }}
+          value={p.search}
+          onChange={(e) => {
+            p.setSearch(e.target.value);
+          }}
+        />
+        <Select
+          style={{ minWidth: 180 }}
+          allowClear
+          placeholder="Holat (barchasi)"
+          value={p.status === "" ? undefined : p.status}
+          options={STATUS_OPTIONS}
+          onChange={(v) => {
+            p.setStatus(v ?? "");
+          }}
+        />
+      </Space>
+
+      {p.query.isError ? (
+        <Alert
+          type="error"
+          showIcon
+          message="Ma'lumot yuklanmadi"
+          description={p.errorDescription}
+          action={
+            <Button size="small" onClick={() => void p.refetch()}>
+              Qayta urinish
+            </Button>
+          }
+        />
+      ) : null}
+
+      <Table<Payment>
+        rowKey="id"
+        loading={p.query.isFetching}
+        dataSource={p.items}
+        scroll={{ x: 1480 }}
+        columns={columns}
+        pagination={{
+          current: p.page,
+          pageSize: p.pageSize,
+          total: p.total,
+          showSizeChanger: false,
+          showTotal: p.showTotal,
+          onChange: p.onPaginationChange,
+        }}
+      />
+    </Space>
+  );
+}

@@ -1,7 +1,10 @@
 import {
+  BarChartOutlined,
+  CreditCardOutlined,
   DashboardOutlined,
   DownOutlined,
   LogoutOutlined,
+  TagsOutlined,
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -18,7 +21,7 @@ import {
   Typography,
 } from "antd";
 import { useMemo, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "@/constants/permissions";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCanAccess } from "@/hooks/use-can-access";
@@ -51,15 +54,22 @@ export function MainLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
+  const canDashboard = useCanAccess(PERMISSIONS.DASHBOARD_READ);
   const canUsers = useCanAccess(PERMISSIONS.USERS_READ);
+  const canPayments = useCanAccess(PERMISSIONS.PAYMENTS_READ);
+  const canReports = useCanAccess(PERMISSIONS.REPORTS_READ);
 
   const menuItems: MenuProps["items"] = useMemo(
     () => [
-      {
-        key: PATHS.DASHBOARD,
-        icon: <DashboardOutlined />,
-        label: "Dashboard",
-      },
+      ...(canDashboard
+        ? [
+            {
+              key: PATHS.DASHBOARD,
+              icon: <DashboardOutlined />,
+              label: "Dashboard",
+            },
+          ]
+        : []),
       ...(canUsers
         ? [
             {
@@ -67,10 +77,33 @@ export function MainLayout() {
               icon: <TeamOutlined />,
               label: "Users",
             },
+            {
+              key: PATHS.ADMIN_ROLES,
+              icon: <TagsOutlined />,
+              label: "Roles",
+            },
+          ]
+        : []),
+      ...(canPayments
+        ? [
+            {
+              key: PATHS.PAYMENTS,
+              icon: <CreditCardOutlined />,
+              label: "Payments",
+            },
+          ]
+        : []),
+      ...(canReports
+        ? [
+            {
+              key: PATHS.REPORTS,
+              icon: <BarChartOutlined />,
+              label: "Reports",
+            },
           ]
         : []),
     ],
-    [canUsers],
+    [canDashboard, canUsers, canPayments, canReports],
   );
 
   const userMenuItems: MenuProps["items"] = useMemo(
@@ -96,11 +129,18 @@ export function MainLayout() {
     return {
       ...mainLayoutContentArea,
       ...(compact ? mainLayoutContentAreaCompact : {}),
-      ...(location.pathname === PATHS.ADMIN_USERS
+      ...(location.pathname === PATHS.ADMIN_USERS ||
+      location.pathname === PATHS.ADMIN_ROLES ||
+      location.pathname === PATHS.PAYMENTS ||
+      location.pathname === PATHS.REPORTS
         ? mainLayoutContentTableFriendly
         : {}),
     };
   }, [screens.md, location.pathname]);
+
+  if (user && user.permissions.length === 0 && location.pathname !== PATHS.ACCOUNT) {
+    return <Navigate to={PATHS.FORBIDDEN} replace />;
+  }
 
   return (
     <Layout style={mainLayoutShell}>

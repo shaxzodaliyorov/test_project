@@ -1,1 +1,2 @@
-export type Role = 'admin' | 'user'
+/** Statik rol sluglari (backend katalog bilan bir xil). */
+export type Role = 'admin' | 'payment' | 'reports' | 'users'

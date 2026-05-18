@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import type { DefaultBodyType, HttpResponseResolver, PathParams } from 'msw'
+import { VALID_ROLE_SLUGS } from '@/constants/role-options'
 import { PERMISSIONS } from '@/constants/permissions'
 import type { Role } from '@/types/role'
 import {
@@ -21,11 +22,8 @@ function parseIntParam(value: string | null, fallback: number): number {
 }
 
 function isRoleArray(v: unknown): v is Role[] {
-  return (
-    Array.isArray(v) &&
-    v.every((x) => x === 'admin' || x === 'user') &&
-    v.length > 0
-  )
+  if (!Array.isArray(v) || v.length === 0) return false
+  return v.every((x) => typeof x === 'string' && VALID_ROLE_SLUGS.has(x as Role))
 }
 
 function passwordMeetsPolicy(p: string): boolean {
@@ -164,7 +162,7 @@ export const usersHandlers = [
     }
     if (!isRoleArray(body.roles)) {
       return HttpResponse.json(
-        { message: 'roles must be a non-empty array of admin|user' },
+        { message: 'roles must be a non-empty array of valid role slugs' },
         { status: 400 },
       )
     }
