@@ -83,6 +83,10 @@ const rows: DemoRow[] = [
   },
 ]
 
+export function getDemoRowsCount(): number {
+  return rows.length
+}
+
 export function findRowById(id: string): DemoRow | undefined {
   return rows.find((r) => r.id === id)
 }

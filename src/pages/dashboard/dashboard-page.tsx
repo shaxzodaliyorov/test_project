@@ -1,19 +1,98 @@
-import { Spin, Typography } from 'antd'
-import { useAuthStore } from '@/hooks/auth-store'
-import { useAuthSession } from '@/hooks/use-auth-session'
+import {
+  AppstoreOutlined,
+  CreditCardOutlined,
+  ShopOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
+import { Alert, Button, Col, Row, Space, Spin, Typography, theme } from "antd";
+import { useDashboard } from "@/hooks/use-dashboard";
+import { useAuthSession } from "@/hooks/use-auth-session";
+import { DashboardActivityChart } from "./dashboard-activity-chart";
+import { DashboardStatTile } from "./dashboard-stat-tile";
 
 export function DashboardPage() {
-  const user = useAuthStore((s) => s.user)
-  const me = useAuthSession()
+  const { token } = theme.useToken();
+  const me = useAuthSession();
+  const dashboard = useDashboard();
 
   if (me.isLoading) {
-    return <Spin size="large" />
+    return <Spin size="large" />;
   }
 
+  const errorDescription =
+    dashboard.error instanceof Error
+      ? dashboard.error.message
+      : String(dashboard.error ?? "Unknown error");
+
+  const d = dashboard.data;
+
   return (
-    <>
-      <Typography.Title level={2}>Dashboard</Typography.Title>
-      <Typography.Paragraph>Welcome, {user?.name}</Typography.Paragraph>
-    </>
-  )
+    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Typography.Title level={2} style={{ margin: 0 }}>
+        Dashboard
+      </Typography.Title>
+
+      {dashboard.isError ? (
+        <Alert
+          type="error"
+          showIcon
+          message="Ma'lumot yuklanmadi"
+          description={errorDescription}
+          action={
+            <Button size="small" onClick={() => void dashboard.refetch()}>
+              Qayta urinish
+            </Button>
+          }
+        />
+      ) : null}
+
+      <Spin spinning={dashboard.isFetching && !d}>
+        {d ? (
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Row gutter={[16, 16]} style={{ width: "100%" }}>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <DashboardStatTile
+                  title="Demo foydalanuvchilar"
+                  value={d.stats.demoUsersTotal}
+                  icon={<TeamOutlined />}
+                  iconColor={token.colorPrimary}
+                />
+              </Col>
+              {d.stats.demoPaymentRecords != null ? (
+                <Col xs={24} sm={12} md={8} lg={6}>
+                  <DashboardStatTile
+                    title="To‘lov yozuvlari (mock)"
+                    value={d.stats.demoPaymentRecords}
+                    icon={<CreditCardOutlined />}
+                    iconColor={token.colorInfo}
+                  />
+                </Col>
+              ) : null}
+              {d.stats.demoReportCategories != null ? (
+                <Col xs={24} sm={12} md={8} lg={6}>
+                  <DashboardStatTile
+                    title="Hisobot: kategoriyalar"
+                    value={d.stats.demoReportCategories}
+                    icon={<AppstoreOutlined />}
+                    iconColor={token.colorSuccess}
+                  />
+                </Col>
+              ) : null}
+              {d.stats.demoReportMerchants != null ? (
+                <Col xs={24} sm={12} md={8} lg={6}>
+                  <DashboardStatTile
+                    title="Hisobot: top merchantlar"
+                    value={d.stats.demoReportMerchants}
+                    icon={<ShopOutlined />}
+                    iconColor={token.colorWarning}
+                  />
+                </Col>
+              ) : null}
+            </Row>
+            <DashboardActivityChart activity={d.activity} />
+          </Space>
+        ) : null}
+      </Spin>
+    </Space>
+  );
 }
