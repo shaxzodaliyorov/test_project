@@ -3,12 +3,16 @@ import {
   MailOutlined,
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
-import { useMutation } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { App, Button, Divider, Flex, Form, Input, Space, Tag, Typography } from "antd";
-import { useNavigate } from "react-router-dom";
-import { LoginLocaleSelect } from "./components/login-locale-select";
-import { LoginThemeToggle } from "./components/login-theme-toggle";
+import {
+  Button,
+  Divider,
+  Flex,
+  Form,
+  Input,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
 import {
   loginCertIcon,
   loginDemoDividerText,
@@ -26,36 +30,13 @@ import {
   loginTitle,
   loginTopBar,
 } from "./login.styles";
-import { useAuthStore } from "@/hooks/auth-store";
-import type { User } from "@/types/user";
-import { postLoginPath } from "@/utils/post-login-path";
-import { getApiErrorMessage } from "@/utils/api-error";
-import { apiPost } from "@/utils/http-client";
-
-type LoginResponse = { token: string; user: User };
+import { useLoginPage } from "@/hooks/use-login-page";
+import type { LoginFormValues } from "@/types/login-form";
+import { LoginLocaleSelect } from "./login-locale-select";
+import { LoginThemeToggle } from "./login-theme-toggle";
 
 export function LoginPage() {
-  const { t } = useTranslation("auth");
-  const navigate = useNavigate();
-  const { message } = App.useApp();
-  const setToken = useAuthStore((s) => s.setToken);
-  const setUser = useAuthStore((s) => s.setUser);
-
-  const login = useMutation({
-    mutationFn: (values: { email: string; password: string }) =>
-      apiPost<LoginResponse, { email: string; password: string }>(
-        "/api/auth/login",
-        values,
-      ),
-    onSuccess: (data) => {
-      setToken(data.token);
-      setUser(data.user);
-      void navigate(postLoginPath(data.user));
-    },
-    onError: (error) => {
-      message.error(getApiErrorMessage(error));
-    },
-  });
+  const { t, emailRules, passwordRules, submit, isPending } = useLoginPage();
 
   return (
     <Flex justify="center" align="center" style={loginRootFlex}>
@@ -83,19 +64,17 @@ export function LoginPage() {
             </Typography.Paragraph>
           </Flex>
 
-          <Form
+          <Form<LoginFormValues>
             layout="vertical"
             requiredMark={false}
             size="large"
-            onFinish={(values) => {
-              login.mutate(values);
-            }}
-            disabled={login.isPending}
+            onFinish={submit}
+            disabled={isPending}
           >
             <Form.Item
               name="email"
               label={<span style={loginFieldLabel}>{t("email")}</span>}
-              rules={[{ required: true, message: t("emailRequired") }]}
+              rules={emailRules}
             >
               <Input
                 type="email"
@@ -107,7 +86,7 @@ export function LoginPage() {
             <Form.Item
               name="password"
               label={<span style={loginFieldLabel}>{t("password")}</span>}
-              rules={[{ required: true, message: t("passwordRequired") }]}
+              rules={passwordRules}
             >
               <Input.Password
                 autoComplete="current-password"
@@ -119,7 +98,7 @@ export function LoginPage() {
               htmlType="submit"
               block
               size="large"
-              loading={login.isPending}
+              loading={isPending}
             >
               {t("continue")}
             </Button>

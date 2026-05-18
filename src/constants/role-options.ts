@@ -1,5 +1,6 @@
 import type { TFunction } from 'i18next'
 import type { Role } from '@/types/role'
+import { ROLE_LABEL_KEY } from '@/utils/role-display'
 
 const ROLE_ORDER: readonly Role[] = [
   'admin',
@@ -9,13 +10,6 @@ const ROLE_ORDER: readonly Role[] = [
 ]
 
 export const VALID_ROLE_SLUGS = new Set<Role>(ROLE_ORDER)
-
-const ROLE_LABEL_KEY: Record<Role, string> = {
-  admin: 'users:roleAdmin',
-  payment: 'users:rolePayment',
-  reports: 'users:roleReports',
-  users: 'users:roleUsers',
-}
 
 function getRoleSelectOptions(
   t: TFunction,

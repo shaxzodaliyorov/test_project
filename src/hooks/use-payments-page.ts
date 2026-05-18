@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PaymentStatus, PaymentsListResponse } from '@/types/payment'
 import { PAYMENTS_DEFAULT_PAGE_SIZE } from '@/constants/payments-list'
+import { buildPaymentsColumns } from '@/pages/payments/payments-table-columns'
 import { useAuthStore } from '@/hooks/auth-store'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { paginationShowTotal } from '@/utils/pagination-show-total'
@@ -27,7 +28,7 @@ function paymentsListUrl(
 type PaymentsStatusFilter = PaymentStatus | ''
 
 export function usePaymentsPage() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['payments', 'common'])
   const preferredCurrency = useAuthStore(
     (s) => s.user?.preferredCurrency ?? 'USD',
   )
@@ -95,6 +96,49 @@ export function usePaymentsPage() {
 
   const showTotal = useMemo(() => paginationShowTotal(t), [t])
 
+  const statusLabels = useMemo(
+    () => ({
+      pending: t('payments:statusPending'),
+      paid: t('payments:statusPaid'),
+      failed: t('payments:statusFailed'),
+    }),
+    [t],
+  )
+
+  const statusOptions = useMemo(
+    () =>
+      (['pending', 'paid', 'failed'] as const).map((value) => ({
+        value,
+        label: statusLabels[value],
+      })),
+    [statusLabels],
+  )
+
+  const emptyDescription = useMemo(
+    () =>
+      search.trim() || status
+        ? t('payments:emptySearch')
+        : t('payments:emptyDefault'),
+    [search, status, t],
+  )
+
+  const columns = useMemo(
+    () => buildPaymentsColumns({ t, page, pageSize, statusLabels }),
+    [t, page, pageSize, statusLabels],
+  )
+
+  const paginationConfig = useMemo(
+    () => ({
+      current: page,
+      pageSize,
+      total: query.data?.total ?? 0,
+      showSizeChanger: false as const,
+      showTotal,
+      onChange: onPaginationChange,
+    }),
+    [page, pageSize, query.data?.total, showTotal, onPaginationChange],
+  )
+
   return {
     page,
     pageSize,
@@ -109,5 +153,10 @@ export function usePaymentsPage() {
     refetch,
     showTotal,
     onPaginationChange,
+    statusLabels,
+    statusOptions,
+    emptyDescription,
+    columns,
+    paginationConfig,
   }
 }

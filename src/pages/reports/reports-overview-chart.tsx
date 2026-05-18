@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, Spin } from "antd";
+import { Card } from "antd";
+import { ReportsChartSkeleton } from "@/components/skeletons/reports-chart-skeleton";
 import type { ReportsOverviewResponse } from "@/types/reports";
 import {
   CartesianGrid,
@@ -37,56 +38,58 @@ export function ReportsOverviewChart({
   const datasets = chart?.datasets ?? [];
   const showChart = rows.length > 0;
 
+  if (fetching) {
+    return <ReportsChartSkeleton compact={compact} />;
+  }
+
   return (
     <Card size="small" title={t("overviewCardTitle")}>
-      <Spin spinning={fetching && !showChart}>
-        {showChart ? (
-          <div style={reportsOverviewChartPlot(compact)}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={rows}
-                margin={{ top: 8, right: 12, left: 4, bottom: 8 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 11 }}
-                  angle={-28}
-                  textAnchor="end"
-                  height={52}
-                  interval="preserveStartEnd"
+      {showChart ? (
+        <div style={reportsOverviewChartPlot(compact)}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={rows}
+              margin={{ top: 8, right: 12, left: 4, bottom: 8 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 11 }}
+                angle={-28}
+                textAnchor="end"
+                height={52}
+                interval="preserveStartEnd"
+              />
+              <YAxis
+                tick={{ fontSize: 11 }}
+                tickFormatter={(v) => formatMoney(Number(v))}
+                width={76}
+              />
+              <Tooltip
+                formatter={(value) => formatMoney(Number(value))}
+                labelFormatter={(label) =>
+                  t("tooltipMonth", { label: String(label) })
+                }
+              />
+              <Legend />
+              {datasets.map((ds, i) => (
+                <Line
+                  key={ds.label}
+                  type="monotone"
+                  dataKey={REPORT_CHART_SERIES_KEY(i)}
+                  name={ds.label}
+                  stroke={LINE_COLORS[i % LINE_COLORS.length]}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
                 />
-                <YAxis
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(v) => formatMoney(Number(v))}
-                  width={76}
-                />
-                <Tooltip
-                  formatter={(value) => formatMoney(Number(value))}
-                  labelFormatter={(label) =>
-                    t("tooltipMonth", { label: String(label) })
-                  }
-                />
-                <Legend />
-                {datasets.map((ds, i) => (
-                  <Line
-                    key={ds.label}
-                    type="monotone"
-                    dataKey={REPORT_CHART_SERIES_KEY(i)}
-                    name={ds.label}
-                    stroke={LINE_COLORS[i % LINE_COLORS.length]}
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4 }}
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        ) : fetching ? null : (
-          <div style={reportsOverviewChartEmpty}>{t("overviewEmpty")}</div>
-        )}
-      </Spin>
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div style={reportsOverviewChartEmpty}>{t("overviewEmpty")}</div>
+      )}
     </Card>
   );
 }

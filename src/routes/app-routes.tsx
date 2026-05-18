@@ -1,7 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/protected-route/protected-route";
 import { MainLayout } from "@/components/main-layout/main-layout";
-import { GuestLayout } from "@/pages/login/components/guest-layout";
 import { AdminUsersPage } from "@/pages/admin-users/admin-users-page";
 import { DashboardPage } from "@/pages/dashboard/dashboard-page";
 import { ForbiddenPage } from "@/pages/forbidden/forbidden-page";
@@ -12,6 +11,7 @@ import { PaymentsPage } from "@/pages/payments/payments-page";
 import { ReportsPage } from "@/pages/reports/reports-page";
 import { SettingsPage } from "@/pages/settings/settings-page";
 import { PERMISSIONS } from "@/constants/permissions";
+import { GuestLayout } from "@/pages/login/guest-layout";
 
 const usersRoute = {
   path: PATHS.USERS,

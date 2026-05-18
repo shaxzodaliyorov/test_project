@@ -35,6 +35,22 @@ export const settingsSectionTitle: CSSProperties = {
   margin: "0 0 12px",
 };
 
+export function settingsPageTitle(compact: boolean): CSSProperties {
+  return { margin: 0, fontSize: compact ? 18 : undefined };
+}
+
+export function settingsPageSubtitle(compact: boolean): CSSProperties {
+  return {
+    marginBottom: 0,
+    marginTop: compact ? 6 : 8,
+    fontSize: compact ? 13 : undefined,
+  };
+}
+
+export function settingsSectionDividerMargin(compact: boolean): string {
+  return compact ? "16px 0" : "24px 0";
+}
+
 export const settingsFooterBar: CSSProperties = {
   position: "sticky",
   bottom: 0,

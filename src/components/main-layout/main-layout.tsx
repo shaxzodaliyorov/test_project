@@ -1,25 +1,17 @@
-import { DownOutlined, LogoutOutlined } from '@ant-design/icons'
-import type { MenuProps } from 'antd'
+import { DownOutlined } from "@ant-design/icons";
 import {
   Avatar,
   Button,
   Dropdown,
-  Grid,
   Layout,
   Menu,
-  Modal,
   Space,
   Typography,
-} from 'antd'
-import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { MainLayoutBottomNav } from './main-layout-bottom-nav'
+} from "antd";
+import { useTranslation } from "react-i18next";
+import { Link, Navigate, Outlet } from "react-router-dom";
+import { MainLayoutBottomNav } from "./main-layout-bottom-nav";
 import {
-  mainLayoutContentArea,
-  mainLayoutContentAreaCompact,
-  mainLayoutContentTableFriendly,
-  mainLayoutContentWithBottomNav,
   mainLayoutHeaderBar,
   mainLayoutHeaderBarCompact,
   mainLayoutHeaderBrand,
@@ -38,29 +30,27 @@ import {
   mainLayoutUserAvatar,
   mainLayoutUserTriggerChevron,
   mainLayoutUserTriggerName,
-} from './main-layout.styles'
-import { useAuthStore } from '@/hooks/auth-store'
-import { useCompactLayout } from '@/hooks/use-compact-layout'
-import { useMainNavItems } from '@/hooks/use-main-nav-items'
-import { PATHS } from '@/routes/paths'
-import { initialsFromName } from '@/utils/initials-from-name'
+} from "./main-layout.styles";
+import { useMainLayout } from "@/hooks/use-main-layout";
+import { PATHS } from "@/routes/paths";
+import { initialsFromName } from "@/utils/initials-from-name";
 
-const { Header, Content, Sider } = Layout
+const { Header, Content, Sider } = Layout;
 
 function TaskSidebarMark({ size = 36 }: { size?: number }) {
-  const icon = Math.round(size * 0.52)
+  const icon = Math.round(size * 0.52);
   return (
     <span
       aria-hidden
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
         width: size,
         height: size,
         borderRadius: 10,
-        background: 'var(--accent)',
-        color: '#fff',
+        background: "var(--accent)",
+        color: "#fff",
         flexShrink: 0,
       }}
     >
@@ -74,87 +64,32 @@ function TaskSidebarMark({ size = 36 }: { size?: number }) {
         />
       </svg>
     </span>
-  )
+  );
 }
 
 export function MainLayout() {
-  const { t } = useTranslation(['nav', 'common'])
-  const navigate = useNavigate()
-  const location = useLocation()
-  const screens = Grid.useBreakpoint()
-  const isCompactNav = useCompactLayout()
-  const navItems = useMainNavItems()
-  const logout = useAuthStore((s) => s.logout)
-  const user = useAuthStore((s) => s.user)
+  const { t } = useTranslation(["nav", "common"]);
+  const layout = useMainLayout();
 
-  const menuItems: MenuProps['items'] = useMemo(
-    () =>
-      navItems.map((item) => ({
-        key: item.key,
-        icon: item.icon,
-        label: item.label,
-      })),
-    [navItems],
-  )
-
-  const userMenuItems: MenuProps['items'] = useMemo(
-    () => [
-      {
-        key: 'logout',
-        icon: <LogoutOutlined />,
-        label: t('nav:logout'),
-        danger: true,
-      },
-    ],
-    [t],
-  )
-
-  const contentStyle = useMemo(() => {
-    const compactPadding = isCompactNav || screens.md === false
-    return {
-      ...mainLayoutContentArea,
-      ...(compactPadding ? mainLayoutContentAreaCompact : {}),
-      ...(isCompactNav ? mainLayoutContentWithBottomNav : {}),
-      ...(location.pathname === PATHS.USERS ||
-      location.pathname === PATHS.PAYMENTS ||
-      location.pathname === PATHS.REPORTS
-        ? mainLayoutContentTableFriendly
-        : {}),
-    }
-  }, [isCompactNav, screens.md, location.pathname])
-
-  const handleLogoutClick = () => {
-    Modal.confirm({
-      title: t('nav:logoutConfirmTitle'),
-      content: t('nav:logoutConfirmBody'),
-      okText: t('common:ok'),
-      cancelText: t('common:cancel'),
-      onOk: () => {
-        logout()
-        void navigate(PATHS.LOGIN)
-      },
-    })
-  }
-
-  if (user && user.permissions.length === 0) {
-    return <Navigate to={PATHS.FORBIDDEN} replace />
+  if (layout.hasNoPermissions) {
+    return <Navigate to={PATHS.FORBIDDEN} replace />;
   }
 
   return (
     <Layout style={mainLayoutShell}>
-      {!isCompactNav ? (
+      {!layout.isCompactNav ? (
         <Sider width={232} theme="light" style={mainLayoutSider}>
           <div style={mainLayoutSiderInner}>
             <Link
               to={PATHS.DASHBOARD}
-              aria-label={t('nav:taskAria')}
+              aria-label={t("nav:taskAria")}
               style={{
                 ...mainLayoutSiderBrand,
-                display: 'block',
-                width: '100%',
-                boxSizing: 'border-box',
-                textDecoration: 'none',
-                color: 'inherit',
+                display: "block",
+                width: "100%",
+                boxSizing: "border-box",
+                textDecoration: "none",
+                color: "inherit",
               }}
             >
               <span style={mainLayoutSiderBrandRow}>
@@ -164,11 +99,9 @@ export function MainLayout() {
             </Link>
             <Menu
               mode="inline"
-              selectedKeys={[location.pathname]}
-              items={menuItems}
-              onClick={({ key }) => {
-                void navigate(String(key))
-              }}
+              selectedKeys={[layout.location.pathname]}
+              items={layout.menuItems}
+              onClick={({ key }) => layout.navigateTo(String(key))}
               style={mainLayoutMenu}
             />
           </div>
@@ -176,16 +109,20 @@ export function MainLayout() {
       ) : null}
       <Layout style={mainLayoutInner}>
         <Header
-          style={isCompactNav ? mainLayoutHeaderBarCompact : mainLayoutHeaderBar}
+          style={
+            layout.isCompactNav
+              ? mainLayoutHeaderBarCompact
+              : mainLayoutHeaderBar
+          }
         >
-          {isCompactNav ? (
+          {layout.isCompactNav ? (
             <Link
               to={PATHS.DASHBOARD}
-              aria-label={t('nav:taskAria')}
+              aria-label={t("nav:taskAria")}
               style={{
                 ...mainLayoutHeaderBrandRow,
-                textDecoration: 'none',
-                color: 'inherit',
+                textDecoration: "none",
+                color: "inherit",
               }}
             >
               <TaskSidebarMark size={32} />
@@ -193,32 +130,34 @@ export function MainLayout() {
             </Link>
           ) : (
             <Typography.Title level={4} style={mainLayoutHeaderBrand}>
-              {t('nav:headerBrand')}
+              {t("nav:headerBrand")}
             </Typography.Title>
           )}
-          {!isCompactNav ? (
+          {!layout.isCompactNav ? (
             <div style={mainLayoutHeaderRight}>
               <Dropdown
                 menu={{
-                  items: userMenuItems,
+                  items: layout.userMenuItems,
                   onClick: ({ key }) => {
-                    if (key === 'logout') {
-                      handleLogoutClick()
+                    if (key === "logout") {
+                      layout.handleLogoutClick();
                     }
                   },
                 }}
-                trigger={['click']}
+                trigger={["click"]}
               >
                 <Button
                   type="default"
                   style={mainLayoutUserTrigger}
-                  aria-label={user?.name ?? t('nav:logout')}
+                  aria-label={layout.user?.name ?? t("nav:logout")}
                 >
-                  <Space size={10} align="center" style={{ width: '100%' }}>
+                  <Space size={10} align="center" style={{ width: "100%" }}>
                     <Avatar size={28} style={mainLayoutUserAvatar}>
-                      {initialsFromName(user?.name)}
+                      {initialsFromName(layout.user?.name)}
                     </Avatar>
-                    <span style={mainLayoutUserTriggerName}>{user?.name}</span>
+                    <span style={mainLayoutUserTriggerName}>
+                      {layout.user?.name}
+                    </span>
                     <DownOutlined style={mainLayoutUserTriggerChevron} />
                   </Space>
                 </Button>
@@ -226,11 +165,13 @@ export function MainLayout() {
             </div>
           ) : null}
         </Header>
-        <Content style={contentStyle}>
+        <Content style={layout.contentStyle}>
           <Outlet />
         </Content>
       </Layout>
-      {isCompactNav ? <MainLayoutBottomNav items={navItems} /> : null}
+      {layout.isCompactNav ? (
+        <MainLayoutBottomNav items={layout.navItems} />
+      ) : null}
     </Layout>
-  )
+  );
 }

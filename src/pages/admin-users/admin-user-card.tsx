@@ -1,7 +1,6 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import type { TFunction } from 'i18next'
 import { Button, Card, Space, Tag, Typography, theme } from 'antd'
-import type { Role } from '@/types/role'
 import type { User } from '@/types/user'
 import {
   adminUserCardActionButton,
@@ -18,20 +17,7 @@ import {
   adminUserCardWidth,
 } from './admin-user-card.styles'
 
-const ROLE_LABEL_KEY: Record<Role, string> = {
-  admin: 'users:roleAdmin',
-  payment: 'users:rolePayment',
-  reports: 'users:roleReports',
-  users: 'users:roleUsers',
-}
-
-function roleTagColor(role: Role): string | undefined {
-  if (role === 'admin') return 'blue'
-  if (role === 'payment') return 'green'
-  if (role === 'reports') return 'gold'
-  if (role === 'users') return 'purple'
-  return undefined
-}
+import { ROLE_LABEL_KEY, roleTagColor } from '@/utils/role-display'
 
 type AdminUserCardProps = {
   user: User

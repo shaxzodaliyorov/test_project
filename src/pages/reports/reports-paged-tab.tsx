@@ -2,8 +2,10 @@ import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ColumnsType } from 'antd/es/table'
-import { Input, Pagination, Spin, Table } from 'antd'
+import { Input, Pagination, Table } from 'antd'
 import type { PagedFilter } from '@/constants/reports-paged-filter'
+import { DataTableSkeleton } from '@/components/skeletons/data-table-skeleton'
+import { ListCardSkeletonList } from '@/components/skeletons/list-card-skeleton-list'
 import { useCompactLayout } from '@/hooks/use-compact-layout'
 import { paginationShowTotal } from '@/utils/pagination-show-total'
 import {
@@ -64,24 +66,33 @@ export function ReportsPagedTab<T extends object>({
       />
 
       {isCompact ? (
-        <Spin spinning={loading}>
-          <div style={reportsPagedTabCardList}>
-            {items.map((row) => (
-              <div key={String(row[rowKey])}>{renderCard(row)}</div>
-            ))}
-          </div>
-          {total > 0 ? (
-            <Pagination
-              {...paginationConfig}
-              size="small"
-              style={reportsPagedTabPagination}
-            />
-          ) : null}
-        </Spin>
+        loading ? (
+          <ListCardSkeletonList count={filter.pageSize} variant="report" />
+        ) : (
+          <>
+            <div style={reportsPagedTabCardList}>
+              {items.map((row) => (
+                <div key={String(row[rowKey])}>{renderCard(row)}</div>
+              ))}
+            </div>
+            {total > 0 ? (
+              <Pagination
+                {...paginationConfig}
+                size="small"
+                style={reportsPagedTabPagination}
+              />
+            ) : null}
+          </>
+        )
+      ) : loading ? (
+        <DataTableSkeleton
+          columnCount={columns?.length ?? 4}
+          rowCount={filter.pageSize}
+          size="small"
+        />
       ) : (
         <Table<T>
           rowKey={rowKey}
-          loading={loading}
           dataSource={items}
           size="small"
           columns={columns}

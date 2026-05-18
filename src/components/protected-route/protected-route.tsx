@@ -1,7 +1,8 @@
-import { Flex, Spin } from 'antd'
 import { Navigate, Outlet, useMatches } from 'react-router-dom'
+import { AppShellSkeleton } from '@/components/skeletons/app-shell-skeleton'
 import { useAuthStore } from '@/hooks/auth-store'
 import { useAuthSession } from '@/hooks/use-auth-session'
+import { useCompactLayout } from '@/hooks/use-compact-layout'
 import { PATHS } from '@/routes/paths'
 import type { AppRouteHandle } from '@/types/app-route-handle'
 import type { User } from '@/types/user'
@@ -29,6 +30,7 @@ export function ProtectedRoute() {
   const user = useAuthStore((s) => s.user)
   const me = useAuthSession()
   const matches = useMatches()
+  const isCompact = useCompactLayout()
 
   if (!token) {
     return <Navigate to={PATHS.LOGIN} replace />
@@ -37,11 +39,7 @@ export function ProtectedRoute() {
   const sessionUser = user ?? me.data ?? null
 
   if (me.isPending && !sessionUser) {
-    return (
-      <Flex align="center" justify="center" style={{ minHeight: '100vh' }}>
-        <Spin size="large" />
-      </Flex>
-    )
+    return <AppShellSkeleton compact={isCompact} />
   }
 
   if (me.isError) {

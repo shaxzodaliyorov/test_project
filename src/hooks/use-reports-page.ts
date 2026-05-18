@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { REPORTS_RANGE_VALUES } from "@/constants/reports-range-options";
 import type { ReportTableSection, ReportsOverviewResponse, ReportsTableResponse } from "@/types/reports";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -48,7 +50,14 @@ function tableSectionFromTab(tab: string): ReportTableSection | null {
   return null;
 }
 
+const RANGE_LABEL_NS: Record<(typeof REPORTS_RANGE_VALUES)[number], string> = {
+  default: "reports:rangeDefault",
+  "12m": "reports:range12m",
+  "30d": "reports:range30d",
+};
+
 export function useReportsPage() {
+  const { t } = useTranslation(["reports", "common"]);
   const preferredCurrency = useAuthStore(
     (s) => s.user?.preferredCurrency ?? "USD",
   );
@@ -221,8 +230,17 @@ export function useReportsPage() {
       ? tableError
       : "";
 
-  const summarySpinning = activeTab === "summary" && overviewQuery.isFetching;
+  const summaryLoading = activeTab === "summary" && overviewQuery.isFetching;
   const overviewFetching = overviewQuery.isFetching;
+
+  const rangeOptions = useMemo(
+    () =>
+      REPORTS_RANGE_VALUES.map((value) => ({
+        value,
+        label: t(RANGE_LABEL_NS[value]),
+      })),
+    [t],
+  );
 
   return {
     range,
@@ -231,7 +249,7 @@ export function useReportsPage() {
     onRangeChange,
     overview,
     overviewFetching,
-    summarySpinning,
+    summaryLoading,
     monthly,
     setMonthly,
     monthlyData,
@@ -256,5 +274,6 @@ export function useReportsPage() {
     showOverviewError,
     showTableError,
     errorDescription,
+    rangeOptions,
   };
 }

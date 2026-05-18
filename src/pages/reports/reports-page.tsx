@@ -1,7 +1,5 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Button, Select, Tabs, Typography } from "antd";
-import { REPORTS_RANGE_VALUES } from "@/constants/reports-range-options";
 import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { useReportsPage } from "@/hooks/use-reports-page";
 import { ReportsCategoriesTab } from "./reports-categories-tab";
@@ -23,32 +21,17 @@ import {
   reportsTitleCompact,
 } from "./reports-page.styles";
 
-const RANGE_LABEL_NS: Record<(typeof REPORTS_RANGE_VALUES)[number], string> = {
-  default: "reports:rangeDefault",
-  "12m": "reports:range12m",
-  "30d": "reports:range30d",
-};
-
 export function ReportsPage() {
   const { t } = useTranslation(["reports", "common"]);
   const isCompact = useCompactLayout();
   const r = useReportsPage();
-
-  const rangeOptions = useMemo(
-    () =>
-      REPORTS_RANGE_VALUES.map((value) => ({
-        value,
-        label: t(RANGE_LABEL_NS[value]),
-      })),
-    [t],
-  );
 
   const tabItems = [
     {
       key: "summary",
       label: t("reports:tabSummary"),
       children: (
-        <ReportsSummaryTab overview={r.overview} spinning={r.summarySpinning} />
+        <ReportsSummaryTab overview={r.overview} loading={r.summaryLoading} />
       ),
     },
     {
@@ -128,7 +111,7 @@ export function ReportsPage() {
               style={reportsPeriodSelectCompact}
               value={r.range || "default"}
               onChange={r.onRangeChange}
-              options={rangeOptions}
+              options={r.rangeOptions}
             />
           </div>
         </>
@@ -145,7 +128,7 @@ export function ReportsPage() {
               style={reportsPeriodSelectDesktop}
               value={r.range || "default"}
               onChange={r.onRangeChange}
-              options={rangeOptions}
+              options={r.rangeOptions}
             />
           </div>
         </>
