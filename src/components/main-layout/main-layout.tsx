@@ -4,9 +4,7 @@ import {
   DashboardOutlined,
   DownOutlined,
   LogoutOutlined,
-  TagsOutlined,
   TeamOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import {
@@ -73,14 +71,9 @@ export function MainLayout() {
       ...(canUsers
         ? [
             {
-              key: PATHS.ADMIN_USERS,
+              key: PATHS.USERS,
               icon: <TeamOutlined />,
               label: "Users",
-            },
-            {
-              key: PATHS.ADMIN_ROLES,
-              icon: <TagsOutlined />,
-              label: "Roles",
             },
           ]
         : []),
@@ -109,12 +102,6 @@ export function MainLayout() {
   const userMenuItems: MenuProps["items"] = useMemo(
     () => [
       {
-        key: "account",
-        icon: <UserOutlined />,
-        label: "Account",
-      },
-      { type: "divider" },
-      {
         key: "logout",
         icon: <LogoutOutlined />,
         label: "Logout",
@@ -129,8 +116,7 @@ export function MainLayout() {
     return {
       ...mainLayoutContentArea,
       ...(compact ? mainLayoutContentAreaCompact : {}),
-      ...(location.pathname === PATHS.ADMIN_USERS ||
-      location.pathname === PATHS.ADMIN_ROLES ||
+      ...(location.pathname === PATHS.USERS ||
       location.pathname === PATHS.PAYMENTS ||
       location.pathname === PATHS.REPORTS
         ? mainLayoutContentTableFriendly
@@ -138,7 +124,7 @@ export function MainLayout() {
     };
   }, [screens.md, location.pathname]);
 
-  if (user && user.permissions.length === 0 && location.pathname !== PATHS.ACCOUNT) {
+  if (user && user.permissions.length === 0) {
     return <Navigate to={PATHS.FORBIDDEN} replace />;
   }
 
@@ -176,10 +162,6 @@ export function MainLayout() {
               menu={{
                 items: userMenuItems,
                 onClick: ({ key }) => {
-                  if (key === "account") {
-                    void navigate(PATHS.ACCOUNT);
-                    return;
-                  }
                   if (key === "logout") {
                     Modal.confirm({
                       title: "Log out?",

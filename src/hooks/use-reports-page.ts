@@ -217,6 +217,7 @@ export function useReportsPage() {
       : "";
 
   const summarySpinning = activeTab === "summary" && overviewQuery.isFetching;
+  const overviewFetching = overviewQuery.isFetching;
 
   return {
     range,
@@ -224,6 +225,7 @@ export function useReportsPage() {
     onTabChange,
     onRangeChange,
     overview,
+    overviewFetching,
     summarySpinning,
     monthly,
     setMonthly,

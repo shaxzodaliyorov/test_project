@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Alert, Button, Input, Select, Space, Table, Typography } from "antd";
+import { Alert, Button, Input, Select, Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { Payment, PaymentStatus } from "@/types/payment";
 import { usePaymentsPage } from "@/hooks/use-payments-page";
@@ -9,6 +9,16 @@ const STATUS_OPTIONS: { label: string; value: PaymentStatus }[] = [
   { label: "To‘langan", value: "paid" },
   { label: "Muvaffaqiyatsiz", value: "failed" },
 ];
+
+const STATUS_TAG_COLOR: Record<PaymentStatus, string> = {
+  pending: "gold",
+  paid: "green",
+  failed: "red",
+};
+
+function paymentStatusLabel(status: PaymentStatus): string {
+  return STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
+}
 
 export function PaymentsPage() {
   const p = usePaymentsPage();
@@ -37,7 +47,15 @@ export function PaymentsPage() {
         width: 100,
         render: (_, row) => `${(row.feeCents / 100).toFixed(2)}`,
       },
-      { title: "Holat", dataIndex: "status", key: "status", width: 96 },
+      {
+        title: "Holat",
+        dataIndex: "status",
+        key: "status",
+        width: 130,
+        render: (status: PaymentStatus) => (
+          <Tag color={STATUS_TAG_COLOR[status]}>{paymentStatusLabel(status)}</Tag>
+        ),
+      },
       { title: "Usul", dataIndex: "method", key: "method", width: 120 },
       {
         title: "Kategoriya",
@@ -82,20 +100,9 @@ export function PaymentsPage() {
       size="large"
       style={{ width: "100%", display: "flex" }}
     >
-      <Space
-        align="baseline"
-        style={{ justifyContent: "space-between", width: "100%" }}
-        wrap
-      >
-        <Typography.Title level={2} style={{ margin: 0 }}>
-          To‘lovlar
-        </Typography.Title>
-        {p.query.isSuccess ? (
-          <Typography.Text type="secondary">
-            Jami {p.total} ta yozuv (backend: qidiruv, holat, pagination)
-          </Typography.Text>
-        ) : null}
-      </Space>
+      <Typography.Title level={2} style={{ margin: 0 }}>
+        To‘lovlar
+      </Typography.Title>
 
       <Space wrap style={{ width: "100%" }} size="middle">
         <Input.Search

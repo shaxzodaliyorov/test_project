@@ -20,7 +20,10 @@ function permissionsForRoles(roles: Role[]): readonly Permission[] {
     }
     return [...set] as readonly Permission[]
   }
-  set.add(PERMISSIONS.DASHBOARD_READ)
+  const usersOnly = roles.length === 1 && roles[0] === 'users'
+  if (!usersOnly) {
+    set.add(PERMISSIONS.DASHBOARD_READ)
+  }
   for (const r of roles) {
     if (r === 'users') {
       set.add(PERMISSIONS.USERS_READ)
@@ -70,6 +73,13 @@ const rows: DemoRow[] = [
     name: 'Reports User',
     password: 'Reports@1',
     roles: ['reports'],
+  },
+  {
+    id: '5',
+    email: 'usersonly@test.com',
+    name: 'Users Only',
+    password: 'Users@123',
+    roles: ['users'],
   },
 ]
 

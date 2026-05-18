@@ -25,7 +25,7 @@ import {
 } from './login.styles'
 import { useAuthStore } from '@/hooks/auth-store'
 import type { User } from '@/types/user'
-import { PATHS } from '@/routes/paths'
+import { postLoginPath } from '@/utils/post-login-path'
 import { getApiErrorMessage } from '@/utils/api-error'
 import { apiPost } from '@/utils/http-client'
 
@@ -46,7 +46,7 @@ export function LoginPage() {
     onSuccess: (data) => {
       setToken(data.token)
       setUser(data.user)
-      void navigate(PATHS.DASHBOARD)
+      void navigate(postLoginPath(data.user))
     },
     onError: (error) => {
       message.error(getApiErrorMessage(error))
@@ -140,6 +140,13 @@ export function LoginPage() {
               </Typography.Text>
               <Tag>reports@test.com</Tag>
               <Tag>Reports@1</Tag>
+            </Flex>
+            <Flex align="center" gap={8} wrap="wrap">
+              <Typography.Text strong style={loginDemoStrong}>
+                Users (faqat)
+              </Typography.Text>
+              <Tag>usersonly@test.com</Tag>
+              <Tag>Users@123</Tag>
             </Flex>
             <Flex align="center" gap={8} wrap="wrap">
               <Typography.Text strong style={loginDemoStrong}>

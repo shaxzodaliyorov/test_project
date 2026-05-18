@@ -6,6 +6,7 @@ import { ReportsDailyTab } from "./reports-daily-tab";
 import { ReportsHourlyTab } from "./reports-hourly-tab";
 import { ReportsMerchantsTab } from "./reports-merchants-tab";
 import { ReportsMonthlyTab } from "./reports-monthly-tab";
+import { ReportsOverviewChart } from "./reports-overview-chart";
 import { ReportsSummaryTab } from "./reports-summary-tab";
 
 export function ReportsPage() {
@@ -104,6 +105,8 @@ export function ReportsPage() {
           options={REPORTS_RANGE_SELECT_OPTIONS}
         />
       </Space>
+
+      <ReportsOverviewChart chart={r.overview?.chart} fetching={r.overviewFetching} />
 
       {r.showOverviewError || r.showTableError ? (
         <Alert
