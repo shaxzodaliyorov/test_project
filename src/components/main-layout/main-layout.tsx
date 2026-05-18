@@ -175,6 +175,9 @@ export function MainLayout() {
             aria-label="TASK — Dashboard"
             style={{
               ...mainLayoutSiderBrand,
+              display: "block",
+              width: "100%",
+              boxSizing: "border-box",
               textDecoration: "none",
               color: "inherit",
             }}

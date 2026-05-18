@@ -1,8 +1,12 @@
 import type { CSSProperties } from 'react'
 
 export const mainLayoutShell: CSSProperties = {
-  minHeight: '100vh',
+  minHeight: 0,
+  height: '100svh',
+  maxHeight: '100svh',
+  overflow: 'hidden',
   background: 'var(--bg)',
+  textAlign: 'left',
 }
 
 export const mainLayoutSider: CSSProperties = {
@@ -10,14 +14,22 @@ export const mainLayoutSider: CSSProperties = {
   borderRight: '1px solid var(--border)',
   borderLeft: '3px solid var(--accent)',
   boxShadow: '2px 0 12px color-mix(in srgb, var(--text-h) 6%, transparent)',
+  height: '100%',
+  flexShrink: 0,
+  overflow: 'hidden',
 }
 
 export const mainLayoutSiderInner: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
+  maxHeight: '100%',
   paddingTop: 8,
   paddingInline: 8,
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  boxSizing: 'border-box',
+  textAlign: 'left',
 }
 
 export const mainLayoutSiderBrand: CSSProperties = {
@@ -35,6 +47,7 @@ export const mainLayoutSiderBrand: CSSProperties = {
 export const mainLayoutSiderBrandRow: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'flex-start',
   gap: 12,
   minWidth: 0,
 }
@@ -70,12 +83,16 @@ export const mainLayoutMenu: CSSProperties = {
   background: 'transparent',
   marginTop: 4,
   borderRadius: 8,
+  textAlign: 'left',
 }
 
 export const mainLayoutInner: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  minHeight: '100vh',
+  flex: 1,
+  minWidth: 0,
+  minHeight: 0,
+  overflow: 'hidden',
   background: 'color-mix(in srgb, var(--bg) 96%, var(--accent-bg))',
   textAlign: 'left',
 }
@@ -84,6 +101,8 @@ export const mainLayoutInner: CSSProperties = {
 export const mainLayoutContentArea: CSSProperties = {
   flex: 1,
   minHeight: 0,
+  overflowY: 'auto',
+  WebkitOverflowScrolling: 'touch',
   padding: '16px 24px',
 }
 
