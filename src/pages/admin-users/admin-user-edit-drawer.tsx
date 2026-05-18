@@ -1,7 +1,7 @@
 import { Button, Drawer, Form, Space } from 'antd'
 import type { FormInstance } from 'antd/es/form'
 import { AdminUserFormFields } from './admin-user-form-fields'
-import type { UserFormValues } from './admin-user-form-types'
+import type { UserFormValues } from '@/types/admin-user-form'
 import type { User } from '@/types/user'
 
 export type AdminUserEditDrawerProps = {

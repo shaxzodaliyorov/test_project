@@ -124,14 +124,14 @@ export function LoginPage() {
                 Admin
               </Typography.Text>
               <Tag>admin@test.com</Tag>
-              <Tag>admin</Tag>
+              <Tag>Admin1!xx</Tag>
             </Flex>
             <Flex align="center" gap={8} wrap="wrap">
               <Typography.Text strong style={loginDemoStrong}>
                 User
               </Typography.Text>
               <Tag>user@test.com</Tag>
-              <Tag>user</Tag>
+              <Tag>User1!xx</Tag>
               <Typography.Text type="secondary" style={loginDemoPermissionNote}>
                 ({PERMISSIONS.DASHBOARD_READ} only)
               </Typography.Text>

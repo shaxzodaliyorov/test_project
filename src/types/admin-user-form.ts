@@ -1,7 +1,8 @@
 import type { Role } from '@/types/role'
 
 export type UserFormValues = {
-  name: string
+  firstName: string
+  lastName: string
   email: string
   password?: string
   roles: Role[]

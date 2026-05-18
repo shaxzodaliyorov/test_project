@@ -25,7 +25,8 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useUsers } from "@/hooks/use-users";
 import { AdminUserCreateModal } from "./admin-user-create-modal";
 import { AdminUserEditDrawer } from "./admin-user-edit-drawer";
-import type { UserFormValues } from "./admin-user-form-types";
+import type { UserFormValues } from "@/types/admin-user-form";
+import { fullNameFromForm, splitStoredName } from "@/utils/admin-user-name";
 import type { Role } from "@/types/role";
 import type { User } from "@/types/user";
 
@@ -54,8 +55,10 @@ export function AdminUsersPage() {
 
   useEffect(() => {
     if (!editUser) return;
+    const { firstName, lastName } = splitStoredName(editUser.name);
     editForm.setFieldsValue({
-      name: editUser.name,
+      firstName,
+      lastName,
       email: editUser.email,
       roles: [...editUser.roles],
       password: undefined,
@@ -64,7 +67,7 @@ export function AdminUsersPage() {
 
   const openCreate = () => {
     createForm.resetFields();
-    createForm.setFieldsValue({ roles: ["user"] });
+    createForm.setFieldsValue({ roles: ["user"], firstName: "", lastName: "" });
     setCreateOpen(true);
   };
 
@@ -72,7 +75,7 @@ export function AdminUsersPage() {
     const v = await createForm.validateFields();
     await createMutation.mutateAsync({
       email: v.email.trim(),
-      name: v.name.trim(),
+      name: fullNameFromForm(v),
       password: v.password ?? "",
       roles: v.roles,
     });
@@ -90,7 +93,7 @@ export function AdminUsersPage() {
       roles: Role[];
     }> = {
       email: v.email.trim(),
-      name: v.name.trim(),
+      name: fullNameFromForm(v),
       roles: v.roles,
     };
     if (v.password?.trim()) body.password = v.password.trim();

@@ -34,15 +34,15 @@ const rows: DemoRow[] = [
   {
     id: '1',
     email: 'admin@test.com',
-    name: 'Admin',
-    password: 'admin',
+    name: 'Admin Demo',
+    password: 'Admin1!xx',
     roles: ['admin'],
   },
   {
     id: '2',
     email: 'user@test.com',
-    name: 'Regular',
-    password: 'user',
+    name: 'Regular User',
+    password: 'User1!xx',
     roles: ['user'],
   },
 ]

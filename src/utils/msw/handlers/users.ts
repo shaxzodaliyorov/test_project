@@ -26,6 +26,13 @@ function isRoleArray(v: unknown): v is Role[] {
   )
 }
 
+function passwordMeetsPolicy(p: string): boolean {
+  if (p.length < 8) return false
+  if (!/[A-Z]/.test(p)) return false
+  const specials = `!@#$%^&*()_+-=[]{};':"|,.<>?/~\``
+  return [...p].some((c) => specials.includes(c))
+}
+
 export const usersHandlers = [
   http.get('/api/users', ({ request }) => {
     const user = getUserFromAuthHeader(request.headers.get('authorization'))
@@ -73,6 +80,21 @@ export const usersHandlers = [
     if (!isRoleArray(body.roles)) {
       return HttpResponse.json(
         { message: 'roles must be a non-empty array of admin|user' },
+        { status: 400 },
+      )
+    }
+    if (body.roles.includes('admin')) {
+      return HttpResponse.json(
+        { message: 'Admin role cannot be assigned to new users' },
+        { status: 400 },
+      )
+    }
+    if (!passwordMeetsPolicy(password)) {
+      return HttpResponse.json(
+        {
+          message:
+            'Password must be at least 8 characters with one uppercase and one special character',
+        },
         { status: 400 },
       )
     }
@@ -136,6 +158,15 @@ export const usersHandlers = [
       if (next) patch.name = next
     }
     if (typeof body.password === 'string' && body.password.length > 0) {
+      if (!passwordMeetsPolicy(body.password)) {
+        return HttpResponse.json(
+          {
+            message:
+              'Password must be at least 8 characters with one uppercase and one special character',
+          },
+          { status: 400 },
+        )
+      }
       patch.password = body.password
     }
     if (body.roles !== undefined) {
