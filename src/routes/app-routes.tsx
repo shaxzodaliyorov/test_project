@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/protected-route/protected-route";
 import { MainLayout } from "@/components/main-layout/main-layout";
 import { useAuthStore } from "@/hooks/auth-store";
+import { AppRoot } from "@/routes/app-root";
 import { AdminUsersPage } from "@/pages/admin-users/admin-users-page";
 import { DashboardPage } from "@/pages/dashboard/dashboard-page";
 import { ForbiddenPage } from "@/pages/forbidden/forbidden-page";
@@ -25,62 +26,80 @@ function AuthenticatedHomeRedirect() {
 const usersRoute = {
   path: PATHS.USERS,
   element: <AdminUsersPage />,
-  handle: { permissions: [PERMISSIONS.USERS_READ] } satisfies AppRouteHandle,
+  handle: {
+    permissions: [PERMISSIONS.USERS_READ],
+    documentTitleKey: "users:title",
+  } satisfies AppRouteHandle,
 };
 
 const paymentsRoute = {
   path: PATHS.PAYMENTS,
   element: <PaymentsPage />,
-  handle: { permissions: [PERMISSIONS.PAYMENTS_READ] } satisfies AppRouteHandle,
+  handle: {
+    permissions: [PERMISSIONS.PAYMENTS_READ],
+    documentTitleKey: "payments:title",
+  } satisfies AppRouteHandle,
 };
 
 const reportsRoute = {
   path: PATHS.REPORTS,
   element: <ReportsPage />,
-  handle: { permissions: [PERMISSIONS.REPORTS_READ] } satisfies AppRouteHandle,
+  handle: {
+    permissions: [PERMISSIONS.REPORTS_READ],
+    documentTitleKey: "reports:title",
+  } satisfies AppRouteHandle,
 };
 
 const settingsRoute = {
   path: PATHS.SETTINGS,
   element: <SettingsPage />,
-  handle: {} satisfies AppRouteHandle,
+  handle: { documentTitleKey: "settings:pageTitle" } satisfies AppRouteHandle,
 };
 
 export const appRouter = createBrowserRouter([
   {
-    path: PATHS.LOGIN,
-    element: <GuestLayout />,
-    children: [{ index: true, element: <LoginPage /> }],
-  },
-  {
-    element: <ProtectedRoute />,
+    element: <AppRoot />,
     children: [
       {
-        element: <MainLayout />,
+        path: PATHS.LOGIN,
+        element: <GuestLayout />,
+        handle: { documentTitleKey: "auth:documentTitle" } satisfies AppRouteHandle,
+        children: [{ index: true, element: <LoginPage /> }],
+      },
+      {
+        element: <ProtectedRoute />,
         children: [
           {
-            path: PATHS.DASHBOARD,
-            element: <DashboardPage />,
-            handle: {
-              permissions: [PERMISSIONS.DASHBOARD_READ],
-            } satisfies AppRouteHandle,
-          },
-          usersRoute,
-          paymentsRoute,
-          reportsRoute,
-          settingsRoute,
-          {
-            path: PATHS.FORBIDDEN,
-            element: <ForbiddenPage />,
-            handle: {} satisfies AppRouteHandle,
-          },
-          {
-            path: PATHS.ROOT,
-            element: <AuthenticatedHomeRedirect />,
+            element: <MainLayout />,
+            children: [
+              {
+                path: PATHS.DASHBOARD,
+                element: <DashboardPage />,
+                handle: {
+                  permissions: [PERMISSIONS.DASHBOARD_READ],
+                  documentTitleKey: "nav:dashboard",
+                } satisfies AppRouteHandle,
+              },
+              usersRoute,
+              paymentsRoute,
+              reportsRoute,
+              settingsRoute,
+              {
+                path: PATHS.FORBIDDEN,
+                element: <ForbiddenPage />,
+                handle: {
+                  documentTitleKey: "common:forbiddenDocumentTitle",
+                } satisfies AppRouteHandle,
+              },
+              {
+                path: PATHS.ROOT,
+                element: <AuthenticatedHomeRedirect />,
+              },
+            ],
           },
         ],
       },
+      { path: "*", element: <Navigate to={PATHS.DASHBOARD} replace /> },
     ],
   },
-  { path: "*", element: <Navigate to={PATHS.DASHBOARD} replace /> },
 ]);

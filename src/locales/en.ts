@@ -12,6 +12,7 @@ export const en = {
     backToDashboard: 'Back to dashboard',
     period: 'Period',
     forbiddenTitle: '403',
+    forbiddenDocumentTitle: 'Forbidden',
     forbiddenSubtitle: 'You do not have permission to view this page.',
     notFoundTitle: '404',
     notFoundSubtitle: 'This page does not exist or you do not have access.',
@@ -49,6 +50,7 @@ export const en = {
     previewAmountNote: 'Display only (no exchange rate)',
   },
   auth: {
+    documentTitle: 'Sign in',
     welcomeTitle: 'Welcome back',
     welcomeSubtitle: 'Sign in to continue to RBAC demo.',
     email: 'Email',

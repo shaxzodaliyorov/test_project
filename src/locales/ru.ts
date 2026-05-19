@@ -12,6 +12,7 @@ export const ru = {
     backToDashboard: 'На главную',
     period: 'Период',
     forbiddenTitle: '403',
+    forbiddenDocumentTitle: 'Доступ запрещён',
     forbiddenSubtitle: 'У вас нет прав для просмотра этой страницы.',
     notFoundTitle: '404',
     notFoundSubtitle: 'Страница не существует или у вас нет доступа.',
@@ -49,6 +50,7 @@ export const ru = {
     previewAmountNote: 'Только отображение (без конвертации курса)',
   },
   auth: {
+    documentTitle: 'Вход',
     welcomeTitle: 'С возвращением',
     welcomeSubtitle: 'Войдите, чтобы продолжить демо RBAC.',
     email: 'Email',

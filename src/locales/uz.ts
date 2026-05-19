@@ -12,6 +12,7 @@ export const uz = {
     backToDashboard: 'Dashboardga qaytish',
     period: 'Davr',
     forbiddenTitle: '403',
+    forbiddenDocumentTitle: 'Ruxsat yo‘q',
     forbiddenSubtitle: 'Bu sahifani ko‘rish uchun ruxsatingiz yo‘q.',
     notFoundTitle: '404',
     notFoundSubtitle: 'Sahifa mavjud emas yoki ruxsatingiz yo‘q.',
@@ -49,6 +50,7 @@ export const uz = {
     previewAmountNote: 'Faqat ko‘rinish (kurs konvertatsiyasi yo‘q)',
   },
   auth: {
+    documentTitle: 'Kirish',
     welcomeTitle: 'Xush kelibsiz',
     welcomeSubtitle: 'RBAC demo ilovasiga kirish uchun tizimga kiring.',
     email: 'Email',
