@@ -1,6 +1,18 @@
 # Test Project
 
-RBAC demo admin panel built with React, TypeScript, Vite, and Ant Design. Sign in with a demo account below to explore role-based navigation and permissions. The app uses MSW for a local mock API — not for production.
+## Tech stack
+
+- **React 19** — UI
+- **TypeScript** — typing
+- **Vite** — dev server and build
+- **Ant Design** — components and layout
+- **React Router** — routing
+- **TanStack Query** — server state / API requests
+- **Zustand** — client state (auth, theme, appearance)
+- **i18next / react-i18next** — locales (en, ru, uz)
+- **Recharts** & **@ant-design/plots** — charts
+- **MSW** — mock API in development
+- **ESLint** + **typescript-eslint** — linting
 
 ## Requirements
 
@@ -25,8 +37,6 @@ yarn
 | `npm run lint`    | Run ESLint               |
 
 ## Demo accounts
-
-Use these credentials on the login page during local development:
 
 | Label           | Email              | Password  | Roles                   |
 | --------------- | ------------------ | --------- | ----------------------- |

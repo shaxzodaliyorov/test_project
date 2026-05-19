@@ -1,5 +1,6 @@
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Flex, Form, Input, Typography } from "antd";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import {
   loginFieldLabel,
   loginHeroFlex,
@@ -8,7 +9,7 @@ import {
   loginPanel,
   loginRing,
   loginRootFlex,
-  loginSubtitle,
+  loginSubtitleCompact,
   loginTitle,
   loginTopBar,
 } from "./login.styles";
@@ -18,30 +19,44 @@ import { LoginLocaleSelect } from "./login-locale-select";
 import { LoginThemeToggle } from "./login-theme-toggle";
 
 export function LoginPage() {
+  const isCompact = useCompactLayout();
   const { t, emailRules, passwordRules, submit, isPending } = useLoginPage();
+  const formSize = isCompact ? "middle" : "large";
 
   return (
-    <Flex justify="center" align="center" style={loginRootFlex}>
+    <Flex
+      justify="center"
+      align={isCompact ? "flex-start" : "center"}
+      style={loginRootFlex(isCompact)}
+    >
       <Flex
         align="center"
         gap="small"
         justify="flex-end"
         wrap="wrap"
-        style={loginTopBar}
+        style={loginTopBar(isCompact)}
       >
-        <LoginLocaleSelect />
+        <LoginLocaleSelect compact={isCompact} />
         <LoginThemeToggle />
       </Flex>
-      <div style={loginRing}>
-        <div style={loginPanel}>
-          <Flex vertical align="center" gap="small" style={loginHeroFlex}>
-            <div style={loginLockIconWrap}>
+      <div style={loginRing(isCompact)}>
+        <div style={loginPanel(isCompact)}>
+          <Flex
+            vertical
+            align="center"
+            gap="small"
+            style={loginHeroFlex(isCompact)}
+          >
+            <div style={loginLockIconWrap(isCompact)}>
               <LockOutlined aria-hidden />
             </div>
-            <Typography.Title level={2} style={loginTitle}>
+            <Typography.Title level={2} style={loginTitle(isCompact)}>
               {t("welcomeTitle")}
             </Typography.Title>
-            <Typography.Paragraph type="secondary" style={loginSubtitle}>
+            <Typography.Paragraph
+              type="secondary"
+              style={loginSubtitleCompact(isCompact)}
+            >
               {t("welcomeSubtitle")}
             </Typography.Paragraph>
           </Flex>
@@ -49,7 +64,7 @@ export function LoginPage() {
           <Form<LoginFormValues>
             layout="vertical"
             requiredMark={false}
-            size="large"
+            size={formSize}
             onFinish={submit}
             disabled={isPending}
           >
@@ -79,7 +94,7 @@ export function LoginPage() {
               type="primary"
               htmlType="submit"
               block
-              size="large"
+              size={formSize}
               loading={isPending}
             >
               {t("continue")}
