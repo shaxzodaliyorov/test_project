@@ -1,11 +1,8 @@
+import { screen, waitFor } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { useAuthStore } from '@/hooks/auth-store'
 import { LoginPage } from '@/pages/login/login-page'
-import {
-  renderWithProviders,
-  screen,
-  waitFor,
-} from '@/test/test-utils'
+import { renderWithProviders } from '@/test/test-utils'
 
 describe('LoginPage', () => {
   it('renders welcome heading in English', () => {

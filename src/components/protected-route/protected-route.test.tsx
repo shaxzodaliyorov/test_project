@@ -1,3 +1,4 @@
+import { screen, waitFor } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/protected-route/protected-route'
@@ -9,8 +10,6 @@ import {
   renderWithProviders,
   routerDataFutureFlags,
   routerProviderFutureFlags,
-  screen,
-  waitFor,
 } from '@/test/test-utils'
 import {
   findRowById,
