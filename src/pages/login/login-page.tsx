@@ -1,24 +1,6 @@
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Flex, Form, Input, Typography } from "antd";
 import {
-  LockOutlined,
-  MailOutlined,
-  SafetyCertificateOutlined,
-} from "@ant-design/icons";
-import {
-  Button,
-  Divider,
-  Flex,
-  Form,
-  Input,
-  Space,
-  Tag,
-  Typography,
-} from "antd";
-import {
-  loginCertIcon,
-  loginDemoDividerText,
-  loginDemoSpace,
-  loginDemoStrong,
-  loginDivider,
   loginFieldLabel,
   loginHeroFlex,
   loginInputPrefix,
@@ -103,51 +85,6 @@ export function LoginPage() {
               {t("continue")}
             </Button>
           </Form>
-
-          <Divider plain style={loginDivider}>
-            <Typography.Text type="secondary" style={loginDemoDividerText}>
-              {t("demoDivider")}
-            </Typography.Text>
-          </Divider>
-
-          <Space direction="vertical" size={12} style={loginDemoSpace}>
-            <Flex align="center" gap={8} wrap="wrap">
-              <SafetyCertificateOutlined style={loginCertIcon} />
-              <Typography.Text strong style={loginDemoStrong}>
-                {t("demoAdmin")}
-              </Typography.Text>
-              <Tag>admin@test.com</Tag>
-              <Tag>Admin@123</Tag>
-            </Flex>
-            <Flex align="center" gap={8} wrap="wrap">
-              <Typography.Text strong style={loginDemoStrong}>
-                {t("demoPayment")}
-              </Typography.Text>
-              <Tag>payment@test.com</Tag>
-              <Tag>Payment@1</Tag>
-            </Flex>
-            <Flex align="center" gap={8} wrap="wrap">
-              <Typography.Text strong style={loginDemoStrong}>
-                {t("demoReports")}
-              </Typography.Text>
-              <Tag>reports@test.com</Tag>
-              <Tag>Reports@1</Tag>
-            </Flex>
-            <Flex align="center" gap={8} wrap="wrap">
-              <Typography.Text strong style={loginDemoStrong}>
-                {t("demoUsersOnly")}
-              </Typography.Text>
-              <Tag>usersonly@test.com</Tag>
-              <Tag>Users@123</Tag>
-            </Flex>
-            <Flex align="center" gap={8} wrap="wrap">
-              <Typography.Text strong style={loginDemoStrong}>
-                {t("demoNoRoles")}
-              </Typography.Text>
-              <Tag>user@test.com</Tag>
-              <Tag>User@1234</Tag>
-            </Flex>
-          </Space>
         </div>
       </div>
     </Flex>

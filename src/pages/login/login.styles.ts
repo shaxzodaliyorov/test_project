@@ -71,24 +71,3 @@ export const loginFieldLabel: CSSProperties = {
 export const loginInputPrefix: CSSProperties = {
   color: "var(--text)",
 };
-
-export const loginDivider: CSSProperties = {
-  margin: "28px 0 20px",
-  borderColor: "var(--border)",
-};
-
-export const loginDemoDividerText: CSSProperties = {
-  fontSize: 13,
-};
-
-export const loginDemoSpace: CSSProperties = {
-  width: "100%",
-};
-
-export const loginCertIcon: CSSProperties = {
-  color: "var(--accent)",
-};
-
-export const loginDemoStrong: CSSProperties = {
-  color: "var(--text-h)",
-};
