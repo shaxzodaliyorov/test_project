@@ -1,6 +1,7 @@
 import { Button, Drawer, Form, Space } from "antd";
 import type { FormInstance } from "antd/es/form";
 import { useTranslation } from "react-i18next";
+import { useCompactLayout } from "@/hooks/use-compact-layout";
 import { AdminUserFormFields } from "./admin-user-form-fields";
 import type { UserFormValues } from "@/types/admin-user-form";
 import type { User } from "@/types/user";
@@ -23,14 +24,24 @@ export function AdminUserEditDrawer({
   onSubmit,
 }: AdminUserEditDrawerProps) {
   const { t } = useTranslation("users");
+  const isCompact = useCompactLayout();
 
   return (
     <Drawer
       title={t("editUserTitle")}
-      width={420}
+      width={isCompact ? "100%" : 600}
       open={Boolean(user)}
       onClose={onClose}
       destroyOnHidden
+      styles={
+        isCompact
+          ? {
+              body: { paddingTop: 16 },
+            }
+          : {
+              body: { padding: "24px 28px" },
+            }
+      }
       extra={
         <Space>
           <Button onClick={onClose}>{t("cancelDrawer")}</Button>
@@ -40,7 +51,12 @@ export function AdminUserEditDrawer({
         </Space>
       }
     >
-      <Form<UserFormValues> form={form} layout="vertical" requiredMark>
+      <Form<UserFormValues>
+        form={form}
+        layout="vertical"
+        requiredMark
+        size="large"
+      >
         <AdminUserFormFields mode="edit" roleOptions={roleOptions} />
       </Form>
     </Drawer>

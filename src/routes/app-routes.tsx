@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/protected-route/protected-route";
 import { MainLayout } from "@/components/main-layout/main-layout";
+import { useAuthStore } from "@/hooks/auth-store";
 import { AdminUsersPage } from "@/pages/admin-users/admin-users-page";
 import { DashboardPage } from "@/pages/dashboard/dashboard-page";
 import { ForbiddenPage } from "@/pages/forbidden/forbidden-page";
@@ -12,6 +13,14 @@ import { ReportsPage } from "@/pages/reports/reports-page";
 import { SettingsPage } from "@/pages/settings/settings-page";
 import { PERMISSIONS } from "@/constants/permissions";
 import { GuestLayout } from "@/pages/login/guest-layout";
+import { postLoginPath } from "@/utils/post-login-path";
+
+function AuthenticatedHomeRedirect() {
+  const user = useAuthStore((s) => s.user);
+  return (
+    <Navigate to={user ? postLoginPath(user) : PATHS.SETTINGS} replace />
+  );
+}
 
 const usersRoute = {
   path: PATHS.USERS,
@@ -61,13 +70,17 @@ export const appRouter = createBrowserRouter([
           reportsRoute,
           settingsRoute,
           {
+            path: PATHS.FORBIDDEN,
+            element: <ForbiddenPage />,
+            handle: {} satisfies AppRouteHandle,
+          },
+          {
             path: PATHS.ROOT,
-            element: <Navigate to={PATHS.DASHBOARD} replace />,
+            element: <AuthenticatedHomeRedirect />,
           },
         ],
       },
     ],
   },
-  { path: PATHS.FORBIDDEN, element: <ForbiddenPage /> },
   { path: "*", element: <Navigate to={PATHS.DASHBOARD} replace /> },
 ]);

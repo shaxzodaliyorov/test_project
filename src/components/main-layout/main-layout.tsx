@@ -71,8 +71,12 @@ export function MainLayout() {
   const { t } = useTranslation(["nav", "common"]);
   const layout = useMainLayout();
 
-  if (layout.hasNoPermissions) {
-    return <Navigate to={PATHS.FORBIDDEN} replace />;
+  if (
+    layout.hasNoPermissions &&
+    layout.location.pathname !== PATHS.FORBIDDEN &&
+    layout.location.pathname !== PATHS.SETTINGS
+  ) {
+    return <Navigate to={PATHS.SETTINGS} replace />;
   }
 
   return (

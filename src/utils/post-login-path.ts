@@ -8,5 +8,5 @@ export function postLoginPath(user: User): string {
   if (hasPermission(user, PERMISSIONS.USERS_READ)) return PATHS.USERS
   if (hasPermission(user, PERMISSIONS.PAYMENTS_READ)) return PATHS.PAYMENTS
   if (hasPermission(user, PERMISSIONS.REPORTS_READ)) return PATHS.REPORTS
-  return PATHS.FORBIDDEN
+  return PATHS.SETTINGS
 }
